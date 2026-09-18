@@ -3,9 +3,14 @@
 import { useConsultationModal } from '@/lib/store/useConsultationModal';
 import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
+import { formatRuPhone, isValidRuPhone } from '@/lib/utils';
 
 export function ConsultationModal() {
   const { isOpen, contextTitle, closeModal } = useConsultationModal();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [details, setDetails] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
@@ -18,6 +23,7 @@ export function ConsultationModal() {
     } else {
       document.body.style.overflow = '';
       setIsSubmitted(false);
+      setErrorMsg('');
     }
     return () => {
       document.body.style.overflow = '';
@@ -27,8 +33,27 @@ export function ConsultationModal() {
 
   if (!isOpen) return null;
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatRuPhone(e.target.value));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setErrorMsg('Пожалуйста, укажите ваше имя');
+      return;
+    }
+    if (!isValidRuPhone(phone)) {
+      setErrorMsg('Укажите корректный номер телефона РФ (+7 (XXX) XXX-XX-XX)');
+      return;
+    }
+
+    setErrorMsg('');
+    setIsSubmitted(true);
+  };
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true">
       {/* Затемняющий оверлей */}
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -64,41 +89,48 @@ export function ConsultationModal() {
             <p className="text-xs text-et-muted">Партнер бюро уже ознакамливается с деталями обращения.</p>
           </div>
         ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setIsSubmitted(true);
-            }}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {errorMsg && (
+              <div role="alert" className="p-3 bg-red-950/60 border border-red-800 text-red-300 text-xs rounded-[2px]">
+                {errorMsg}
+              </div>
+            )}
+
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
-                ФИО доверителя / представителя
+              <label htmlFor="modal-name" className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
+                Ваше имя / ФИО доверителя
               </label>
               <input
+                id="modal-name"
                 type="text"
-                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Иван Иванов"
                 className="w-full bg-et-bg border border-et-border px-3.5 py-2.5 text-xs text-et-dark placeholder-neutral-400 focus:outline-none focus:border-et-dark transition-colors"
               />
             </div>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
+              <label htmlFor="modal-phone" className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
                 Телефон для защищенной связи
               </label>
               <input
+                id="modal-phone"
                 type="tel"
-                required
+                value={phone}
+                onChange={handlePhoneChange}
                 placeholder="+7 (___) ___-__-__"
                 className="w-full bg-et-bg border border-et-border px-3.5 py-2.5 text-xs text-et-dark placeholder-neutral-400 focus:outline-none focus:border-et-dark transition-colors"
               />
             </div>
             <div>
-              <label className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
+              <label htmlFor="modal-details" className="text-[11px] uppercase tracking-wider text-et-muted block mb-1">
                 Суть вопроса (кратко)
               </label>
               <textarea
+                id="modal-details"
                 rows={3}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
                 placeholder="Стадия спора, проверка, субсидиарный иск..."
                 className="w-full bg-et-bg border border-et-border px-3.5 py-2.5 text-xs text-et-dark placeholder-neutral-400 focus:outline-none focus:border-et-dark transition-colors resize-none"
               />
@@ -107,7 +139,7 @@ export function ConsultationModal() {
               Нажимая кнопку, вы подтверждаете согласие на обработку персональных данных в соответствии с Федеральным законом № 152-ФЗ.
             </p>
             <Button fullWidth type="submit" className="mt-4">
-              Отправить запрос
+              Обсудить ситуацию
             </Button>
           </form>
         )}
@@ -115,4 +147,5 @@ export function ConsultationModal() {
     </div>
   );
 }
+
 export default ConsultationModal;

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { ConsultationModal } from "@/components/ui/ConsultationModal";
 import { useConsultationModal as useZustandConsultationModal } from "@/lib/store/useConsultationModal";
 
 export const useConsultationModal = () => {
@@ -14,5 +15,10 @@ export const useConsultationModal = () => {
 };
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <ConsultationModal />
+    </>
+  );
 }

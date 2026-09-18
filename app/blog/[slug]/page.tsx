@@ -1,121 +1,61 @@
-import React from "react";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { articles, lawyers } from "@/lib/data/mock-data";
-import { ArrowLeft, Calendar, Tag, User } from "lucide-react";
-import type { Metadata } from "next";
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { getArticleBySlug, getAllArticles } from '@/lib/data/queries';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Button } from '@/components/ui/Button';
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
 export async function generateStaticParams() {
-  return articles.map((a) => ({
-    slug: a.slug,
+  const articles = getAllArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
   }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = articles.find((a) => a.slug === slug);
-  if (!article) return {};
+  const article = getArticleBySlug(slug);
 
-  return {
-    title: `${article.title} — Блог Адвокатского бюро Etlegis`,
-    description: article.previewText,
-  };
-}
-
-export default async function ArticleDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const article = articles.find((a) => a.slug === slug);
-
-  if (!article) {
-    notFound();
-  }
-
-  const author = lawyers.find((l) => l.id === article.authorId);
+  if (!article) notFound();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA]">
+    <div className="flex flex-col min-h-screen bg-et-bg text-et-dark">
       <Header />
-      <main className="flex-grow pt-32 pb-24">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow pt-28 pb-24">
+        <article className="px-6 md:px-12 pt-16 max-w-3xl mx-auto">
           <div className="mb-8">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-[#5E6267] hover:text-[#141517] transition-colors"
-            >
-              <ArrowLeft size={14} />
-              <span>Все публикации</span>
+            <Link href="/blog" className="text-xs uppercase tracking-widest text-et-muted hover:text-et-dark transition-colors">
+              ← Все статьи
             </Link>
           </div>
 
-          <header className="mb-12">
-            <div className="flex flex-wrap items-center gap-3 mb-4 text-xs text-[#5E6267]">
-              <span className="px-2.5 py-1 bg-white border border-[#E2E2DC] text-[10px] uppercase font-semibold text-[#9B815C] rounded-[2px]">
-                {article.category}
-              </span>
-              <span className="font-mono">{article.date}</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl font-heading font-medium text-[#141517] leading-tight mb-6">
-              {article.title}
-            </h1>
-
-            {author && (
-              <div className="flex items-center gap-3 pt-4 border-t border-[#ECECE8]">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-[#ECECE8]">
-                  <img
-                    src={author.photoUrl}
-                    alt={author.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <Link
-                    href={`/team/${author.slug}`}
-                    className="text-sm font-semibold text-[#141517] hover:text-[#9B815C] transition-colors"
-                  >
-                    {author.name}
-                  </Link>
-                  <span className="block text-xs text-[#5E6267]">{author.status}</span>
-                </div>
-              </div>
-            )}
-          </header>
-
-          <div className="bg-white border border-[#E2E2DC] rounded-[2px] p-8 sm:p-12 shadow-subtle mb-12">
-            <div className="prose prose-stone max-w-none text-[#141517] leading-relaxed space-y-6 text-sm sm:text-base whitespace-pre-line font-normal">
-              {article.content}
-            </div>
+          <div className="flex items-center gap-4 text-xs font-mono text-et-muted uppercase mb-4">
+            <span className="text-et-accent font-medium">{article.category}</span>
+            <span>• {article.date}</span>
           </div>
 
-          {/* Consultation CTA Banner */}
-          <div className="p-8 bg-[#141517] text-white rounded-[2px] shadow-card flex flex-col sm:flex-row items-center justify-between gap-6">
+          <h1 className="font-serif text-3xl sm:text-5xl font-medium leading-tight mb-8">
+            {article.title}
+          </h1>
+
+          <div className="border-t border-b border-et-border py-6 mb-10 text-sm sm:text-base font-light text-et-dark leading-relaxed italic">
+            {article.previewText}
+          </div>
+
+          <div className="prose prose-neutral max-w-none text-sm sm:text-base text-et-muted font-light leading-relaxed space-y-6">
+            <p>{article.content}</p>
+          </div>
+
+          <div className="mt-16 bg-white border border-et-border p-8 flex flex-col sm:flex-row justify-between items-center gap-6 rounded-[2px]">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#9B815C] font-semibold block mb-1">
-                Юридическая помощь
-              </span>
-              <h3 className="text-xl sm:text-2xl font-heading font-medium">
-                Остались вопросы по теме публикации?
-              </h3>
-              <p className="text-xs text-[#A1A4A8] mt-1 max-w-md">
-                Свяжитесь с автором материала для консультации по вашей конкретной ситуации.
-              </p>
+              <h3 className="font-serif text-xl font-medium">Нужна консультация по теме статьи?</h3>
+              <p className="text-xs text-et-muted mt-1 font-light">Юристы бюро подготовят оценку правовых рисков.</p>
             </div>
-            <a
-              href="#contacts"
-              className="btn-legal-primary bg-white text-[#141517] hover:bg-[#ECECE8] px-8 py-3.5 text-xs uppercase tracking-wider shrink-0"
-            >
-              Обсудить ситуацию
-            </a>
+            <Button className="flex-shrink-0">Обсудить ситуацию</Button>
           </div>
         </article>
       </main>
