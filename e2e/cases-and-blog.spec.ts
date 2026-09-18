@@ -4,7 +4,7 @@ test.describe('Разделы Кейсы и Блог', () => {
   test('Каталог кейсов открывается и содержит оригинальные победы бюро', async ({ page }) => {
     await page.goto('/cases');
     const heading = page.locator('h1');
-    await expect(heading).toContainText('Практика и результаты');
+    await expect(heading).toContainText('БОЛЕЕ 100 УСПЕШНЫХ ДЕЛ');
 
     // Проверяем наличие знакового кейса на 1,2 млрд руб.
     const billionCase = page.locator('text=1,2 млрд ₽');

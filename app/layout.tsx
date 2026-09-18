@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${cormorant.variable} ${jost.variable}`}>
-      <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white">
+      <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white overflow-x-hidden max-w-full">
         <SmoothScrollProvider>
           <ModalProvider>
             {children}

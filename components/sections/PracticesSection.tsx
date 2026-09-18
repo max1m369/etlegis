@@ -10,7 +10,7 @@ export function PracticesSection() {
   const [activePracticeId, setActivePracticeId] = useState<string>(PRACTICES_DATA[0].id);
 
   return (
-    <section id="practices" className="py-20 md:py-32 px-6 md:px-12 max-w-7xl mx-auto w-full">
+    <section id="practices" className="py-20 md:py-32 px-6 md:px-12 max-w-7xl mx-auto w-full overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
         <div>
           <span className="text-xs uppercase tracking-widest text-et-accent font-medium">Компетенции</span>
@@ -30,13 +30,9 @@ export function PracticesSection() {
         </div>
       </div>
 
-      {/* 
-        МОБИЛЬНАЯ ВЕРСИЯ: Плавный горизонтальный свайп с привязкой (CSS Snap)
-        ДЕСКТОП: Строгая премиальная 4-колоночная сетка для 4 ключевых направлений
-      */}
       <div 
         data-testid="practices-carousel"
-        className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-6 md:pb-0 snap-x snap-mandatory scrollbar-none -mx-6 px-6 md:mx-0 md:px-0"
+        className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-6 md:pb-0 snap-x snap-mandatory scrollbar-none"
       >
         {PRACTICES_DATA.map((practice, index) => {
           const isActive = activePracticeId === practice.id;
@@ -48,7 +44,7 @@ export function PracticesSection() {
               aria-roledescription="slide"
               aria-label={`Практика ${index + 1}: ${practice.title}`}
               onClick={() => setActivePracticeId(practice.id)}
-              className={`min-w-[85vw] sm:min-w-[340px] md:min-w-0 snap-center bg-white border transition-all duration-300 p-6 sm:p-8 flex flex-col justify-between flex-shrink-0 cursor-pointer ${
+              className={`min-w-[80vw] sm:min-w-[340px] md:min-w-0 snap-center bg-white border transition-all duration-300 p-6 sm:p-8 flex flex-col justify-between flex-shrink-0 cursor-pointer ${
                 isActive ? 'border-et-dark shadow-sm' : 'border-et-border hover:border-et-muted'
               }`}
             >
