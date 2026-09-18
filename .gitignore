@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -17,6 +18,8 @@
 # misc
 .DS_Store
 *.pem
+*.exe
+*.db
 
 # debug
 npm-debug.log*
@@ -25,6 +28,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # vercel
 .vercel
@@ -36,3 +40,6 @@ next-env.d.ts
 # playwright
 /test-results/
 /playwright-report/
+
+# ignore separate legacy subfolder
+EEE/

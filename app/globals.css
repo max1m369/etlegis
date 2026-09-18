@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #ECECE8;
+  --border-subtle: #E2E2DC;
+  --text-main: #141517;
+  --text-muted: #5E6267;
+  --accent: #1E293B;
+  --accent-bronze: #9B815C;
+  --accent-bronze-light: #BCA685;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-body), 'Jost', sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Lenis smooth scrolling rules */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Serif headings */
+h1, h2, h3, .font-heading {
+  font-family: var(--font-heading), 'Cormorant Garamond', serif;
+}
+
+/* Hide scrollbar for mobile swipe carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Precision legal boutique button styles */
+.btn-legal-primary {
+  background-color: var(--text-main);
+  color: #ffffff;
+  border-radius: 2px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-legal-primary:hover {
+  background-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(30, 41, 59, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-legal-primary:active {
+  transform: translateY(0);
+}
+
+.btn-legal-outline {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-legal-outline:hover {
+  border-color: var(--text-main);
+  background-color: var(--text-main);
+  color: #ffffff;
+}
+
+/* Selection */
+::selection {
+  background-color: #1E293B;
+  color: #FFFFFF;
+}
