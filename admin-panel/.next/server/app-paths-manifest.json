@@ -1,0 +1,6 @@
+{
+  "/(admin)/studio/page": "app/(admin)/studio/page.js",
+  "/(admin)/studio/cases/new/page": "app/(admin)/studio/cases/new/page.js",
+  "/(admin)/studio/employees/page": "app/(admin)/studio/employees/page.js",
+  "/(admin)/studio/employees/new/page": "app/(admin)/studio/employees/new/page.js"
+}

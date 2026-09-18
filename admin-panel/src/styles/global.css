@@ -1,0 +1,383 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--f-text), 'Onest', system-ui, -apple-system, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--t-in) var(--e), color var(--t-in) var(--e);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  width: 100%;
+}
+
+/* Типографика */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--f-display), 'Jost', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.eyebrow {
+  font-family: var(--f-display), 'Jost', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+p.lead {
+  font-size: 19px;
+  color: var(--text-2);
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* Сетка-подложка из фирменного блокнота */
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--text) 1px, transparent 1px),
+    linear-gradient(90deg, var(--text) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Фирменные скобки */
+.bracketed {
+  position: relative;
+  padding: 34px;
+}
+
+.br {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.br.tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.br.br2 {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+.bracketed.tone-brass .br {
+  border-color: var(--brass);
+}
+
+.reveal .br,
+.rv.in-view .br,
+.in-view.bracketed .br {
+  animation: brOpen 0.55s var(--e) forwards;
+}
+
+@keyframes brOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Кнопки */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: var(--f-text), 'Onest', sans-serif;
+  font-weight: 400;
+  border: 1px solid var(--text);
+  background: var(--text);
+  color: var(--surface);
+  cursor: pointer;
+  transition: all var(--t-hover) var(--e);
+  border-radius: 0;
+}
+
+.btn:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.btn.ghost:hover {
+  border-color: var(--text);
+  background: transparent;
+}
+
+.btn.brass {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: #FFFFFF;
+}
+
+.btn.brass:hover {
+  background: var(--brass-hover);
+  border-color: var(--brass-hover);
+}
+
+.btn.sm {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+.btn.lg {
+  padding: 18px 36px;
+  font-size: 16px;
+}
+
+/* Карточки */
+.card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 38px 34px 34px;
+  box-shadow: var(--shadow);
+  transition: transform 0.45s var(--e), border-color 0.25s var(--e), box-shadow 0.45s var(--e);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 8px 8px auto auto;
+  width: 22px;
+  height: 22px;
+  border-top: 1px solid var(--brass);
+  border-right: 1px solid var(--brass);
+  opacity: 0;
+  transition: opacity var(--t-hover) var(--e);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  border-color: var(--text-2);
+  box-shadow: var(--shadow-lg);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card .num {
+  font-family: var(--f-display), 'Jost', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: var(--text-2);
+}
+
+.card h3 {
+  font-size: 24px;
+  margin: 18px 0 12px;
+}
+
+.card p {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.card .cnt {
+  margin-top: auto;
+  padding-top: 18px;
+  font-size: 13px;
+  color: var(--text-2);
+  border-top: 1px solid var(--line);
+}
+
+.card svg.ic {
+  width: 34px;
+  height: 34px;
+  stroke: var(--text);
+  fill: none;
+  stroke-width: 1.2;
+  margin-bottom: 22px;
+}
+
+.card svg.ic path,
+.card svg.ic rect,
+.card svg.ic circle,
+.card svg.ic line {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  transition: stroke-dashoffset 1s var(--e);
+}
+
+.in-view svg.ic path,
+.in-view svg.ic rect,
+.in-view svg.ic circle,
+.in-view svg.ic line {
+  stroke-dashoffset: 0;
+}
+
+/* СОВМЕЩЕНИЕ ГЕОМЕТРИИ */
+.frames {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 520px;
+  margin-left: auto;
+}
+
+.frames rect {
+  fill: none;
+  stroke: var(--text-2);
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 1.6s var(--e), opacity 1.6s var(--e), stroke 1.6s var(--e);
+}
+
+.frames rect.key {
+  stroke: var(--brass);
+}
+
+.aligned rect {
+  transform: translate(0, 0) rotate(0deg) scale(1) !important;
+  opacity: 1 !important;
+}
+
+/* Анимации появления по скроллу */
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--t-in) var(--e), transform var(--t-in) var(--e);
+}
+
+.rv.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Формы и инпуты */
+.input-field,
+.textarea-field,
+.select-field {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color var(--t-hover) var(--e), background var(--t-hover) var(--e);
+  border-radius: 0;
+}
+
+.input-field:focus,
+.textarea-field:focus,
+.select-field:focus {
+  border-color: var(--brass);
+  background: var(--card);
+}
+
+.textarea-field {
+  resize: vertical;
+  min-height: 110px;
+}
+
+/* Хлебные крошки */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs a {
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color var(--t-hover) var(--e);
+}
+
+.breadcrumbs a:hover {
+  color: var(--brass);
+}
+
+.breadcrumbs .sep {
+  opacity: 0.5;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+  :root {
+    --pad: 20px;
+    --gap: 16px;
+  }
+
+  h1 {
+    font-size: 34px !important;
+  }
+
+  h2 {
+    font-size: 26px !important;
+  }
+
+  .frames {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

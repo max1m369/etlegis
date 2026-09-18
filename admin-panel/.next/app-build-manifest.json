@@ -1,0 +1,41 @@
+{
+  "pages": {
+    "/(admin)/studio/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(admin)/studio/layout.css",
+      "static/chunks/app/(admin)/studio/layout.js"
+    ],
+    "/(admin)/studio/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(admin)/studio/login/page.css",
+      "static/chunks/app/(admin)/studio/login/page.js"
+    ],
+    "/(admin)/studio/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/studio/page.js"
+    ],
+    "/(admin)/studio/cases/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/studio/cases/page.js"
+    ],
+    "/(admin)/studio/cases/new/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/studio/cases/new/page.js"
+    ],
+    "/(admin)/studio/employees/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/studio/employees/page.js"
+    ],
+    "/(admin)/studio/employees/new/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(admin)/studio/employees/new/page.js"
+    ]
+  }
+}

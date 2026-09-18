@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:3005",
     channel: "chrome",
   },
   projects: [
@@ -41,9 +41,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
-    url: "http://localhost:3000",
-    reuseExistingServer: true,
+    command: "npx next start -p 3005",
+    url: "http://localhost:3005",
+    reuseExistingServer: false,
     timeout: 120000,
   },
 });

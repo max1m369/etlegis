@@ -1,0 +1,133 @@
+'use client'
+
+import Link from 'next/link'
+import { ThemeToggle } from './ThemeToggle'
+
+const navItems = [
+  { label: 'Услуги', href: '/services' },
+  { label: 'Кейсы', href: '/cases' },
+  { label: 'Команда', href: '/team' },
+  { label: 'Медиа', href: '/media' },
+  { label: 'О бюро', href: '/about' },
+  { label: 'Контакты', href: '/contacts' },
+]
+
+export function Header() {
+  return (
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        background: 'color-mix(in srgb, var(--surface) 85%, transparent)',
+        borderBottom: '1px solid var(--line)',
+      }}
+    >
+      <div
+        className="wrap"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 76,
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: 'var(--text)',
+            transition: 'opacity 0.2s var(--e)',
+          }}
+          aria-label="ETLEGIS — Главная"
+        >
+          <svg
+            height="26"
+            viewBox="0 0 633.6 124.6"
+            fill="currentColor"
+            style={{ display: 'block', width: 'auto' }}
+            aria-hidden="true"
+          >
+            <path d="M113.4,31.3V11.9H35.8v19.4H12.5v81.5H94V89.5h19.4V70.1H55.2V58.4h58.2V42.9H55.2V31.3H113.4z M86.2,89.5V105 h-66V39h15.5v50.4H86.2z" />
+            <g>
+              <path d="M214,85.9v9.8h-37.5V32.8H213v9.7h-26.2v16.4h23.9v9.5h-23.9v17.6H214z" />
+              <path d="M285.5,42.4h-18.4v53.3h-10.3V42.4h-18.4v-9.6h47.2V42.4z" />
+              <path d="M349.9,86v9.6h-36.5V32.8h10.3V86H349.9z" />
+              <path d="M415.3,85.9v9.8h-37.5V32.8h36.5v9.7h-26.2v16.4h23.9v9.5h-23.9v17.6H415.3z" />
+              <path d="M504.5,63.7c-0.3,19.3-13.3,33.1-31.7,33.1c-18.5,0-32.2-13.8-32.2-32.6c0-18.7,13.6-32.6,32-32.6 c15.3,0,28.2,9.7,31,23.3h-10.6c-2.7-8.1-10.7-13.4-20.2-13.4c-12.7,0-21.7,9.3-21.7,22.6c0,13.4,8.7,22.6,21.7,22.6 c10,0,18.2-5.7,20.6-14.2h-22.4v-8.9L504.5,63.7z" />
+              <path d="M534.3,32.8h10.3v62.9h-10.3V32.8z" />
+              <path d="M574.5,75.9H585c0,7,5.8,10.9,13.2,10.9c6.7,0,12.4-3.5,12.4-9.3c0-6.3-6.7-7.8-14.3-9.6 c-9.6-2.3-20.7-5-20.7-18c0-11.4,8.6-18.1,22-18.1c13.6,0,21.7,7.4,21.7,19.3h-10.2c0-6.3-5.2-9.7-11.8-9.7c-6.3,0-11.5,2.9-11.5,8 c0,5.8,6.5,7.4,13.9,9.2c9.8,2.4,21.3,5.2,21.3,18.7c0,12.6-10.2,19.3-22.9,19.3C584.1,96.6,574.5,88.7,574.5,75.9z" />
+            </g>
+          </svg>
+        </Link>
+
+        <nav
+          style={{
+            display: 'flex',
+            gap: 32,
+          }}
+          className="header-nav"
+        >
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              style={{
+                position: 'relative',
+                color: 'var(--text-2)',
+                textDecoration: 'none',
+                fontSize: 15,
+                padding: '4px 0',
+                transition: 'color 0.25s var(--e)',
+              }}
+              className="nav-link"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 20,
+          }}
+        >
+          <ThemeToggle />
+          <Link href="/contacts#consultation" className="btn sm">
+            Консультация
+          </Link>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 0;
+          height: 1px;
+          background: var(--brass);
+          transition: width 0.25s var(--e);
+        }
+        .nav-link:hover {
+          color: var(--text) !important;
+        }
+        .nav-link:hover::after {
+          width: 100%;
+        }
+        @media (max-width: 900px) {
+          .header-nav {
+            display: none !important;
+          }
+        }
+      `}</style>
+    </header>
+  )
+}
