@@ -46,14 +46,13 @@ test.describe("Mobile UX & Accessibility Specification Tests", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
     // Locate practices section and cards
-    const practiceCards = page.locator('[role="region"][aria-roledescription="slide"]');
+    const carousel = page.locator('[data-testid="practices-carousel"]');
+    await expect(carousel).toBeVisible({ timeout: 5000 });
+
+    const practiceCards = carousel.locator('[role="region"][aria-roledescription="slide"]');
     await expect(practiceCards.first()).toBeVisible({ timeout: 5000 });
     const count = await practiceCards.count();
     expect(count).toBeGreaterThanOrEqual(3);
-
-    // Locate the carousel container
-    const carousel = page.locator('[data-testid="practices-carousel"]');
-    await expect(carousel).toBeVisible();
 
     // Verify touch/swipe action by dispatching touch events or scrolling
     const initialScrollLeft = await carousel.evaluate((el) => el.scrollLeft);
