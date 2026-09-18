@@ -1,3 +1,8 @@
+import { lawyers, cases, practices, articles } from './mock-data';
+import type { Lawyer, Case, Practice, Article } from '@/types/models';
+
+export type { Lawyer, Case, Practice, Article };
+
 export interface PracticeServiceItem {
   id: string;
   title: string;
@@ -57,3 +62,7 @@ export const PRACTICES_DATA: PracticeItem[] = [
     ],
   },
 ];
+
+export const LAWYERS_DATA: Lawyer[] = lawyers;
+export const CASES_DATA: Case[] = cases;
+export const ARTICLES_DATA: Article[] = articles;
