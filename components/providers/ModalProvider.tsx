@@ -1,41 +1,18 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
-import ConsultationModal from "@/components/ui/ConsultationModal";
+import React from "react";
+import { useConsultationModal as useZustandConsultationModal } from "@/lib/store/useConsultationModal";
 
-interface ModalContextType {
-  isOpen: boolean;
-  openModal: (initialNote?: string) => void;
-  closeModal: () => void;
-  initialNote: string;
-}
-
-const ModalContext = createContext<ModalContextType>({
-  isOpen: false,
-  openModal: () => {},
-  closeModal: () => {},
-  initialNote: "",
-});
-
-export const useConsultationModal = () => useContext(ModalContext);
+export const useConsultationModal = () => {
+  const store = useZustandConsultationModal();
+  return {
+    isOpen: store.isOpen,
+    openModal: store.openModal,
+    closeModal: store.closeModal,
+    initialNote: store.contextTitle || "",
+  };
+};
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [initialNote, setInitialNote] = useState("");
-
-  const openModal = (note?: string) => {
-    setInitialNote(note || "");
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
-  return (
-    <ModalContext.Provider value={{ isOpen, openModal, closeModal, initialNote }}>
-      {children}
-      <ConsultationModal />
-    </ModalContext.Provider>
-  );
+  return <>{children}</>;
 }

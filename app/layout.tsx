@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
+import { ConsultationModal } from "@/components/ui/ConsultationModal";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin", "cyrillic"],
@@ -38,6 +39,7 @@ export default function RootLayout({
         <SmoothScrollProvider>
           <ModalProvider>
             {children}
+            <ConsultationModal />
           </ModalProvider>
         </SmoothScrollProvider>
       </body>
