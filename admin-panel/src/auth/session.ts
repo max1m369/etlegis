@@ -17,14 +17,14 @@ export async function createSession(userId: string | number) {
     collection: 'sessions',
     overrideAccess: true,
     data: {
-      user: userId,
+      user: userId as any,
       tokenHash: hashToken(raw),
       expiresAt: new Date(now + IDLE_TTL_MS).toISOString(),
       absoluteExpiresAt: new Date(now + ABSOLUTE_TTL_MS).toISOString(),
       ip: h.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown',
       userAgent: h.get('user-agent') || 'unknown',
       revoked: false,
-    },
+    } as any,
   })
 
   const store = await cookies()

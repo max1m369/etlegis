@@ -6,7 +6,7 @@ export const AdminUsers: CollectionConfig = {
   slug: 'admin-users',
   labels: { singular: 'Пользователь админки', plural: 'Пользователи админки' },
   auth: {
-    disableLocalStrategy: false, // логин/пароль нужен для проверки в payload.login()
+    // local strategy enabled by default
     tokenExpiration: 60, // JWT Payload практически не используем
     maxLoginAttempts: 5,
     lockTime: 10 * 60 * 1000,

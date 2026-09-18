@@ -116,8 +116,8 @@ export async function saveCase(id: string | null, _prev: unknown, formData: Form
   const data = toDoc(parsed.data)
 
   const doc = id
-    ? await payload.update({ collection: 'cases', id, data, draft: parsed.data.status === 'draft' })
-    : await payload.create({ collection: 'cases', data, draft: parsed.data.status === 'draft' })
+    ? await payload.update({ collection: 'cases', id, data: data as any, draft: parsed.data.status === 'draft' })
+    : await payload.create({ collection: 'cases', data: data as any, draft: parsed.data.status === 'draft' })
 
   revalidateTag('cases')
   revalidatePath('/cases')

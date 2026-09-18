@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         format,
         status: 'pending',
         notes: notes || undefined,
-      },
+      } as any,
     })
 
     if (slotId) {

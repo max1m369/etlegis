@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getPayload } from '@/lib/payload'
 import { requirePermission } from '@/auth/guard'
 
-export async function saveSettings(_prev: unknown, formData: FormData) {
+export async function saveSettings(formData: FormData): Promise<void> {
   await requirePermission('settings', 'update')
 
   const phone = String(formData.get('phone') || '')
@@ -28,5 +28,4 @@ export async function saveSettings(_prev: unknown, formData: FormData) {
   })
 
   revalidatePath('/')
-  return { ok: true }
 }

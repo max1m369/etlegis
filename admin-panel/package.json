@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "test:db": "tsx scripts/test-db.ts",
     "create-admin": "tsx scripts/create-admin.ts",
     "generate:types": "payload generate:types",
@@ -25,6 +25,7 @@
     "@tiptap/react": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
     "clsx": "^2.1.1",
+    "graphql": "^17.0.2",
     "gsap": "^3.12.5",
     "next": "15.4.10",
     "nodemailer": "^6.9.14",

@@ -108,8 +108,8 @@ export async function saveEmployee(id: string | null, _prev: unknown, formData: 
 
   const payload = await getPayload()
   const doc = id
-    ? await payload.update({ collection: 'employees', id, data, draft: d.status === 'draft' })
-    : await payload.create({ collection: 'employees', data, draft: d.status === 'draft' })
+    ? await payload.update({ collection: 'employees', id, data: data as any, draft: d.status === 'draft' })
+    : await payload.create({ collection: 'employees', data: data as any, draft: d.status === 'draft' })
 
   revalidateTag('employees')
   revalidatePath('/team')

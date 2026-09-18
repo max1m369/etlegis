@@ -13,25 +13,20 @@ const userSchema = z.object({
   role: z.enum(['admin', 'editor']),
 })
 
-export async function createUser(_prev: unknown, formData: FormData) {
+export async function createUser(formData: FormData): Promise<void> {
   await requirePermission('admin-users', 'create')
   const parsed = userSchema.safeParse(Object.fromEntries(formData))
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0].message }
+    throw new Error(parsed.error.issues[0].message)
   }
 
   const payload = await getPayload()
-  try {
-    await payload.create({
-      collection: 'admin-users',
-      data: parsed.data,
-    })
-    revalidatePath('/studio/users')
-    return { ok: true }
-  } catch (err: any) {
-    return { error: err.message || 'Ошибка создания пользователя' }
-  }
+  await payload.create({
+    collection: 'admin-users',
+    data: parsed.data,
+  })
+  revalidatePath('/studio/users')
 }
 
 export async function revokeUserSessions(userId: string) {

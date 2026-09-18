@@ -49,7 +49,7 @@ export default async function CasesPage({
         pagination={{ page: res.page ?? 1, totalPages: res.totalPages }}
         columns={[
           { key: 'title', label: 'Название', primary: true },
-          { key: 'practice', label: 'Практика', render: (r) => r.practice?.title ?? '—' },
+          { key: 'practice', label: 'Практика', render: (r) => (r.practice as any)?.title ?? '—' },
           { key: 'amount', label: 'Сумма', render: (r) => (r.amount ? formatMoney(r.amount) : '—') },
           {
             key: '_status',
