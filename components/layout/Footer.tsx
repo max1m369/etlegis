@@ -40,7 +40,19 @@ export default function Footer() {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          message,
+          contextTitle: 'Заявка из футера',
+        }),
+      });
+
+      if (!res.ok) throw new Error('Ошибка отправки');
+
       setIsSubmitted(true);
       setName("");
       setPhone("");
