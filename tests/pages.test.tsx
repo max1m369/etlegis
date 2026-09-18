@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { practices, cases, services, lawyers, companyContacts } from "@/lib/data/mock-data";
 import ConsultationModal from "@/components/ui/ConsultationModal";
-import { ModalProvider } from "@/components/providers/ModalProvider";
+import { ModalProvider, useConsultationModal } from "@/components/providers/ModalProvider";
 
 // Define contracts and tests
 describe("SPEC Contract Tests: Pages and Components", () => {
@@ -123,12 +123,10 @@ describe("SPEC Contract Tests: Pages and Components", () => {
 
     // Render Modal within Provider
     const TestComponent = () => {
-      const { useConsultationModal } = require("@/components/providers/ModalProvider");
       const { openModal } = useConsultationModal();
       return (
         <div>
           <button onClick={() => openModal()}>Открыть</button>
-          <ConsultationModal />
         </div>
       );
     };
