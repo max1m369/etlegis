@@ -88,15 +88,12 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group" aria-label="Адвокатское бюро Etlegis">
-            <div className="flex flex-col">
-              <span className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-text-main group-hover:text-accent transition-colors">
-                et.legis
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.25em] text-text-muted font-medium -mt-1">
-                Адвокатское бюро
-              </span>
-            </div>
+          <Link href="/" className="flex items-center group" aria-label="Адвокатское бюро Etlegis">
+            <img
+              src="/logo.svg"
+              alt="Адвокатское бюро ETLEGIS"
+              className="h-8 sm:h-9 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -166,9 +163,13 @@ export default function Header() {
           className="fixed inset-0 z-30 bg-bg-primary pt-24 pb-10 px-6 flex flex-col justify-between overflow-y-auto md:hidden animate-in fade-in slide-in-from-top-4 duration-200"
         >
           <div className="space-y-6">
-            <div className="flex items-center gap-2 text-accent-bronze pb-3 border-b border-border-subtle">
-              <Shield size={16} />
-              <span className="text-xs uppercase tracking-widest font-medium">Адвокатское бюро «Этлегис»</span>
+            <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+              <img
+                src="/logo.svg"
+                alt="Адвокатское бюро ETLEGIS"
+                className="h-7 w-auto object-contain"
+              />
+              <span className="text-[10px] uppercase tracking-widest text-accent-bronze font-medium">С 2019 года</span>
             </div>
 
             <nav className="flex flex-col space-y-4 pt-2" aria-label="Мобильное меню">

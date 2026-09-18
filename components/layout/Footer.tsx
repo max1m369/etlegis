@@ -69,10 +69,12 @@ export default function Footer() {
           {/* Left Column: Mission, Positioning & Contacts */}
           <div className="lg:col-span-6 space-y-8">
             <div>
-              <span className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                et.legis
-              </span>
-              <p className="text-xs uppercase tracking-[0.25em] text-[#9B815C] mt-1 font-medium">
+              <img
+                src="/logo.svg"
+                alt="Адвокатское бюро ETLEGIS"
+                className="h-8 sm:h-9 w-auto brightness-0 invert object-contain mb-2"
+              />
+              <p className="text-xs uppercase tracking-[0.25em] text-[#9B815C] mt-2 font-medium">
                 {companyContacts.name}
               </p>
             </div>
