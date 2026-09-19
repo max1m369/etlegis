@@ -116,3 +116,31 @@ h1, h2, h3, .font-heading {
   background-color: #1E293B;
   color: #FFFFFF;
 }
+
+/* Luxury 10-second Shimmering Corner Brackets Gradient Animation */
+@keyframes luxuryShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.luxury-gradient-line {
+  background: linear-gradient(
+    90deg,
+    #8C6F47 0%,
+    #C5A880 20%,
+    #FDF6E3 45%,
+    #FFFDF9 50%,
+    #FDF6E3 55%,
+    #C5A880 80%,
+    #8C6F47 100%
+  );
+  background-size: 300% 300%;
+  animation: luxuryShimmer 10s ease-in-out infinite;
+}

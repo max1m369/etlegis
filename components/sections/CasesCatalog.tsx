@@ -183,9 +183,9 @@ export function CasesCatalog({ initialDynamicCases }: { initialDynamicCases?: an
 
       {/* Сетка кейсов: 3 колонки на десктопе, 1 колонка на мобайле */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCases.map((item) => (
+        {filteredCases.map((item, index) => (
           <div
-            key={item.id}
+            key={`${item.slug}-${index}`}
             data-case-card
             className="bg-white border border-et-border p-7 sm:p-8 flex flex-col justify-between hover:border-et-dark hover:shadow-md transition-all duration-300 group"
           >
