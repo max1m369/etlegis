@@ -12,7 +12,10 @@ import { translit } from '@/lib/translit'
 const caseSchema = z.object({
   title: z.string().min(3, 'Название слишком короткое'),
   slug: z.string().min(1, 'Слаг обязателен').regex(/^[a-z0-9-]+$/, 'Слаг: только латиница, цифры и дефис'),
-  practice: z.string().min(1, 'Выберите практику'),
+  practice: z.union([z.string(), z.number()]).transform((v) => {
+    const n = Number(v)
+    return isNaN(n) || n <= 0 ? null : n
+  }).refine((v) => v !== null, 'Выберите практику'),
   role: z.enum(['plaintiff', 'defendant', 'defence']),
   amount: z.coerce.number().nonnegative().optional(),
   instances: z.string().optional(),
@@ -22,15 +25,22 @@ const caseSchema = z.object({
   task: z.string().optional(),
   actions: z.string().optional(),
   result: z.string().min(1, 'Заполните результат'),
-  lawyers: z.array(z.string()).default([]),
-  relatedServices: z.array(z.string()).default([]),
+  lawyers: z.array(z.union([z.string(), z.number()])).transform((arr) =>
+    arr.map((v) => Number(v)).filter((n) => !isNaN(n) && n > 0)
+  ).default([]),
+  relatedServices: z.array(z.union([z.string(), z.number()])).transform((arr) =>
+    arr.map((v) => Number(v)).filter((n) => !isNaN(n) && n > 0)
+  ).default([]),
   showOnHome: z.coerce.boolean().default(false),
   clientConsent: z.coerce.boolean().default(false),
   consentDate: z.string().optional(),
   anonymizedClient: z.string().optional(),
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(180).optional(),
-  ogImage: z.string().optional(),
+  ogImage: z.union([z.string(), z.number()]).transform((v) => {
+    const n = Number(v)
+    return isNaN(n) || n <= 0 ? undefined : n
+  }).optional(),
   status: z.enum(['draft', 'published']),
 })
 
@@ -80,8 +90,8 @@ const toDoc = (d: z.infer<typeof caseSchema>) => {
     task: cleanHtml(d.task ?? ''),
     actions: cleanHtml(d.actions ?? ''),
     result: cleanHtml(d.result),
-    lawyers: d.lawyers,
-    relatedServices: d.relatedServices,
+    lawyers: d.lawyers.length > 0 ? d.lawyers : undefined,
+    relatedServices: d.relatedServices.length > 0 ? d.relatedServices : undefined,
     showOnHome: d.showOnHome,
     disclosure: {
       clientConsent: d.clientConsent,
@@ -115,9 +125,15 @@ export async function saveCase(id: string | null, _prev: unknown, formData: Form
   const payload = await getPayload()
   const data = toDoc(parsed.data)
 
-  const doc = id
-    ? await payload.update({ collection: 'cases', id, data: data as any, draft: parsed.data.status === 'draft' })
-    : await payload.create({ collection: 'cases', data: data as any, draft: parsed.data.status === 'draft' })
+  let doc: any
+  try {
+    doc = id
+      ? await payload.update({ collection: 'cases', id, data: data as any, draft: parsed.data.status === 'draft' })
+      : await payload.create({ collection: 'cases', data: data as any, draft: parsed.data.status === 'draft' })
+  } catch (err: any) {
+    console.error('Payload case save error:', err)
+    return { error: err.message || 'Ошибка сохранения в базу данных' }
+  }
 
   revalidateTag('cases')
   revalidatePath('/cases')

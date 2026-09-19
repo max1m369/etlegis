@@ -12,12 +12,17 @@ import { translit } from '@/lib/translit'
 const serviceSchema = z.object({
   title: z.string().min(3, 'Укажите название услуги'),
   slug: z.string().min(1, 'Слаг обязателен').regex(/^[a-z0-9-]+$/, 'Слаг: только латиница, цифры и дефис'),
-  practice: z.string().min(1, 'Выберите практику'),
+  practice: z.union([z.string(), z.number()]).transform((v) => {
+    const n = Number(v)
+    return isNaN(n) || n <= 0 ? null : n
+  }).refine((v) => v !== null, 'Выберите практику'),
   lead: z.string().min(1, 'Заполните лид-абзац'),
   body: z.string().optional(),
   whenText: z.string().optional(),
   order: z.coerce.number().default(0),
-  lawyers: z.array(z.string()).default([]),
+  lawyers: z.array(z.union([z.string(), z.number()])).transform((arr) =>
+    arr.map((v) => Number(v)).filter((n) => !isNaN(n) && n > 0)
+  ).default([]),
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(180).optional(),
   status: z.enum(['draft', 'published']),
@@ -69,7 +74,7 @@ export async function saveService(id: string | null, _prev: unknown, formData: F
     lead: d.lead,
     body: cleanHtml(d.body ?? ''),
     when: whenArray,
-    lawyers: d.lawyers,
+    lawyers: d.lawyers.length > 0 ? d.lawyers : undefined,
     order: d.order,
     seo: {
       title: d.seoTitle || fallbackTitle,
@@ -79,9 +84,15 @@ export async function saveService(id: string | null, _prev: unknown, formData: F
   }
 
   const payload = await getPayload()
-  const doc: any = id
-    ? await payload.update({ collection: 'services', id, data: data as any, draft: d.status === 'draft' })
-    : await payload.create({ collection: 'services', data: data as any, draft: d.status === 'draft' })
+  let doc: any
+  try {
+    doc = id
+      ? await payload.update({ collection: 'services', id, data: data as any, draft: d.status === 'draft' })
+      : await payload.create({ collection: 'services', data: data as any, draft: d.status === 'draft' })
+  } catch (err: any) {
+    console.error('Payload service save error:', err)
+    return { error: err.message || 'Ошибка сохранения услуги' }
+  }
 
   revalidateTag('services')
   revalidatePath('/services')

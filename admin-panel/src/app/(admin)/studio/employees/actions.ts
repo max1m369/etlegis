@@ -87,7 +87,7 @@ export async function saveEmployee(id: string | null, _prev: unknown, formData: 
     isAdvocate: d.isAdvocate,
     registryNo: d.registryNo || undefined,
     experienceSince: d.experienceSince || undefined,
-    practices: d.practices,
+    practices: d.practices.map(Number).filter((n) => !isNaN(n) && n > 0),
     specialization: specializationArray,
     education: educationArray,
     bio: cleanHtml(d.bio ?? ''),
@@ -97,7 +97,7 @@ export async function saveEmployee(id: string | null, _prev: unknown, formData: 
       phone: d.phone || undefined,
       telegram: d.telegram || undefined,
     },
-    photo: d.photo || undefined,
+    photo: d.photo ? (Number(d.photo) || undefined) : undefined,
     showOnHome: d.showOnHome,
     seo: {
       title: d.seoTitle || undefined,
@@ -107,9 +107,15 @@ export async function saveEmployee(id: string | null, _prev: unknown, formData: 
   }
 
   const payload = await getPayload()
-  const doc = id
-    ? await payload.update({ collection: 'employees', id, data: data as any, draft: d.status === 'draft' })
-    : await payload.create({ collection: 'employees', data: data as any, draft: d.status === 'draft' })
+  let doc: any
+  try {
+    doc = id
+      ? await payload.update({ collection: 'employees', id, data: data as any, draft: d.status === 'draft' })
+      : await payload.create({ collection: 'employees', data: data as any, draft: d.status === 'draft' })
+  } catch (err: any) {
+    console.error('Payload employee save error:', err)
+    return { error: err.message || 'Ошибка сохранения сотрудника' }
+  }
 
   revalidateTag('employees')
   revalidatePath('/team')

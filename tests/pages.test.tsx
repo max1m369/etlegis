@@ -5,6 +5,11 @@ import { practices, cases, services, lawyers, companyContacts } from "@/lib/data
 import ConsultationModal from "@/components/ui/ConsultationModal";
 import { ModalProvider, useConsultationModal } from "@/components/providers/ModalProvider";
 
+import Header from "@/components/layout/Header";
+import Hero from "@/components/sections/Hero";
+import Footer from "@/components/layout/Footer";
+import { formatRuPhone, isValidRuPhone } from "@/lib/utils";
+
 // Define contracts and tests
 describe("SPEC Contract Tests: Pages and Components", () => {
   /**
@@ -47,9 +52,7 @@ describe("SPEC Contract Tests: Pages and Components", () => {
    * test_navigation_links_exist
    * Проверяет, что все пункты меню (/practices, /team, /cases, /blog, #contacts) не содержат пустых/заглушечных '#' ссылок.
    */
-  it("test_navigation_links_exist", async () => {
-    // Dynamic import of Header to test rendered navigation
-    const { default: Header } = await import("@/components/layout/Header");
+  it("test_navigation_links_exist", () => {
     const { container } = render(
       <ModalProvider>
         <Header />
@@ -74,11 +77,7 @@ describe("SPEC Contract Tests: Pages and Components", () => {
    * test_cta_buttons_label
    * Проверяет, что все основные кнопки конверсии содержат точный текст «Обсудить ситуацию».
    */
-  it("test_cta_buttons_label", async () => {
-    const { default: Header } = await import("@/components/layout/Header");
-    const { default: Hero } = await import("@/components/sections/Hero");
-    const { default: Footer } = await import("@/components/layout/Footer");
-
+  it("test_cta_buttons_label", () => {
     const headerRender = render(
       <ModalProvider>
         <Header />
@@ -112,8 +111,6 @@ describe("SPEC Contract Tests: Pages and Components", () => {
    * Проверяет валидацию телефона (маска РФ), обработку обязательных полей и блокировку повторной отправки.
    */
   it("test_lead_form_validation", async () => {
-    // Open modal directly by providing custom open state
-    const { formatRuPhone, isValidRuPhone } = await import("@/lib/utils");
 
     // Check Russian phone formatter
     expect(formatRuPhone("9035312851")).toBe("+7 (903) 531-28-51");

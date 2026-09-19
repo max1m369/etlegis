@@ -106,6 +106,28 @@ export default function CaseForm({ doc, practices, employees, services }: Props)
           onResetToAuto={handleResetSlug}
           isAuto={!isSlugManual}
         />
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          <Select
+            name="practice"
+            label="Практика *"
+            defaultValue={typeof doc?.practice === 'object' ? doc.practice?.id : (doc?.practice ?? practices[0]?.id)}
+            options={practices.map((p) => ({ value: p.id, label: p.title }))}
+            required
+          />
+          <Select
+            name="role"
+            label="Наша роль *"
+            defaultValue={doc?.role ?? 'defence'}
+            options={[
+              { value: 'defence', label: 'Защита' },
+              { value: 'plaintiff', label: 'Истец' },
+              { value: 'defendant', label: 'Ответчик' },
+            ]}
+          />
+          <Money name="amount" label="Сумма спора, ₽" defaultValue={doc?.amount} />
+        </div>
+
         <RichText name="synopsis" label="Фабула" defaultValue={doc?.synopsis} />
         <RichText name="task" label="Задача" defaultValue={doc?.task} />
         <RichText name="actions" label="Что сделали" defaultValue={doc?.actions} />
@@ -118,24 +140,6 @@ export default function CaseForm({ doc, practices, employees, services }: Props)
       </section>
 
       <section hidden={tab !== 'meta'} className="adm-grid">
-        <Select
-          name="practice"
-          label="Практика"
-          defaultValue={typeof doc?.practice === 'object' ? doc.practice?.id : doc?.practice}
-          options={practices.map((p) => ({ value: p.id, label: p.title }))}
-          required
-        />
-        <Select
-          name="role"
-          label="Наша роль"
-          defaultValue={doc?.role ?? 'defence'}
-          options={[
-            { value: 'defence', label: 'Защита' },
-            { value: 'plaintiff', label: 'Истец' },
-            { value: 'defendant', label: 'Ответчик' },
-          ]}
-        />
-        <Money name="amount" label="Сумма спора, ₽" defaultValue={doc?.amount} />
         <Text
           name="instances"
           label="Инстанции"
