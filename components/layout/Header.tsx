@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useConsultationModal } from "@/components/providers/ModalProvider";
 import { useLenisScroll } from "@/components/providers/SmoothScrollProvider";
-import { Menu, X, Phone, Shield, ArrowUpRight } from "lucide-react";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { Menu, X, Sun, Moon, ArrowUpRight } from "lucide-react";
 
 export default function Header() {
-  const { openModal } = useConsultationModal();
+  const { theme, toggleTheme } = useTheme();
   const { scrollTo } = useLenisScroll();
   const pathname = usePathname();
 
@@ -20,20 +20,18 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // Add subtle background once scrolled past 20px
+
       if (currentScrollY > 20) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
 
-      // Smart hide header on scroll down, show on scroll up
       if (currentScrollY > 120) {
         if (currentScrollY > lastScrollY.current && !mobileMenuOpen) {
-          setIsVisible(false); // scrolling down
+          setIsVisible(false);
         } else {
-          setIsVisible(true); // scrolling up
+          setIsVisible(true);
         }
       } else {
         setIsVisible(true);
@@ -46,7 +44,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [mobileMenuOpen]);
 
-  // Prevent background scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -78,78 +75,87 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 border-b ${
           isVisible ? "translate-y-0" : "-translate-y-full"
         } ${
           isScrolled
-            ? "bg-bg-primary/90 backdrop-blur-md border-b border-border-subtle/80 shadow-subtle py-3.5"
-            : "bg-transparent py-5"
+            ? "bg-et-bg/90 backdrop-blur-md border-et-border/80 shadow-subtle py-3.5"
+            : "bg-et-bg/70 backdrop-blur-sm border-et-border/40 py-4 sm:py-5"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Logo */}
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16 flex items-center justify-between">
+          {/* Logo (Левая часть экрана) */}
           <Link href="/" className="flex items-center group logo-shimmer-container" aria-label="Адвокатское бюро Etlegis">
             <img
               src="/logo.svg"
               alt="Адвокатское бюро ETLEGIS"
-              className="h-8 sm:h-9 w-auto object-contain"
+              className={`h-7 sm:h-8 w-auto object-contain transition-all ${
+                theme === 'dark' ? 'invert opacity-90' : ''
+              }`}
             />
             <div className="logo-shimmer-overlay" aria-hidden="true" />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8" aria-label="Основное меню">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className={`text-sm font-medium transition-colors hover:text-text-main relative py-1 ${
-                  pathname === link.href ? "text-text-main font-semibold" : "text-text-muted"
-                }`}
-              >
-                {link.label}
-                {pathname === link.href && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-accent" />
-                )}
-              </Link>
-            ))}
-          </nav>
+          {/* Right Section: Desktop Navigation + Theme Toggle Circle */}
+          <div className="hidden md:flex items-center gap-8">
+            <nav className="flex items-center gap-8" aria-label="Основное меню">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className={`text-xs uppercase tracking-widest font-medium transition-colors hover:text-et-dark relative py-1 ${
+                    pathname === link.href ? "text-et-dark font-semibold" : "text-et-muted"
+                  }`}
+                >
+                  {link.label}
+                  {pathname === link.href && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-et-accent" />
+                  )}
+                </Link>
+              ))}
+            </nav>
 
-          {/* CTA & Phone (Desktop) */}
-          <div className="hidden lg:flex items-center gap-6">
-            <a
-              href="tel:+74951059115"
-              className="flex items-center gap-2 text-sm font-medium text-text-main hover:text-accent transition-colors"
-            >
-              <Phone size={14} className="text-accent-bronze" />
-              <span>+7 (495) 105-91-15</span>
-            </a>
-
+            {/* 🔴 Кружочек-переключатель темы (Светлая / Ночная) */}
             <button
-              onClick={() => openModal()}
-              className="btn-legal-primary px-5 py-2.5 text-xs uppercase tracking-wider"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? "Включить светлую тему" : "Включить ночную тему"}
+              title={theme === 'dark' ? "Ночная тема (нажмите для светлой)" : "Светлая тема (нажмите для ночной)"}
+              className={`w-7 h-7 rounded-full border transition-all flex items-center justify-center group ${
+                theme === 'dark'
+                  ? 'border-[#927b50] bg-[#3e5871] text-[#927b50] shadow-sm hover:scale-110'
+                  : 'border-[#2c3e50]/40 bg-[#2c3e50] text-[#CBD5E1] shadow-sm hover:scale-110'
+              }`}
             >
-              Обсудить ситуацию
+              {theme === 'dark' ? (
+                <Sun size={13} className="text-[#927b50] transition-transform group-hover:rotate-45" />
+              ) : (
+                <Moon size={12} className="text-[#CBD5E1] transition-transform group-hover:-rotate-12" />
+              )}
             </button>
           </div>
 
-          {/* Mobile CTA + Hamburger */}
+          {/* Mobile Theme Toggle + Hamburger */}
           <div className="flex items-center gap-3 md:hidden">
             <button
-              onClick={() => openModal()}
-              className="btn-legal-primary px-3 py-1.5 text-xs"
+              onClick={toggleTheme}
+              aria-label="Переключить тему"
+              className={`w-7 h-7 rounded-full border transition-all flex items-center justify-center ${
+                theme === 'dark'
+                  ? 'border-[#927b50] bg-[#3e5871] text-[#927b50]'
+                  : 'border-[#2c3e50]/40 bg-[#2c3e50] text-[#CBD5E1]'
+              }`}
             >
-              Обсудить ситуацию
+              {theme === 'dark' ? <Sun size={13} /> : <Moon size={12} />}
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
               aria-expanded={mobileMenuOpen}
-              className="p-2 text-text-main hover:text-accent transition-colors"
+              className="p-2 text-et-dark hover:text-et-accent transition-colors"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>

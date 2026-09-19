@@ -78,14 +78,6 @@ describe("SPEC Contract Tests: Pages and Components", () => {
    * Проверяет, что все основные кнопки конверсии содержат точный текст «Обсудить ситуацию».
    */
   it("test_cta_buttons_label", () => {
-    const headerRender = render(
-      <ModalProvider>
-        <Header />
-      </ModalProvider>
-    );
-    const headerCtas = headerRender.getAllByRole("button", { name: /обсудить ситуацию/i });
-    expect(headerCtas.length).toBeGreaterThanOrEqual(1);
-
     const heroRender = render(
       <ModalProvider>
         <Hero />

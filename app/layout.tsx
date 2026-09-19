@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ConsultationModal } from "@/components/ui/ConsultationModal";
 
 const cormorant = Cormorant_Garamond({
@@ -36,12 +37,14 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${cormorant.variable} ${jost.variable}`}>
       <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white overflow-x-hidden max-w-full">
-        <SmoothScrollProvider>
-          <ModalProvider>
-            {children}
-            <ConsultationModal />
-          </ModalProvider>
-        </SmoothScrollProvider>
+        <ThemeProvider>
+          <SmoothScrollProvider>
+            <ModalProvider>
+              {children}
+              <ConsultationModal />
+            </ModalProvider>
+          </SmoothScrollProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
