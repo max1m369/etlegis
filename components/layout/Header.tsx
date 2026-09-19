@@ -83,7 +83,7 @@ export default function Header() {
             : "bg-et-bg/70 backdrop-blur-sm border-et-border/40 py-4 sm:py-5"
         }`}
       >
-        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16 flex items-center justify-between">
+        <div className="w-full px-6 sm:px-10 lg:px-14 flex items-center justify-between">
           {/* Logo (Левая часть экрана) */}
           <Link href="/" className="flex items-center group logo-shimmer-container" aria-label="Адвокатское бюро Etlegis">
             <img
