@@ -83,13 +83,13 @@ export default function Header() {
             : "bg-et-bg/70 backdrop-blur-sm border-et-border/40 py-4 sm:py-5"
         }`}
       >
-        <div className="w-full px-6 sm:px-10 lg:px-14 flex items-center justify-between">
+        <div className="w-full px-6 sm:px-10 lg:px-[clamp(2.5rem,4vw,6rem)] flex items-center justify-between">
           {/* Logo (Левая часть экрана) */}
           <Link href="/" className="flex items-center group logo-shimmer-container" aria-label="Адвокатское бюро Etlegis">
             <img
               src="/logo.svg"
               alt="Адвокатское бюро ETLEGIS"
-              className={`h-7 sm:h-8 w-auto object-contain transition-all ${
+              className={`h-[clamp(1.75rem,2.2vw,3rem)] w-auto object-contain transition-all ${
                 theme === 'dark' ? 'invert opacity-90' : ''
               }`}
             />
@@ -97,33 +97,33 @@ export default function Header() {
           </Link>
 
           {/* Right Section: Theme Toggle Split Circle + Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-[clamp(1.5rem,2vw,3rem)]">
             {/* 🔴 Иконка смены режима: полузакрашенный круг (как на скриншоте) */}
             <button
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? "Включить светлую тему" : "Включить ночную тему"}
               title={theme === 'dark' ? "Ночная тема (нажмите для светлой)" : "Светлая тема (нажмите для ночной)"}
-              className="w-6 h-6 rounded-full border border-et-dark/60 flex items-center justify-center transition-transform hover:scale-110 shrink-0 text-et-dark overflow-hidden"
+              className="w-[clamp(1.5rem,1.7vw,2.25rem)] h-[clamp(1.5rem,1.7vw,2.25rem)] rounded-full border border-et-dark/60 flex items-center justify-center transition-transform hover:scale-110 shrink-0 text-et-dark overflow-hidden"
             >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-[clamp(0.85rem,1vw,1.35rem)] h-[clamp(0.85rem,1vw,1.35rem)]" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
                 <path d="M 8 1 A 7 7 0 0 1 8 15 Z" fill="currentColor" />
               </svg>
             </button>
 
-            <nav className="flex items-center gap-8" aria-label="Основное меню">
+            <nav className="flex items-center gap-[clamp(1.5rem,2.2vw,3.5rem)]" aria-label="Основное меню">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`text-xs uppercase tracking-widest font-medium transition-colors hover:text-et-dark relative py-1 ${
+                  className={`text-[clamp(0.75rem,0.85vw,1.15rem)] uppercase tracking-[0.2em] font-medium transition-colors hover:text-et-dark relative py-1 ${
                     pathname === link.href ? "text-et-dark font-semibold" : "text-et-muted"
                   }`}
                 >
                   {link.label}
                   {pathname === link.href && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-et-accent" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-et-accent" />
                   )}
                 </Link>
               ))}
