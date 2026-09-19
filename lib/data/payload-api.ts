@@ -11,6 +11,32 @@ const getApiUrl = (endpoint: string) => {
 
 export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
   const practiceTitle = typeof doc.practice === 'object' ? doc.practice?.title : 'Арбитражное судопроизводство';
+  const mappedLawyers = Array.isArray(doc.lawyers)
+    ? doc.lawyers
+        .map((l: any) => {
+          if (typeof l === 'object' && l !== null) {
+            let photoUrl = undefined;
+            if (l.photo) {
+              photoUrl = typeof l.photo === 'object' ? l.photo.url : undefined;
+              if (photoUrl && photoUrl.startsWith('/')) {
+                photoUrl = `http://localhost:3001${photoUrl}`;
+              }
+            }
+            return {
+              id: String(l.id),
+              name: l.name || 'Адвокат',
+              slug: l.slug || '',
+              position: l.position || 'Адвокат / Партнёр',
+              photo: photoUrl,
+              isAdvocate: l.isAdvocate ?? true,
+              registryNo: l.registryNo || undefined,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean)
+    : [];
+
   return {
     id: String(doc.id),
     slug: doc.slug,
@@ -22,7 +48,8 @@ export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
     solution: doc.actions ? doc.actions.replace(/<[^>]+>/g, '').trim() : 'Правовая позиция адвокатов Etlegis',
     courtInstance: doc.instances || 'Арбитражный суд',
     date: doc.year ? String(doc.year) : '2026',
-    lawyerSlug: doc.lawyers?.[0]?.slug,
+    lawyerSlug: mappedLawyers[0]?.slug,
+    lawyers: mappedLawyers as any,
   };
 }
 

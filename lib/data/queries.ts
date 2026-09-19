@@ -2,6 +2,16 @@ import { LAWYERS_DATA, CASES_DATA, ARTICLES_DATA } from './etlegis-data';
 import { practices as mockPractices } from './mock-data';
 import type { Lawyer } from '@/types/models';
 
+export interface CaseLawyer {
+  id?: string;
+  name: string;
+  slug: string;
+  position?: string;
+  photo?: string;
+  isAdvocate?: boolean;
+  registryNo?: string;
+}
+
 export interface DetailedCase {
   id: string;
   slug: string;
@@ -13,6 +23,7 @@ export interface DetailedCase {
   challenge: string;
   solution: string;
   lawyerSlug?: string;
+  lawyers?: CaseLawyer[];
   courtInstance?: string;
   date?: string;
 }
@@ -158,31 +169,50 @@ export function getCaseBySlug(slug: string): DetailedCase | undefined {
   const catalogCase = ALL_CATALOG_CASES.find(
     (c) => c.slug === slug || c.id === slug || (c.aliases && c.aliases.includes(slug))
   );
-  if (catalogCase) return catalogCase;
 
-  const mockCase = CASES_DATA.find((c) => c.slug === slug || c.id === slug);
-  if (mockCase) {
-    return {
-      id: mockCase.id,
-      slug: mockCase.slug,
-      categoryLabel: mockCase.practiceId || 'Арбитражное судопроизводство',
-      title: mockCase.title,
-      claimAmount: mockCase.claimAmount,
-      resultSummary: mockCase.resultSummary,
-      challenge: mockCase.challenge,
-      solution: mockCase.solution,
-      lawyerSlug: mockCase.lawyerIds?.[0] ? LAWYERS_DATA.find(l => l.id === mockCase.lawyerIds[0])?.slug : undefined,
-      courtInstance: mockCase.courtInstance,
-      date: mockCase.date,
-    };
+  let resultCase: DetailedCase | undefined = undefined;
+
+  if (catalogCase) {
+    resultCase = { ...catalogCase };
+  } else {
+    const mockCase = CASES_DATA.find((c) => c.slug === slug || c.id === slug);
+    if (mockCase) {
+      resultCase = {
+        id: mockCase.id,
+        slug: mockCase.slug,
+        categoryLabel: mockCase.practiceId || 'Арбитражное судопроизводство',
+        title: mockCase.title,
+        claimAmount: mockCase.claimAmount,
+        resultSummary: mockCase.resultSummary,
+        challenge: mockCase.challenge,
+        solution: mockCase.solution,
+        lawyerSlug: mockCase.lawyerIds?.[0] ? LAWYERS_DATA.find(l => l.id === mockCase.lawyerIds[0])?.slug : undefined,
+        courtInstance: mockCase.courtInstance,
+        date: mockCase.date,
+      };
+    }
   }
-  return undefined;
+
+  if (resultCase && (!resultCase.lawyers || resultCase.lawyers.length === 0) && resultCase.lawyerSlug) {
+    const lawyerObj = LAWYERS_DATA.find((l) => l.slug === resultCase!.lawyerSlug || l.id === resultCase!.lawyerSlug);
+    if (lawyerObj) {
+      resultCase.lawyers = [{
+        id: lawyerObj.id,
+        name: lawyerObj.name,
+        slug: lawyerObj.slug,
+        position: lawyerObj.status || lawyerObj.role || 'Адвокат / Партнёр',
+        photo: lawyerObj.photoUrl,
+        isAdvocate: true,
+        registryNo: lawyerObj.registryNo || '77/14890',
+      }];
+    }
+  }
+
+  return resultCase;
 }
 
 export async function getCaseBySlugAsync(slug: string): Promise<DetailedCase | undefined> {
-  const syncCase = getCaseBySlug(slug);
-  if (syncCase) return syncCase;
-
+  // First query Payload CMS database for live dynamic cases
   try {
     const res = await fetch(`http://localhost:3001/api/payload/cases?where[slug][equals]=${encodeURIComponent(slug)}&depth=2`, {
       next: { revalidate: 5 },
@@ -192,6 +222,33 @@ export async function getCaseBySlugAsync(slug: string): Promise<DetailedCase | u
       if (data?.docs?.[0]) {
         const doc = data.docs[0];
         const practiceTitle = typeof doc.practice === 'object' ? doc.practice?.title : 'Арбитражное судопроизводство';
+
+        const mappedLawyers: CaseLawyer[] = Array.isArray(doc.lawyers)
+          ? doc.lawyers
+              .map((l: any) => {
+                if (typeof l === 'object' && l !== null) {
+                  let photoUrl = undefined;
+                  if (l.photo) {
+                    photoUrl = typeof l.photo === 'object' ? l.photo.url : undefined;
+                    if (photoUrl && photoUrl.startsWith('/')) {
+                      photoUrl = `http://localhost:3001${photoUrl}`;
+                    }
+                  }
+                  return {
+                    id: String(l.id),
+                    name: l.name || 'Адвокат',
+                    slug: l.slug || '',
+                    position: l.position || 'Адвокат / Партнёр',
+                    photo: photoUrl,
+                    isAdvocate: l.isAdvocate ?? true,
+                    registryNo: l.registryNo || undefined,
+                  };
+                }
+                return null;
+              })
+              .filter((l): l is CaseLawyer => l !== null)
+          : [];
+
         return {
           id: String(doc.id),
           slug: doc.slug,
@@ -203,14 +260,17 @@ export async function getCaseBySlugAsync(slug: string): Promise<DetailedCase | u
           solution: doc.actions ? doc.actions.replace(/<[^>]+>/g, '').trim() : 'Правовая позиция адвокатов Etlegis',
           courtInstance: doc.instances || 'Арбитражный суд',
           date: doc.year ? String(doc.year) : '2026',
-          lawyerSlug: doc.lawyers?.[0]?.slug,
+          lawyerSlug: mappedLawyers[0]?.slug,
+          lawyers: mappedLawyers,
         };
       }
     }
   } catch (err) {
     // fallback
   }
-  return undefined;
+
+  // Fallback to static mock data
+  return getCaseBySlug(slug);
 }
 
 export function getPracticeBySlug(slug: string) {
