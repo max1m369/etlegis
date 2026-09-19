@@ -3,13 +3,18 @@ import { CasesCatalog } from '@/components/sections/CasesCatalog';
 import { Button } from '@/components/ui/Button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { getDynamicCases } from '@/lib/data/payload-api';
+
+export const revalidate = 0;
 
 export const metadata = {
   title: 'Успешные кейсы | Адвокатское бюро Etlegis',
   description: 'Более 100 успешных дел — ваша уверенность в надежных руках. Судебная практика, арбитраж, банкротство.',
 };
 
-export default function CasesPage() {
+export default async function CasesPage() {
+  const dynamicCases = await getDynamicCases();
+
   return (
     <div className="flex flex-col min-h-screen bg-et-bg text-et-dark">
       <Header />
@@ -35,7 +40,7 @@ export default function CasesPage() {
         </section>
 
         {/* Каталог с верхним переключателем фильтров */}
-        <CasesCatalog />
+        <CasesCatalog initialDynamicCases={dynamicCases} />
       </main>
       <Footer />
     </div>

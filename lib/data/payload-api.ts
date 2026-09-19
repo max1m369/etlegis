@@ -1,8 +1,13 @@
-// Unified API client for fetching dynamic data from Payload CMS backend (port 3001)
+// Unified API client for fetching dynamic data from Payload CMS backend
 import { cases as fallbackCases, practices as fallbackPractices } from './mock-data';
 import type { DetailedCase } from './queries';
 
-const PAYLOAD_URL = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3001';
+const getApiUrl = (endpoint: string) => {
+  if (typeof window !== 'undefined') {
+    return `/api/payload/${endpoint}`;
+  }
+  return `http://localhost:3001/api/payload/${endpoint}`;
+};
 
 export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
   const practiceTitle = typeof doc.practice === 'object' ? doc.practice?.title : 'Арбитражное судопроизводство';
@@ -23,8 +28,9 @@ export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
 
 export async function getDynamicCases() {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/payload/cases?depth=2&limit=100`, {
-      next: { revalidate: 5 },
+    const url = getApiUrl('cases?depth=2&limit=100');
+    const res = await fetch(url, {
+      cache: 'no-store',
     });
     if (!res.ok) return fallbackCases;
     const data = await res.json();
@@ -54,8 +60,9 @@ export async function getDynamicCases() {
 
 export async function getDynamicPractices() {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/payload/practices?depth=1&limit=50`, {
-      next: { revalidate: 10 },
+    const url = getApiUrl('practices?depth=1&limit=50');
+    const res = await fetch(url, {
+      cache: 'no-store',
     });
     if (!res.ok) return fallbackPractices;
     const data = await res.json();

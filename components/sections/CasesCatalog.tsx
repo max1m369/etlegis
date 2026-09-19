@@ -116,35 +116,38 @@ function determineCategory(practice: any, title: string): { category: 'bankruptc
   return { category: 'arbitration', categoryLabel: 'Арбитражное судопроизводство' };
 }
 
-export function CasesCatalog() {
+function buildMergedCatalog(dynCases?: any[]): CaseItem[] {
+  if (!dynCases || dynCases.length === 0) return CASES_CATALOG_DATA;
+
+  const dynamicMapped: CaseItem[] = dynCases.map((c: any) => {
+    const { category, categoryLabel } = determineCategory(c.practice || c.practiceId, c.title);
+    return {
+      id: String(c.id),
+      slug: c.slug,
+      category,
+      categoryLabel,
+      title: c.title,
+      claimAmount: c.claimAmount,
+      summary: c.resultSummary || c.challenge,
+    };
+  });
+
+  const existingSlugs = new Set(dynamicMapped.map((item) => item.slug));
+  return [
+    ...dynamicMapped,
+    ...CASES_CATALOG_DATA.filter((item) => !existingSlugs.has(item.slug)),
+  ];
+}
+
+export function CasesCatalog({ initialDynamicCases }: { initialDynamicCases?: any[] }) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [catalogItems, setCatalogItems] = useState<CaseItem[]>(CASES_CATALOG_DATA);
+  const [catalogItems, setCatalogItems] = useState<CaseItem[]>(() => buildMergedCatalog(initialDynamicCases));
   const { openModal } = useConsultationModal();
 
   useEffect(() => {
     getDynamicCases().then((dynCases) => {
       if (dynCases && dynCases.length > 0) {
-        const dynamicMapped: CaseItem[] = dynCases.map((c: any) => {
-          const { category, categoryLabel } = determineCategory(c.practice || c.practiceId, c.title);
-          return {
-            id: c.id,
-            slug: c.slug,
-            category,
-            categoryLabel,
-            title: c.title,
-            claimAmount: c.claimAmount,
-            summary: c.resultSummary || c.challenge,
-          };
-        });
-
-        // Merge: dynamic cases first, then original catalog cases without duplicates
-        const existingSlugs = new Set(dynamicMapped.map((item) => item.slug));
-        const merged = [
-          ...dynamicMapped,
-          ...CASES_CATALOG_DATA.filter((item) => !existingSlugs.has(item.slug)),
-        ];
-
-        setCatalogItems(merged);
+        setCatalogItems(buildMergedCatalog(dynCases));
       }
     });
   }, []);

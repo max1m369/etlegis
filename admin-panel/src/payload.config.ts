@@ -26,6 +26,8 @@ const dirname = path.dirname(filename)
 const isPostgres = process.env.DATABASE_URI?.startsWith('postgres')
 
 export default buildConfig({
+  cors: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'],
+  csrf: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'],
   admin: {
     user: 'admin-users',
   },
