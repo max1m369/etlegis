@@ -88,12 +88,13 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center group" aria-label="Адвокатское бюро Etlegis">
+          <Link href="/" className="flex items-center group logo-shimmer-container" aria-label="Адвокатское бюро Etlegis">
             <img
               src="/logo.svg"
               alt="Адвокатское бюро ETLEGIS"
               className="h-8 sm:h-9 w-auto object-contain"
             />
+            <div className="logo-shimmer-overlay" aria-hidden="true" />
           </Link>
 
           {/* Desktop Navigation */}

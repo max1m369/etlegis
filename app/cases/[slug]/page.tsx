@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import DocumentFrame from '@/components/ui/DocumentFrame';
+import ShimmerStudioWidget from '@/components/ui/ShimmerStudioWidget';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -173,6 +174,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
           </section>
         </div>
       </main>
+      <ShimmerStudioWidget />
       <Footer />
     </div>
   );

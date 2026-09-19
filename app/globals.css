@@ -117,7 +117,17 @@ h1, h2, h3, .font-heading {
   color: #FFFFFF;
 }
 
-/* Luxury 10-second Shimmering Corner Brackets Gradient Animation */
+/* Dynamic bracket & shimmer controls */
+:root {
+  --bracket-base-color: #2C3E50;
+  --bracket-highlight-color: #CBD5E1;
+  --bracket-shimmer-duration: 10s;
+  --bracket-size: 44px;
+  --bracket-thickness: 1.5px;
+  --logo-shimmer-enabled: 0;
+}
+
+/* Luxury Shimmering Corner Brackets & Logo Gradient Animation */
 @keyframes luxuryShimmer {
   0% {
     background-position: 0% 50%;
@@ -133,14 +143,43 @@ h1, h2, h3, .font-heading {
 .luxury-gradient-line {
   background: linear-gradient(
     90deg,
-    #8C6F47 0%,
-    #C5A880 20%,
-    #FDF6E3 45%,
-    #FFFDF9 50%,
-    #FDF6E3 55%,
-    #C5A880 80%,
-    #8C6F47 100%
+    var(--bracket-base-color, #2C3E50) 0%,
+    var(--bracket-base-color, #2C3E50) 25%,
+    var(--bracket-highlight-color, #CBD5E1) 50%,
+    var(--bracket-base-color, #2C3E50) 75%,
+    var(--bracket-base-color, #2C3E50) 100%
   );
-  background-size: 300% 300%;
-  animation: luxuryShimmer 10s ease-in-out infinite;
+  background-size: 250% 250%;
+  animation: luxuryShimmer var(--bracket-shimmer-duration, 10s) ease-in-out infinite;
+}
+
+/* Logo Shimmer overlay synced with gradient */
+.logo-shimmer-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo-shimmer-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--bracket-base-color, #2C3E50) 0%,
+    var(--bracket-highlight-color, #CBD5E1) 50%,
+    var(--bracket-base-color, #2C3E50) 100%
+  );
+  background-size: 250% 100%;
+  animation: luxuryShimmer var(--bracket-shimmer-duration, 10s) ease-in-out infinite;
+  mask-image: url(/logo.svg);
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: url(/logo.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  pointer-events: none;
+  opacity: var(--logo-shimmer-enabled, 0);
+  transition: opacity 0.3s ease;
 }
