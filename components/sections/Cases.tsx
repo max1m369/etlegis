@@ -1,11 +1,18 @@
-"use client";
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { cases, practices } from "@/lib/data/mock-data";
+import { cases as mockCases, practices } from "@/lib/data/mock-data";
+import { getDynamicCases } from "@/lib/data/payload-api";
 import { ArrowRight, Trophy, ShieldCheck } from "lucide-react";
 
 export default function Cases() {
+  const [items, setItems] = useState(mockCases);
+
+  useEffect(() => {
+    getDynamicCases().then((res) => {
+      if (res && res.length > 0) setItems(res);
+    });
+  }, []);
+
   const getPracticeTitle = (practiceId: string) => {
     return practices.find((p) => p.id === practiceId)?.title || "Арбитражная практика";
   };
@@ -36,7 +43,7 @@ export default function Cases() {
 
         {/* Victory Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {cases.slice(0, 3).map((item) => (
+          {items.slice(0, 3).map((item) => (
             <div
               key={item.id}
               className="bg-white border border-[#E2E2DC] rounded-[2px] p-6 sm:p-8 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] transition-all duration-300 group"

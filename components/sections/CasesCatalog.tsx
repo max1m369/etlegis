@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useConsultationModal } from '@/lib/store/useConsultationModal';
+import { getDynamicCases } from '@/lib/data/payload-api';
 
 export interface CaseItem {
   id: string;
@@ -103,12 +104,30 @@ const CATEGORIES = [
 
 export function CasesCatalog() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [catalogItems, setCatalogItems] = useState<CaseItem[]>(CASES_CATALOG_DATA);
   const { openModal } = useConsultationModal();
 
+  useEffect(() => {
+    getDynamicCases().then((dynCases) => {
+      if (dynCases && dynCases.length > 0) {
+        const mapped: CaseItem[] = dynCases.map((c) => ({
+          id: c.id,
+          slug: c.slug,
+          category: 'all',
+          categoryLabel: c.practiceId === '3' ? 'Банкротство' : 'Арбитражное судопроизводство',
+          title: c.title,
+          claimAmount: c.claimAmount,
+          summary: c.resultSummary || c.challenge,
+        }));
+        setCatalogItems(mapped);
+      }
+    });
+  }, []);
+
   const filteredCases = useMemo(() => {
-    if (selectedCategory === 'all') return CASES_CATALOG_DATA;
-    return CASES_CATALOG_DATA.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === 'all') return catalogItems;
+    return catalogItems.filter((item) => item.category === selectedCategory);
+  }, [selectedCategory, catalogItems]);
 
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-20">
