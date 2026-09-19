@@ -96,8 +96,21 @@ export default function Header() {
             <div className="logo-shimmer-overlay" aria-hidden="true" />
           </Link>
 
-          {/* Right Section: Desktop Navigation + Theme Toggle Circle */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Right Section: Theme Toggle Split Circle + Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-6">
+            {/* 🔴 Иконка смены режима: полузакрашенный круг (как на скриншоте) */}
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? "Включить светлую тему" : "Включить ночную тему"}
+              title={theme === 'dark' ? "Ночная тема (нажмите для светлой)" : "Светлая тема (нажмите для ночной)"}
+              className="w-6 h-6 rounded-full border border-et-dark/60 flex items-center justify-center transition-transform hover:scale-110 shrink-0 text-et-dark overflow-hidden"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M 8 1 A 7 7 0 0 1 8 15 Z" fill="currentColor" />
+              </svg>
+            </button>
+
             <nav className="flex items-center gap-8" aria-label="Основное меню">
               {navLinks.map((link) => (
                 <Link
@@ -115,24 +128,6 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-
-            {/* 🔴 Кружочек-переключатель темы (Светлая / Ночная) */}
-            <button
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? "Включить светлую тему" : "Включить ночную тему"}
-              title={theme === 'dark' ? "Ночная тема (нажмите для светлой)" : "Светлая тема (нажмите для ночной)"}
-              className={`w-7 h-7 rounded-full border transition-all flex items-center justify-center group ${
-                theme === 'dark'
-                  ? 'border-[#927b50] bg-[#3e5871] text-[#927b50] shadow-sm hover:scale-110'
-                  : 'border-[#2c3e50]/40 bg-[#2c3e50] text-[#CBD5E1] shadow-sm hover:scale-110'
-              }`}
-            >
-              {theme === 'dark' ? (
-                <Sun size={13} className="text-[#927b50] transition-transform group-hover:rotate-45" />
-              ) : (
-                <Moon size={12} className="text-[#CBD5E1] transition-transform group-hover:-rotate-12" />
-              )}
-            </button>
           </div>
 
           {/* Mobile Theme Toggle + Hamburger */}
@@ -176,7 +171,6 @@ export default function Header() {
                 alt="Адвокатское бюро ETLEGIS"
                 className="h-7 w-auto object-contain"
               />
-              <span className="text-[10px] uppercase tracking-widest text-accent-bronze font-medium">С 2019 года</span>
             </div>
 
             <nav className="flex flex-col space-y-4 pt-2" aria-label="Мобильное меню">
