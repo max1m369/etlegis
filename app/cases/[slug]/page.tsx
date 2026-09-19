@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getCaseBySlug, getLawyerBySlug, getAllCases } from '@/lib/data/queries';
+import { getCaseBySlugAsync, getLawyerBySlug, getAllCases } from '@/lib/data/queries';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 
 export default async function CaseDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const caseItem = getCaseBySlug(slug);
+  const caseItem = await getCaseBySlugAsync(slug);
 
   if (!caseItem) notFound();
 

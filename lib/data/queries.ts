@@ -179,6 +179,40 @@ export function getCaseBySlug(slug: string): DetailedCase | undefined {
   return undefined;
 }
 
+export async function getCaseBySlugAsync(slug: string): Promise<DetailedCase | undefined> {
+  const syncCase = getCaseBySlug(slug);
+  if (syncCase) return syncCase;
+
+  try {
+    const res = await fetch(`http://localhost:3001/api/payload/cases?where[slug][equals]=${encodeURIComponent(slug)}&depth=2`, {
+      next: { revalidate: 5 },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.docs?.[0]) {
+        const doc = data.docs[0];
+        const practiceTitle = typeof doc.practice === 'object' ? doc.practice?.title : 'Арбитражное судопроизводство';
+        return {
+          id: String(doc.id),
+          slug: doc.slug,
+          categoryLabel: practiceTitle || 'Арбитражное судопроизводство',
+          title: doc.title,
+          claimAmount: doc.amount ? `${Number(doc.amount).toLocaleString('ru-RU')} ₽` : undefined,
+          resultSummary: doc.result ? doc.result.replace(/<[^>]+>/g, '').trim() : 'Победа в суде',
+          challenge: doc.task ? doc.task.replace(/<[^>]+>/g, '').trim() : doc.synopsis ? doc.synopsis.replace(/<[^>]+>/g, '').trim() : 'Судебное разбирательство',
+          solution: doc.actions ? doc.actions.replace(/<[^>]+>/g, '').trim() : 'Правовая позиция адвокатов Etlegis',
+          courtInstance: doc.instances || 'Арбитражный суд',
+          date: doc.year ? String(doc.year) : '2026',
+          lawyerSlug: doc.lawyers?.[0]?.slug,
+        };
+      }
+    }
+  } catch (err) {
+    // fallback
+  }
+  return undefined;
+}
+
 export function getPracticeBySlug(slug: string) {
   return mockPractices.find((p) => p.slug === slug || p.id === slug);
 }
