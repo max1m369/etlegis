@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useConsultationModal } from "@/components/providers/ModalProvider";
+import SpotlightButton from "@/components/ui/SpotlightButton";
 
 export default function Hero() {
   const { openModal } = useConsultationModal();
@@ -31,15 +32,15 @@ export default function Hero() {
               Стратегическое ведение дел, защита активов и топ-менеджмента. Практика с подтвержденным результатом в 1,2+ млрд ₽ сохраненных средств.
             </p>
 
-            <button
+            <SpotlightButton
               onClick={() => openModal()}
-              className="group inline-flex items-center justify-center gap-[clamp(0.5rem,0.7vw,1.2rem)] text-[clamp(0.625rem,0.56vw,0.875rem)] font-mono font-medium uppercase tracking-[0.18em] text-et-dark border border-et-dark/60 px-[clamp(1rem,1.1vw,2rem)] py-[clamp(0.5rem,0.55vw,1rem)] bg-transparent hover:border-[#507192] hover:text-[#507192] transition-all duration-300 rounded-[2px] shrink-0 hover:shadow-[0_0_15px_rgba(80,113,146,0.18)]"
+              className="inline-flex items-center justify-center gap-[clamp(0.5rem,0.7vw,1.2rem)] text-[clamp(0.625rem,0.56vw,0.875rem)] font-mono font-medium uppercase tracking-[0.18em] text-et-dark border border-et-dark/60 px-[clamp(1rem,1.1vw,2rem)] py-[clamp(0.5rem,0.55vw,1rem)] bg-transparent hover:border-[#507192] hover:text-[#507192] rounded-[2px] shrink-0 hover:shadow-[0_0_20px_rgba(80,113,146,0.22)]"
             >
               <span>Обсудить ситуацию</span>
               <span className="inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:animate-pulse text-[#507192]">
                 →
               </span>
-            </button>
+            </SpotlightButton>
           </div>
         </div>
       </div>
