@@ -1,122 +1,136 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import { PRACTICES_DATA } from '@/lib/data/etlegis-data';
-import { Button } from '@/components/ui/Button';
+import SpotlightButton from '@/components/ui/SpotlightButton';
 
 export function PracticesSection() {
   const [activePracticeId, setActivePracticeId] = useState<string>(PRACTICES_DATA[0].id);
 
   return (
-    <section id="practices" className="py-20 md:py-32 px-6 md:px-12 max-w-7xl mx-auto w-full overflow-hidden">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-        <div>
-          <span className="text-xs uppercase tracking-widest text-et-accent font-medium">Компетенции</span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-medium mt-2">Ключевые практики</h2>
+    <section id="practices" className="py-16 md:py-24 px-[clamp(1.5rem,4vw,6rem)] w-full bg-[#F8F9FA]">
+      <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full">
+        {/* Левая колонка: Большой заголовок (соразмерный с Hero) */}
+        <div className="w-full lg:w-[32%] xl:w-[30%] lg:sticky lg:top-28 shrink-0">
+          <span className="text-xs uppercase tracking-widest text-[#9B815C] font-mono font-semibold block mb-3">
+            Компетенции
+          </span>
+          <h2 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] leading-[1.08]">
+            Ключевые практики
+          </h2>
         </div>
-        <div className="flex flex-col md:items-end gap-2 mt-4 md:mt-0">
-          <p className="text-sm text-et-muted max-w-md font-light">
-            Объединяем направления работы в монолитные практики для комплексной защиты активов и топ-менеджмента.
-          </p>
-          <Link
-            href="/practices"
-            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-et-dark hover:text-et-accent transition-colors font-medium group"
+
+        {/* Правая колонка: 4 вида практики (сетка 2х2) */}
+        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-10">
+          <div 
+            data-testid="practices-carousel"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
           >
-            <span>Смотреть все практики</span>
-            <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-        </div>
-      </div>
+            {PRACTICES_DATA.slice(0, 4).map((practice, index) => {
+              const isActive = activePracticeId === practice.id;
+              const formattedIndex = `0${index + 1}`;
 
-      <div 
-        data-testid="practices-carousel"
-        className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-6 md:pb-0 snap-x snap-mandatory scrollbar-none"
-      >
-        {PRACTICES_DATA.map((practice, index) => {
-          const isActive = activePracticeId === practice.id;
-          return (
-            <div
-              key={practice.id}
-              data-practice-card
-              role="region"
-              aria-roledescription="slide"
-              aria-label={`Практика ${index + 1}: ${practice.title}`}
-              onClick={() => setActivePracticeId(practice.id)}
-              className={`min-w-[80vw] sm:min-w-[340px] md:min-w-0 snap-center bg-white border transition-all duration-300 p-6 sm:p-8 flex flex-col justify-between flex-shrink-0 cursor-pointer ${
-                isActive ? 'border-et-dark shadow-sm' : 'border-et-border hover:border-et-muted'
-              }`}
-            >
-              <div>
-                <div className="flex justify-between items-center text-xs font-mono text-et-muted pb-4 border-b border-et-border/60">
-                  <span>0{index + 1}</span>
-                  <span className="uppercase tracking-widest text-[10px]">Практика</span>
-                </div>
-
-                <Link
-                  href={`/practices/${practice.slug}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="block group"
+              return (
+                <div
+                  key={practice.id}
+                  data-practice-card
+                  role="region"
+                  aria-roledescription="card"
+                  aria-label={`Практика ${formattedIndex}: ${practice.title}`}
+                  onMouseEnter={() => setActivePracticeId(practice.id)}
+                  className={`group bg-white border transition-all duration-300 rounded-[2px] overflow-hidden flex flex-col justify-between cursor-pointer ${
+                    isActive ? 'border-[#141517] shadow-md' : 'border-[#E2E2DC] hover:border-[#141517]'
+                  }`}
                 >
-                  <h3 className="font-serif text-xl sm:text-2xl font-medium mt-6 leading-snug group-hover:text-et-accent transition-colors">
-                    {practice.title}
-                  </h3>
-                </Link>
-                
-                <p className="text-xs sm:text-sm text-et-muted mt-4 leading-relaxed font-light">
-                  {practice.shortDescription}
-                </p>
+                  {/* Изображение с подложкой фирменного цвета при ховере */}
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-neutral-900">
+                    {practice.image && (
+                      <Image
+                        src={practice.image}
+                        alt={practice.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90"
+                      />
+                    )}
 
-                <div className="mt-8 pt-6 border-t border-et-border/60">
-                  <span className="text-[11px] uppercase tracking-wider text-et-muted font-semibold block mb-3">
-                    Услуги направления:
-                  </span>
-                  <ul className="space-y-2.5">
-                    {practice.services.map((service) => (
-                      <li key={service.id} className="text-xs text-et-dark flex items-start gap-2.5 group">
-                        <span className="w-1.5 h-1.5 bg-et-accent mt-1 flex-shrink-0" />
-                        <span className="group-hover:underline underline-offset-2 transition-all">
-                          {service.title}
+                    {/* Фирменный номер 01, 02, 03, 04 на изображении */}
+                    <div className="absolute top-4 left-4 z-10 bg-[#141517]/80 backdrop-blur-md px-3 py-1 border border-white/10 rounded-[2px]">
+                      <span className="text-xs font-mono font-bold tracking-wider text-white">
+                        {formattedIndex}
+                      </span>
+                    </div>
+
+                    {/* Всплывающая подложка фирменного цвета (#2F4858 / #101c22) с детальным текстом прямо на изображении */}
+                    <div className="absolute inset-0 bg-[#2F4858]/92 backdrop-blur-md p-6 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-400 ease-in-out z-20 overflow-y-auto">
+                      <div>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-[#A0AEC0] block mb-2">
+                          Услуги & Направления
                         </span>
-                      </li>
-                    ))}
-                  </ul>
+                        <h4 className="font-serif text-lg font-medium text-white mb-3 leading-snug">
+                          {practice.title}
+                        </h4>
+                        <ul className="space-y-2 mt-3">
+                          {practice.services.map((service) => (
+                            <li key={service.id} className="text-xs text-neutral-200 flex items-start gap-2">
+                              <CheckCircle size={12} className="text-[#9B815C] mt-0.5 shrink-0" />
+                              <span className="line-clamp-2">{service.title}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="pt-4 border-t border-white/15 mt-4">
+                        <span className="text-[11px] font-mono text-[#A0AEC0] uppercase tracking-wider">
+                          Нажмите для изучения практики
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Заголовок практики под изображением (в обычном состоянии) */}
+                  <div className="p-6 flex flex-col flex-grow justify-between bg-white">
+                    <div>
+                      <Link href={`/practices/${practice.slug}`} className="block">
+                        <h3 className="font-serif text-xl font-medium leading-snug text-[#141517] group-hover:text-[#507192] transition-colors">
+                          {practice.title}
+                        </h3>
+                      </Link>
+
+                      <p className="text-xs text-[#5E6267] mt-2.5 leading-relaxed font-light line-clamp-2">
+                        {practice.shortDescription}
+                      </p>
+                    </div>
+
+                    {/* Кнопка в едином стиле "ПОДРОБНЕЕ О ПРАКТИКЕ →" */}
+                    <div className="mt-6 pt-4 border-t border-[#ECECE8]">
+                      <Link href={`/practices/${practice.slug}`} className="block w-full">
+                        <SpotlightButton className="w-full py-3 px-4 text-xs">
+                          Подробнее о практике
+                        </SpotlightButton>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
 
-              <div className="mt-8 pt-4">
-                <Link
-                  href={`/practices/${practice.slug}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-et-muted hover:text-et-dark transition-colors font-medium mb-3 group"
-                >
-                  <span>Подробнее о практике</span>
-                  <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-                <Button 
-                  variant={isActive ? 'primary' : 'outline'} 
-                  fullWidth 
-                  className="text-xs py-3"
-                >
-                  Обсудить ситуацию
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Индикатор свайпа для телефонов */}
-      <div className="flex md:hidden justify-center gap-2 mt-4">
-        {PRACTICES_DATA.map((p) => (
-          <div
-            key={p.id}
-            className={`h-1 transition-all duration-300 ${
-              activePracticeId === p.id ? 'w-6 bg-et-dark' : 'w-2 bg-et-border'
-            }`}
-          />
-        ))}
+          {/* Нижний блок: Текст о практиках слева, кнопка "Смотреть все" справа */}
+          <div className="pt-6 border-t border-[#E2E2DC] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <p className="text-sm text-[#5E6267] max-w-xl font-light leading-relaxed">
+              Объединяем направления работы в монолитные практики для комплексной защиты активов и топ-менеджмента.
+            </p>
+            <Link href="/practices" className="shrink-0">
+              <SpotlightButton className="px-6 py-3.5 text-xs">
+                Все направления практик
+              </SpotlightButton>
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

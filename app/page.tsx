@@ -7,6 +7,7 @@ import Numbers from "@/components/sections/Numbers";
 import { PracticesSection } from "@/components/sections/PracticesSection";
 import Team from "@/components/sections/Team";
 import Cases from "@/components/sections/Cases";
+import DiagnosticsQuiz from "@/components/sections/DiagnosticsQuiz";
 import Blog from "@/components/sections/Blog";
 import Footer from "@/components/layout/Footer";
 import { ScrollFadeIn } from "@/components/animations/ScrollFadeIn";
@@ -25,11 +26,12 @@ export default function HomePage() {
         <ScrollFadeIn delay={0.15}>
           <PracticesSection />
         </ScrollFadeIn>
-        <ScrollFadeIn delay={0.15}>
-          <Team />
-        </ScrollFadeIn>
+        <Team />
         <ScrollFadeIn delay={0.15}>
           <Cases />
+        </ScrollFadeIn>
+        <ScrollFadeIn delay={0.15}>
+          <DiagnosticsQuiz />
         </ScrollFadeIn>
         <ScrollFadeIn delay={0.15}>
           <Blog />

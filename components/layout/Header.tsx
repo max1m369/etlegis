@@ -5,10 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLenisScroll } from "@/components/providers/SmoothScrollProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useConsultationModal } from "@/components/providers/ModalProvider";
 import { Menu, X, Sun, Moon, ArrowUpRight } from "lucide-react";
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { openModal } = useConsultationModal();
   const { scrollTo } = useLenisScroll();
   const pathname = usePathname();
 

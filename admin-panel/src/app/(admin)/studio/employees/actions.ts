@@ -97,7 +97,7 @@ export async function saveEmployee(id: string | null, _prev: unknown, formData: 
       phone: d.phone || undefined,
       telegram: d.telegram || undefined,
     },
-    photo: d.photo ? (Number(d.photo) || undefined) : undefined,
+    photo: d.photo ? (Number(d.photo) || (d.photo as any)) : null,
     showOnHome: d.showOnHome,
     seo: {
       title: d.seoTitle || undefined,

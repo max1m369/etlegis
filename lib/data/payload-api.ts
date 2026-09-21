@@ -106,3 +106,64 @@ export async function getDynamicPractices() {
     return fallbackPractices;
   }
 }
+
+export async function getDynamicEmployees() {
+  try {
+    const res = await fetch('http://localhost:3001/api/employees?depth=2&limit=100', {
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data?.docs || data.docs.length === 0) return null;
+
+    const mapped = data.docs.map((doc: any) => {
+      let photoUrl = undefined;
+      if (doc.photo) {
+        photoUrl = typeof doc.photo === 'object' ? doc.photo.url : undefined;
+        if (photoUrl && photoUrl.startsWith('/')) {
+          photoUrl = `http://localhost:3001${photoUrl}`;
+        }
+      }
+      if (!photoUrl) {
+        if (doc.slug?.includes('biry') || doc.slug?.includes('biru') || doc.name?.includes('Бирюков')) {
+          photoUrl = '/team/biryukov.jpg';
+        } else if (doc.slug?.includes('luch') || doc.name?.includes('Лучников')) {
+          photoUrl = '/team/luchnikov.jpg';
+        } else if (doc.slug?.includes('roman') || doc.name?.includes('Романова')) {
+          photoUrl = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80';
+        }
+      }
+
+      return {
+        id: String(doc.id),
+        name: doc.name,
+        slug: doc.slug,
+        status: doc.position || 'Адвокат / Юрист',
+        experienceYears: doc.experienceSince ? new Date().getFullYear() - doc.experienceSince : 12,
+        photoUrl: photoUrl || undefined,
+        quote: doc.bio || 'Профессиональная защита интересов доверителей в судах всех инстанций.',
+        specializations: Array.isArray(doc.specialization) ? doc.specialization.map((s: any) => typeof s === 'object' ? s.item : s) : [],
+        registryNo: doc.registryNo || undefined,
+        isAdvocate: doc.isAdvocate ?? true,
+        order: doc.order ?? 99,
+      };
+    });
+
+    // Сортировка: 1-й — Бирюков, 2-й — Лучников, остальные — в конец списка
+    return mapped.sort((a: any, b: any) => {
+      const aIsBir = a.slug?.includes('biry') || a.slug?.includes('biru') || a.name?.includes('Бирюков');
+      const bIsBir = b.slug?.includes('biry') || b.slug?.includes('biru') || b.name?.includes('Бирюков');
+      if (aIsBir && !bIsBir) return -1;
+      if (!aIsBir && bIsBir) return 1;
+
+      const aIsLuch = a.slug?.includes('luch') || a.name?.includes('Лучников');
+      const bIsLuch = b.slug?.includes('luch') || b.name?.includes('Лучников');
+      if (aIsLuch && !bIsLuch) return -1;
+      if (!aIsLuch && bIsLuch) return 1;
+
+      return (a.order ?? 99) - (b.order ?? 99);
+    });
+  } catch (err) {
+    return null;
+  }
+}

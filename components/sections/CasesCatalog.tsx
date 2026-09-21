@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useConsultationModal } from '@/lib/store/useConsultationModal';
 import { getDynamicCases } from '@/lib/data/payload-api';
+import SpotlightButton from '@/components/ui/SpotlightButton';
 
 export interface CaseItem {
   id: string;
@@ -214,19 +215,12 @@ export function CasesCatalog({ initialDynamicCases }: { initialDynamicCases?: an
               </p>
             </div>
 
-            <div className="mt-8 pt-5 border-t border-et-border/60 flex items-center justify-between">
-              <Link
-                href={`/cases/${item.slug}`}
-                className="text-xs text-et-muted hover:text-et-dark transition-colors font-medium"
-              >
-                Детали кейса →
+            <div className="mt-8 pt-5 border-t border-et-border/60">
+              <Link href={`/cases/${item.slug}`} className="block w-full">
+                <SpotlightButton className="w-full py-3.5 px-4 text-xs">
+                  Детали кейса
+                </SpotlightButton>
               </Link>
-              <button
-                onClick={() => openModal(`Кейс: ${item.title}`)}
-                className="text-xs text-et-dark font-medium underline underline-offset-4 hover:text-et-accent transition-colors"
-              >
-                Обсудить ситуацию
-              </button>
             </div>
           </div>
         ))}

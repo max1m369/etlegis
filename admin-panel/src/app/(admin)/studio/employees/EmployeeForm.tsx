@@ -107,7 +107,7 @@ export default function EmployeeForm({ doc, practices }: Props) {
           isAuto={!isSlugManual}
         />
         <Text name="position" label="Должность" defaultValue={doc?.position} required />
-        <MediaPicker name="photo" label="Фотография" defaultValue={doc?.photo?.id || doc?.photo} />
+        <MediaPicker name="photo" label="Фотография" defaultValue={doc?.photo} />
         <Checkbox
           name="isAdvocate"
           label="Имеет действующий статус адвоката"

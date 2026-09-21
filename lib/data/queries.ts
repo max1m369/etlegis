@@ -1,5 +1,6 @@
 import { LAWYERS_DATA, CASES_DATA, ARTICLES_DATA } from './etlegis-data';
 import { practices as mockPractices } from './mock-data';
+import { getDynamicEmployees } from './payload-api';
 import type { Lawyer } from '@/types/models';
 
 export interface CaseLawyer {
@@ -148,12 +149,60 @@ export function getAllLawyers(): Lawyer[] {
   return LAWYERS_DATA;
 }
 
+export async function getAllLawyersAsync(): Promise<Lawyer[]> {
+  try {
+    const dynamicEmployees = await getDynamicEmployees();
+    if (dynamicEmployees && dynamicEmployees.length > 0) {
+      return dynamicEmployees as any;
+    }
+  } catch (err) {
+    // fallback
+  }
+  return LAWYERS_DATA;
+}
+
 export function getLawyerBySlug(slug: string): Lawyer | undefined {
-  return LAWYERS_DATA.find((l) => l.slug === slug || l.id === slug);
+  const isBir = slug === 'birukov-aleksey' || slug === 'biryukov-alexey';
+  return LAWYERS_DATA.find((l) => l.slug === slug || (isBir && (l.slug === 'biryukov-alexey' || l.slug === 'birukov-aleksey')) || l.id === slug);
+}
+
+export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undefined> {
+  try {
+    const lawyers = await getAllLawyersAsync();
+    const isBir = slug === 'birukov-aleksey' || slug === 'biryukov-alexey';
+    const isLuch = slug === 'luchnikov-konstantin';
+
+    const found = lawyers.find((l) => {
+      if (l.slug === slug || l.id === slug) return true;
+      if (isBir && (l.slug === 'birukov-aleksey' || l.slug === 'biryukov-alexey' || l.name?.includes('Бирюков'))) return true;
+      if (isLuch && (l.slug === 'luchnikov-konstantin' || l.name?.includes('Лучников'))) return true;
+      return false;
+    });
+
+    if (found) {
+      const staticMock = getLawyerBySlug(slug);
+      if (staticMock) {
+        return {
+          ...staticMock,
+          ...found,
+          photoUrl: found.photoUrl || staticMock.photoUrl,
+          education: (found.education && found.education.length > 0) ? found.education : staticMock.education,
+          bio: (found.bio && found.bio.trim().length > 0) ? found.bio : (found.quote || staticMock.bio),
+          experienceYears: found.experienceYears || staticMock.experienceYears,
+          practiceIds: (found.practiceIds && found.practiceIds.length > 0) ? found.practiceIds : staticMock.practiceIds,
+          cases: (found.cases && found.cases.length > 0) ? found.cases : staticMock.cases,
+        };
+      }
+      return found;
+    }
+  } catch (err) {
+    // fallback
+  }
+  return getLawyerBySlug(slug);
 }
 
 export function getPracticesForLawyer(practiceIds: string[]) {
-  return mockPractices.filter((p) => practiceIds.includes(p.id));
+  return mockPractices.filter((p) => practiceIds.includes(p.id) || practiceIds.includes(p.slug));
 }
 
 export function getCasesForLawyer(caseIds?: string[]) {
@@ -200,10 +249,10 @@ export function getCaseBySlug(slug: string): DetailedCase | undefined {
         id: lawyerObj.id,
         name: lawyerObj.name,
         slug: lawyerObj.slug,
-        position: lawyerObj.status || lawyerObj.role || 'Адвокат / Партнёр',
+        position: lawyerObj.status || (lawyerObj as any).role || 'Адвокат / Партнёр',
         photo: lawyerObj.photoUrl,
         isAdvocate: true,
-        registryNo: lawyerObj.registryNo || '77/14890',
+        registryNo: (lawyerObj as any).registryNo || '77/14890',
       }];
     }
   }
@@ -227,26 +276,40 @@ export async function getCaseBySlugAsync(slug: string): Promise<DetailedCase | u
           ? doc.lawyers
               .map((l: any) => {
                 if (typeof l === 'object' && l !== null) {
-                  let photoUrl = undefined;
-                  if (l.photo) {
-                    photoUrl = typeof l.photo === 'object' ? l.photo.url : undefined;
-                    if (photoUrl && photoUrl.startsWith('/')) {
-                      photoUrl = `http://localhost:3001${photoUrl}`;
-                    }
+                  const rawSlug = l.slug || '';
+                  const resolvedSlug = rawSlug === 'birukov-aleksey' || l.name?.includes('Бирюков')
+                    ? 'biryukov-alexey'
+                    : rawSlug;
+
+                  const staticLawyer = LAWYERS_DATA.find(
+                    (sl) => sl.slug === resolvedSlug || (l.name && sl.name.includes(l.name))
+                  );
+
+                  if (staticLawyer) {
+                    return {
+                      id: staticLawyer.id,
+                      name: staticLawyer.name,
+                      slug: staticLawyer.slug,
+                      position: staticLawyer.status,
+                      photo: staticLawyer.photoUrl,
+                      isAdvocate: true,
+                      registryNo: (staticLawyer as any).registryNo || '77/14890',
+                    };
                   }
+
                   return {
                     id: String(l.id),
-                    name: l.name || 'Адвокат',
-                    slug: l.slug || '',
-                    position: l.position || 'Адвокат / Партнёр',
-                    photo: photoUrl,
+                    name: l.name || 'Алексей Сергеевич Бирюков',
+                    slug: resolvedSlug || 'biryukov-alexey',
+                    position: l.position || 'Управляющий партнер, адвокат',
+                    photo: undefined,
                     isAdvocate: l.isAdvocate ?? true,
-                    registryNo: l.registryNo || undefined,
+                    registryNo: l.registryNo || '77/14890',
                   };
                 }
                 return null;
               })
-              .filter((l): l is CaseLawyer => l !== null)
+              .filter((l: any): l is CaseLawyer => l !== null)
           : [];
 
         return {

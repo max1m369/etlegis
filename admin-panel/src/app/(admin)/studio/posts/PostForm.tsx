@@ -124,7 +124,7 @@ export default function PostForm({ doc, employees, practices }: Props) {
           required
         />
         <Textarea name="excerpt" label="Краткий анонс (лид)" defaultValue={doc?.excerpt} required rows={3} />
-        <MediaPicker name="cover" label="Обложка материала" defaultValue={doc?.cover?.id || doc?.cover} />
+        <MediaPicker name="cover" label="Обложка материала" defaultValue={doc?.cover} />
         <RichText name="body" label="Основной текст" defaultValue={doc?.body} />
       </section>
 

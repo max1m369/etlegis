@@ -42,6 +42,9 @@ global.ResizeObserver = class ResizeObserver {
 // Mock scrollTo
 window.scrollTo = (() => {}) as any;
 
+// Mock getContext for canvas
+HTMLCanvasElement.prototype.getContext = vi.fn();
+
 // Mock requestAnimationFrame and cancelAnimationFrame
 const mockRaf = (callback: FrameRequestCallback) => setTimeout(callback, 0) as unknown as number;
 const mockCaf = (id: number) => clearTimeout(id as unknown as NodeJS.Timeout);

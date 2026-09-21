@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getLawyerBySlug, getPracticesForLawyer, getCasesForLawyer, getAllLawyers } from '@/lib/data/queries';
+import { getLawyerBySlugAsync, getLawyerBySlug, getPracticesForLawyer, getCasesForLawyer, getAllLawyers } from '@/lib/data/queries';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -8,21 +8,30 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   const lawyers = getAllLawyers();
-  return lawyers.map((lawyer) => ({
-    slug: lawyer.slug,
+  const allSlugs = new Set(lawyers.map((lawyer) => lawyer.slug));
+  allSlugs.add('birukov-aleksey');
+  allSlugs.add('biryukov-alexey');
+  allSlugs.add('luchnikov-konstantin');
+  allSlugs.add('romanova-ekaterina');
+
+  return Array.from(allSlugs).map((slug) => ({
+    slug,
   }));
 }
 
 export default async function LawyerDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const lawyer = getLawyerBySlug(slug);
+  const lawyer = (await getLawyerBySlugAsync(slug)) || getLawyerBySlug(slug);
 
   if (!lawyer) notFound();
 
-  const practices = getPracticesForLawyer(lawyer.practiceIds);
-  const cases = getCasesForLawyer(lawyer.cases?.map((c) => c.id));
+  const practices = getPracticesForLawyer(Array.isArray(lawyer.practiceIds) ? lawyer.practiceIds : []);
+  const cases = getCasesForLawyer(Array.isArray(lawyer.cases) ? lawyer.cases.map((c) => c.id) : []);
 
   return (
     <div className="flex flex-col min-h-screen bg-et-bg text-et-dark">
@@ -57,7 +66,7 @@ export default async function LawyerDetailPage({ params }: PageProps) {
                 <div>
                   <span className="text-neutral-400 uppercase tracking-widest block text-[10px]">Образование</span>
                   <ul className="mt-1 space-y-1">
-                    {lawyer.education.map((edu, idx) => (
+                    {(Array.isArray(lawyer.education) ? lawyer.education : []).map((edu, idx) => (
                       <li key={idx} className="text-et-dark">{edu}</li>
                     ))}
                   </ul>

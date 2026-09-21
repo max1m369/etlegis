@@ -1,15 +1,21 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { cases as mockCases, practices } from "@/lib/data/mock-data";
 import { getDynamicCases } from "@/lib/data/payload-api";
-import { ArrowRight, Trophy, ShieldCheck } from "lucide-react";
+import { Trophy } from "lucide-react";
+import SpotlightButton from "@/components/ui/SpotlightButton";
 
 export default function Cases() {
   const [items, setItems] = useState(mockCases);
 
   useEffect(() => {
     getDynamicCases().then((res) => {
-      if (res && res.length > 0) setItems(res);
+      if (res && res.length > 0) {
+        const sorted = [...res].sort((a, b) => Number(b.date || 0) - Number(a.date || 0));
+        setItems(sorted);
+      }
     });
   }, []);
 
@@ -23,7 +29,7 @@ export default function Cases() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16">
           <div className="max-w-2xl">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] font-semibold block mb-3">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] font-semibold block mb-3 font-mono">
               Судебная практика и результаты
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-[#141517] leading-tight">
@@ -31,12 +37,10 @@ export default function Cases() {
             </h2>
           </div>
           <div className="mt-4 md:mt-0">
-            <Link
-              href="/cases"
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#141517] hover:text-[#9B815C] transition-colors group"
-            >
-              <span>Все завершенные дела</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Link href="/cases">
+              <SpotlightButton className="px-5 py-3 text-xs">
+                Все завершенные дела
+              </SpotlightButton>
             </Link>
           </div>
         </div>
@@ -51,7 +55,7 @@ export default function Cases() {
               <div>
                 {/* Practice Tag and Year */}
                 <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-[#ECECE8]">
-                  <span className="text-[10px] uppercase font-semibold tracking-wider text-[#9B815C] truncate">
+                  <span className="text-[10px] uppercase font-semibold tracking-wider text-[#9B815C] truncate font-mono">
                     {getPracticeTitle(item.practiceId)}
                   </span>
                   <span className="text-xs font-mono text-[#5E6267] shrink-0">
@@ -62,7 +66,7 @@ export default function Cases() {
                 {/* Big Budget / Claim Amount */}
                 {item.claimAmount && (
                   <div className="mb-4">
-                    <span className="text-xs uppercase tracking-wider text-[#5E6267] block mb-0.5">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-[#5E6267] block mb-0.5">
                       Защищенный бюджет:
                     </span>
                     <span className="font-heading text-3xl sm:text-4xl font-semibold text-[#141517] tracking-tight">
@@ -72,7 +76,7 @@ export default function Cases() {
                 )}
 
                 {/* Title */}
-                <h3 className="text-lg font-heading font-medium text-[#141517] mb-3 leading-snug group-hover:text-accent transition-colors">
+                <h3 className="text-lg font-heading font-medium text-[#141517] mb-3 leading-snug group-hover:text-[#507192] transition-colors">
                   {item.title}
                 </h3>
 
@@ -93,13 +97,13 @@ export default function Cases() {
                 </div>
               </div>
 
-              <Link
-                href={`/cases/${item.slug}`}
-                className="inline-flex items-center justify-between w-full pt-4 border-t border-[#ECECE8] text-xs font-semibold uppercase tracking-wider text-[#141517] group-hover:text-[#9B815C] transition-colors"
-              >
-                <span>Разбор дела</span>
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <div className="pt-4 border-t border-[#ECECE8]">
+                <Link href={`/cases/${item.slug}`} className="block w-full">
+                  <SpotlightButton className="w-full py-3 text-xs">
+                    Детали кейса
+                  </SpotlightButton>
+                </Link>
+              </div>
             </div>
           ))}
         </div>

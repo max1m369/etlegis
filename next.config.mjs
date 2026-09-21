@@ -2,7 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["etlegis.ru", "images.unsplash.com"],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'etlegis.ru' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
   },
   async rewrites() {
     return [

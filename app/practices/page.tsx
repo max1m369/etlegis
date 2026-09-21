@@ -3,7 +3,8 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { practices } from "@/lib/data/mock-data";
-import { ArrowRight, CheckCircle, Scale } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+import SpotlightButton from "@/components/ui/SpotlightButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,12 +16,20 @@ export default function PracticesIndexPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#F8F9FA]">
       <Header />
-      <main className="flex-grow pt-32 pb-20">
+      <main className="flex-grow pt-28 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Верхняя стрелка "На главную" в соответствии с референсом */}
+          <div className="mb-6 pt-4">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 text-sm font-mono font-medium uppercase tracking-[0.18em] text-[#141517] hover:text-[#507192] transition-colors group"
+            >
+              <span className="text-xl font-bold transition-transform duration-300 group-hover:-translate-x-1.5">←</span>
+              <span>На главную</span>
+            </Link>
+          </div>
+
           <div className="max-w-3xl mb-16">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] font-semibold block mb-3">
-              Специализация
-            </span>
             <h1 className="text-4xl sm:text-5xl font-heading font-medium text-[#141517] mb-6">
               Практики адвокатского бюро
             </h1>
@@ -33,13 +42,13 @@ export default function PracticesIndexPage() {
             {practices.map((practice, idx) => (
               <div
                 key={practice.id}
-                className="bg-white border border-[#E2E2DC] rounded-[2px] p-8 sm:p-10 shadow-subtle hover:shadow-card hover:border-[#141517] transition-all duration-300 flex flex-col justify-between"
+                className="bg-white border border-[#E2E2DC] rounded-[2px] p-8 sm:p-10 shadow-subtle hover:shadow-card hover:border-[#141517] transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <span className="text-xs font-mono text-[#9B815C] uppercase tracking-widest block mb-2">
-                    Направление 0{idx + 1}
+                    0{idx + 1}
                   </span>
-                  <h2 className="text-2xl font-heading font-semibold text-[#141517] mb-4">
+                  <h2 className="text-2xl font-heading font-semibold text-[#141517] mb-4 group-hover:text-[#507192] transition-colors">
                     {practice.title}
                   </h2>
                   <p className="text-sm text-[#5E6267] leading-relaxed mb-6">
@@ -61,12 +70,13 @@ export default function PracticesIndexPage() {
                   </div>
                 </div>
 
-                <Link
-                  href={`/practices/${practice.slug}`}
-                  className="btn-legal-primary py-3.5 px-6 text-xs uppercase tracking-wider text-center"
-                >
-                  Перейти к практике
-                </Link>
+                <div className="pt-4 border-t border-[#ECECE8]">
+                  <Link href={`/practices/${practice.slug}`} className="block w-full">
+                    <SpotlightButton className="w-full py-3.5 text-xs">
+                      Перейти к практике
+                    </SpotlightButton>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
