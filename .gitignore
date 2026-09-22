@@ -43,3 +43,10 @@ next-env.d.ts
 
 # ignore separate legacy subfolder
 EEE/
+
+# ignore admin-panel (excluded for static site repository)
+admin-panel/
+
+# archives
+*.tar.gz
+*.zip

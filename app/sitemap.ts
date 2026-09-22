@@ -4,6 +4,8 @@ import { ALL_CATALOG_CASES } from '@/lib/data/queries';
 
 const BASE_URL = 'https://etlegis.ru';
 
+export const dynamic = 'force-static';
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString();
 

@@ -88,7 +88,7 @@ export function ConsultationModal() {
         onClick={closeModal}
       />
 
-      <div className="relative w-full max-w-lg bg-white border border-et-border p-6 sm:p-10 shadow-2xl z-10">
+      <div className="relative w-full max-w-lg bg-white dark:bg-bg-surface border border-et-border p-6 sm:p-10 shadow-2xl z-10">
         <button
           onClick={closeModal}
           className="absolute top-4 right-4 text-et-muted hover:text-et-dark text-xl font-light p-2"

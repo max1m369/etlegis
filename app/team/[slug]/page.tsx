@@ -8,9 +8,6 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 export async function generateStaticParams() {
   const lawyers = getAllLawyers();
   const allSlugs = new Set(lawyers.map((lawyer) => lawyer.slug));
@@ -47,7 +44,7 @@ export default async function LawyerDetailPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             {/* Фото и статус */}
             <div className="md:col-span-4">
-              <div className="w-full aspect-[3/4] bg-neutral-200 border border-et-border overflow-hidden rounded-[2px] flex items-center justify-center text-xs text-neutral-500">
+              <div className="w-full aspect-[3/4] bg-[#ECECE8] dark:bg-bg-subtle border border-et-border overflow-hidden rounded-[2px] flex items-center justify-center text-xs text-et-muted">
                 {lawyer.photoUrl ? (
                   <img
                     src={lawyer.photoUrl}
@@ -96,7 +93,7 @@ export default async function LawyerDetailPage({ params }: PageProps) {
                       <Link
                         key={p.id}
                         href={`/practices/${p.slug}`}
-                        className="px-4 py-2 border border-et-border text-xs bg-white hover:border-et-dark transition-all rounded-[2px]"
+                        className="px-4 py-2 border border-et-border text-xs bg-white dark:bg-bg-surface hover:border-et-dark dark:hover:border-accent-bronze transition-all rounded-[2px]"
                       >
                         {p.title} →
                       </Link>

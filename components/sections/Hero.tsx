@@ -32,13 +32,13 @@ export default function Hero() {
       <div className="relative z-20 w-full mt-4">
         {/* Частичная линия-разделитель (от середины экрана до правого края) */}
         <div className="flex justify-end mb-[clamp(1rem,1.8vh,2.5rem)]">
-          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] border-t-2 border-[#141517]/85" />
+          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] border-t-2 border-et-dark/85" />
         </div>
 
         {/* Блок под чертой: контрастные текст и кнопка в точных пропорциях скриншота */}
         <div className="flex justify-end">
           <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] flex flex-col md:flex-row md:items-center justify-between gap-[clamp(1rem,1.8vw,3rem)]">
-            <p className="text-[clamp(0.85rem,0.75vw,1.15rem)] text-[#141517]/90 font-sans leading-[1.6] max-w-[clamp(280px,28vw,700px)] font-normal">
+            <p className="text-[clamp(0.85rem,0.75vw,1.15rem)] text-et-dark/90 font-sans leading-[1.6] max-w-[clamp(280px,28vw,700px)] font-normal">
               Стратегическое ведение дел, защита активов и топ-менеджмента. Практика с подтвержденным результатом в 1,2+ млрд ₽ сохраненных средств.
             </p>
 

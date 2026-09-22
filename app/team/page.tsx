@@ -4,9 +4,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SpotlightButton from '@/components/ui/SpotlightButton';
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-
 export const metadata = {
   title: 'О компании и команда | Адвокатское бюро Etlegis',
   description: 'История адвокатского бюро Etlegis, принципы работы, партнеры и ведущие адвокаты практики.',
@@ -16,7 +13,7 @@ export default async function TeamPage() {
   const lawyers = await getAllLawyersAsync();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8F9FA] text-[#141517]">
+    <div className="flex flex-col min-h-screen bg-et-bg text-et-dark">
       <Header />
       <main className="flex-grow pt-28 pb-24">
         <div className="px-6 md:px-12 pt-8 max-w-7xl mx-auto">
@@ -24,7 +21,7 @@ export default async function TeamPage() {
           <div className="mb-10">
             <Link
               href="/"
-              className="inline-flex items-center gap-3 text-sm font-mono font-medium uppercase tracking-[0.18em] text-[#141517] hover:text-[#507192] transition-colors group"
+              className="inline-flex items-center gap-3 text-sm font-mono font-medium uppercase tracking-[0.18em] text-et-dark hover:text-[#507192] dark:hover:text-accent-bronze transition-colors group"
             >
               <span className="text-xl font-bold transition-transform duration-300 group-hover:-translate-x-1.5">←</span>
               <span>На главную</span>
@@ -33,14 +30,14 @@ export default async function TeamPage() {
 
           {/* 1. Блок "О компании" (Большой заголовок и история) */}
           <section className="mb-20">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] font-mono font-semibold block mb-3">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
               О компании
             </span>
-            <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-[#141517] leading-[1.05] mb-8 max-w-5xl">
+            <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-et-dark leading-[1.05] mb-8 max-w-5xl">
               Адвокатское бюро «ЭТЛЕГИС»
             </h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 text-sm sm:text-base text-[#5E6267] font-light leading-relaxed mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 text-sm sm:text-base text-et-muted font-light leading-relaxed mb-10">
               <p>
                 Компания основана в 2019 году ведущими судебными адвокатами и экспертами в области арбитражного, корпоративного и уголовного права. С момента основания бюро ориентировано на решение нестандартных и высокорисковых правовых задач для собственников бизнеса, бенефициаров и генеральных директоров.
               </p>
@@ -50,32 +47,32 @@ export default async function TeamPage() {
             </div>
 
             {/* Метрики и вехи бюро */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-8 border-y border-[#E2E2DC]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-8 border-y border-[#E2E2DC] dark:border-border-subtle">
               <div>
-                <span className="font-mono text-3xl sm:text-4xl font-semibold text-[#141517] tracking-tight block">2019</span>
-                <span className="text-xs text-[#5E6267] font-light mt-1 block">Год основания бюро</span>
+                <span className="font-mono text-3xl sm:text-4xl font-semibold text-et-dark tracking-tight block">2019</span>
+                <span className="text-xs text-et-muted font-light mt-1 block">Год основания бюро</span>
               </div>
               <div>
-                <span className="font-mono text-3xl sm:text-4xl font-semibold text-[#141517] tracking-tight block">1,2+ млрд ₽</span>
-                <span className="text-xs text-[#5E6267] font-light mt-1 block">Защищенных активов</span>
+                <span className="font-mono text-3xl sm:text-4xl font-semibold text-et-dark tracking-tight block">1,2+ млрд ₽</span>
+                <span className="text-xs text-et-muted font-light mt-1 block">Защищенных активов</span>
               </div>
               <div>
-                <span className="font-mono text-3xl sm:text-4xl font-semibold text-[#141517] tracking-tight block">94%</span>
-                <span className="text-xs text-[#5E6267] font-light mt-1 block">Выигранных дел</span>
+                <span className="font-mono text-3xl sm:text-4xl font-semibold text-et-dark tracking-tight block">94%</span>
+                <span className="text-xs text-et-muted font-light mt-1 block">Выигранных дел</span>
               </div>
             </div>
           </section>
 
           {/* 2. Блок "Адвокаты бюро" (Команда) */}
-          <section className="pt-8 border-t border-[#E2E2DC]">
+          <section className="pt-8 border-t border-[#E2E2DC] dark:border-border-subtle">
             <div className="mb-12">
-              <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] font-mono font-semibold block mb-3">
+              <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
                 Лидеры практик
               </span>
-              <h2 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-[#141517] mb-4">
+              <h2 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-et-dark mb-4">
                 Адвокаты бюро
               </h2>
-              <p className="text-sm sm:text-base text-[#5E6267] max-w-2xl font-light leading-relaxed">
+              <p className="text-sm sm:text-base text-et-muted max-w-2xl font-light leading-relaxed">
                 Каждый адвокат бюро специализируется на защите имущественных и личных прав руководителей бизнеса, сочетая процессуальный опыт и бизнес-понимание.
               </p>
             </div>
@@ -84,10 +81,10 @@ export default async function TeamPage() {
               {lawyers.map((lawyer) => (
                 <div 
                   key={lawyer.id} 
-                  className="bg-white border border-[#E2E2DC] p-6 flex flex-col justify-between hover:border-[#141517] hover:shadow-card transition-all duration-300 group rounded-[2px]"
+                  className="bg-white dark:bg-bg-surface border border-[#E2E2DC] dark:border-border-subtle p-6 flex flex-col justify-between hover:border-[#141517] dark:hover:border-accent-bronze hover:shadow-card transition-all duration-300 group rounded-[2px]"
                 >
                   <div>
-                    <div className="w-full aspect-[3/4] bg-[#ECECE8] mb-6 relative overflow-hidden flex items-center justify-center text-xs font-mono text-[#5E6267] rounded-[2px]">
+                    <div className="w-full aspect-[3/4] bg-[#ECECE8] dark:bg-bg-subtle mb-6 relative overflow-hidden flex items-center justify-center text-xs font-mono text-et-muted rounded-[2px]">
                       {lawyer.photoUrl ? (
                         <img
                           src={lawyer.photoUrl}
@@ -98,23 +95,23 @@ export default async function TeamPage() {
                         <span>Да, фотография</span>
                       )}
                     </div>
-                    <h3 className="font-serif text-2xl font-medium group-hover:text-[#507192] transition-colors text-[#141517]">
+                    <h3 className="font-serif text-2xl font-medium group-hover:text-[#507192] dark:group-hover:text-accent-bronze transition-colors text-et-dark">
                       <Link href={`/team/${lawyer.slug}`}>
                         {lawyer.name}
                       </Link>
                     </h3>
-                    <span className="text-xs text-[#9B815C] font-mono font-medium block mt-1 uppercase tracking-wider">
+                    <span className="text-xs text-[#9B815C] dark:text-accent-bronze font-mono font-medium block mt-1 uppercase tracking-wider">
                       {lawyer.status}
                     </span>
-                    <p className="text-xs text-[#5E6267] mt-3 font-light leading-relaxed line-clamp-3">
+                    <p className="text-xs text-et-muted mt-3 font-light leading-relaxed line-clamp-3">
                       {Array.isArray((lawyer as any).specializations)
                         ? (lawyer as any).specializations.join(', ')
                         : lawyer.specialization || (lawyer as any).quote || (lawyer as any).bio}
                     </p>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-[#ECECE8] flex flex-col gap-4">
-                    <span className="text-xs text-[#5E6267] font-mono">
+                  <div className="mt-8 pt-4 border-t border-[#ECECE8] dark:border-border-subtle flex flex-col gap-4">
+                    <span className="text-xs text-et-muted font-mono">
                       Стаж: {lawyer.experienceYears} лет практики
                     </span>
                     <Link href={`/team/${lawyer.slug}`} className="block w-full">

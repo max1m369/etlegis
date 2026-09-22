@@ -187,7 +187,7 @@ export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undef
           ...found,
           photoUrl: found.photoUrl || staticMock.photoUrl,
           education: (found.education && found.education.length > 0) ? found.education : staticMock.education,
-          bio: (found.bio && found.bio.trim().length > 0) ? found.bio : (found.quote || staticMock.bio),
+          bio: (found.bio && found.bio.trim().length > 0) ? found.bio : ((found as any).quote || staticMock.bio),
           experienceYears: found.experienceYears || staticMock.experienceYears,
           practiceIds: (found.practiceIds && found.practiceIds.length > 0) ? found.practiceIds : staticMock.practiceIds,
           cases: (found.cases && found.cases.length > 0) ? found.cases : staticMock.cases,

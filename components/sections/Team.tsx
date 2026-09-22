@@ -126,19 +126,19 @@ export default function Team() {
     <section
       ref={sectionRef}
       id="team"
-      className="team-section min-h-screen lg:h-screen w-full relative overflow-hidden bg-[#FFFFFF] border-t border-[#E2E2DC] flex flex-col justify-between pt-20 pb-10 px-[clamp(1.5rem,4vw,6rem)]"
+      className="team-section min-h-screen lg:h-screen w-full relative overflow-hidden bg-[#FFFFFF] dark:bg-et-bg border-t border-[#E2E2DC] dark:border-border-subtle flex flex-col justify-between pt-20 pb-10 px-[clamp(1.5rem,4vw,6rem)]"
     >
       <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full my-auto">
         {/* 1. Левая закрепленная колонка (team-sidebar) */}
         <div className="team-sidebar w-full lg:w-[32%] xl:w-[30%] shrink-0 z-10 flex flex-col justify-between pt-1">
           <div>
-            <span className="text-xs uppercase tracking-widest text-[#9B815C] font-mono font-semibold block mb-3">
+            <span className="text-xs uppercase tracking-widest text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
               Лидеры практик
             </span>
-            <h2 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] leading-[1.05] mb-6">
+            <h2 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-6">
               Команда бюро
             </h2>
-            <p className="text-sm text-[#5E6267] font-light leading-relaxed mb-8 max-w-sm">
+            <p className="text-sm text-[#5E6267] dark:text-et-muted font-light leading-relaxed mb-8 max-w-sm">
               Партнеры и адвокаты бюро с практическим опытом защиты бизнеса, активов и персональных интересов руководителей.
             </p>
           </div>
@@ -157,11 +157,11 @@ export default function Team() {
             {teamLawyers.map((lawyer) => (
               <div
                 key={lawyer.id}
-                className="team-card w-[300px] sm:w-[340px] xl:w-[360px] shrink-0 bg-[#F8F9FA] border border-[#E2E2DC] rounded-[2px] p-5 sm:p-6 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] transition-all duration-300 group cursor-pointer"
+                className="team-card w-[300px] sm:w-[340px] xl:w-[360px] shrink-0 bg-[#F8F9FA] dark:bg-bg-surface border border-[#E2E2DC] dark:border-border-subtle rounded-[2px] p-5 sm:p-6 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] dark:hover:border-accent-bronze transition-all duration-300 group cursor-pointer"
               >
                 <div>
                   {/* Портретная фотография адвоката */}
-                  <div className="relative aspect-[3/4] max-h-[380px] w-full overflow-hidden bg-[#ECECE8] rounded-[2px] mb-4 group/photo">
+                  <div className="relative aspect-[3/4] max-h-[380px] w-full overflow-hidden bg-[#ECECE8] dark:bg-bg-subtle rounded-[2px] mb-4 group/photo">
                     {lawyer.photoUrl ? (
                       <img
                         src={lawyer.photoUrl}
@@ -169,7 +169,7 @@ export default function Team() {
                         className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/photo:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs font-mono text-[#5E6267] bg-[#ECECE8]">
+                      <div className="w-full h-full flex items-center justify-center text-xs font-mono text-[#5E6267] dark:text-et-muted bg-[#ECECE8] dark:bg-bg-subtle">
                         Да, фотография
                       </div>
                     )}
@@ -190,15 +190,15 @@ export default function Team() {
                   </div>
 
                   {/* Описание под фотографией: Статус, Имя, Специализация */}
-                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9B815C] block mb-1">
+                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze block mb-1">
                     {lawyer.status}
                   </span>
-                  <h3 className="font-serif text-xl sm:text-2xl font-medium text-[#141517] leading-snug mb-2 group-hover:text-[#507192] transition-colors">
+                  <h3 className="font-serif text-xl sm:text-2xl font-medium text-[#141517] dark:text-et-dark leading-snug mb-2 group-hover:text-[#507192] dark:group-hover:text-accent-bronze transition-colors">
                     <Link href={`/team/${lawyer.slug}`}>
                       {lawyer.name}
                     </Link>
                   </h3>
-                  <p className="text-xs text-[#5E6267] font-light leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4">
+                  <p className="text-xs text-[#5E6267] dark:text-et-muted font-light leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4">
                     {Array.isArray((lawyer as any).specializations)
                       ? (lawyer as any).specializations.join(', ')
                       : lawyer.specialization || (lawyer as any).quote || (lawyer as any).bio}
@@ -206,7 +206,7 @@ export default function Team() {
                 </div>
 
                 {/* Ссылка под карточкой */}
-                <div className="pt-4 border-t border-[#ECECE8]">
+                <div className="pt-4 border-t border-[#ECECE8] dark:border-border-subtle">
                   <Link href={`/team/${lawyer.slug}`} className="block w-full">
                     <SpotlightButton className="w-full py-3 px-4 text-xs">
                       Смотреть профиль
@@ -218,33 +218,33 @@ export default function Team() {
           </div>
 
           {/* 3. Нижняя плашка прямо под карточками */}
-          <div className="mt-6 pt-5 border-t border-[#E2E2DC] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
+          <div className="mt-6 pt-5 border-t border-[#E2E2DC] dark:border-border-subtle flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
             {/* Текст слева */}
-            <p className="text-sm text-[#5E6267] max-w-md xl:max-w-lg font-light leading-relaxed">
+            <p className="text-sm text-[#5E6267] dark:text-et-muted max-w-md xl:max-w-lg font-light leading-relaxed">
               Практический опыт и высокая личная экспертиза партнеров бюро для защиты вашего бизнеса.
             </p>
 
             {/* Справа: Переключатель слайдов (01 / 05 < >) + Кнопка "ВСЯ КОМАНДА БЮРО" */}
             <div className="flex items-center gap-6 shrink-0">
-              <div className="text-xs font-mono font-medium text-[#141517] tracking-wider flex items-center gap-4">
+              <div className="text-xs font-mono font-medium text-[#141517] dark:text-et-dark tracking-wider flex items-center gap-4">
                 <div>
-                  <span ref={counterRef} className="text-sm font-bold text-[#507192]">01</span>
-                  <span className="text-[#5E6267] mx-1">/</span>
-                  <span className="text-[#5E6267]">{String(teamLawyers.length).padStart(2, '0')}</span>
+                  <span ref={counterRef} className="text-sm font-bold text-[#507192] dark:text-accent-bronze">01</span>
+                  <span className="text-[#5E6267] dark:text-et-muted mx-1">/</span>
+                  <span className="text-[#5E6267] dark:text-et-muted">{String(teamLawyers.length).padStart(2, '0')}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
                     aria-label="Предыдущий адвокат"
-                    className="w-10 h-10 border border-[#141517]/30 hover:border-[#507192] hover:text-[#507192] rounded-[2px] flex items-center justify-center transition-colors bg-white text-[#141517]"
+                    className="w-10 h-10 border border-[#141517]/30 dark:border-border-subtle hover:border-[#507192] dark:hover:border-accent-bronze hover:text-[#507192] dark:hover:text-accent-bronze rounded-[2px] flex items-center justify-center transition-colors bg-white dark:bg-bg-surface text-[#141517] dark:text-et-dark"
                   >
                     <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={handleNext}
                     aria-label="Следующий адвокат"
-                    className="w-10 h-10 border border-[#141517]/30 hover:border-[#507192] hover:text-[#507192] rounded-[2px] flex items-center justify-center transition-colors bg-white text-[#141517]"
+                    className="w-10 h-10 border border-[#141517]/30 dark:border-border-subtle hover:border-[#507192] dark:hover:border-accent-bronze hover:text-[#507192] dark:hover:text-accent-bronze rounded-[2px] flex items-center justify-center transition-colors bg-white dark:bg-bg-surface text-[#141517] dark:text-et-dark"
                   >
                     <ChevronRight size={18} />
                   </button>

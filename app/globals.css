@@ -17,27 +17,30 @@
   --et-dark: #141517;
   --et-muted: #5E6267;
   --et-border: #E2E2DC;
-  --et-accent: #2C3E50;
+  --et-accent: #9B815C;
   --et-surface-alt: #ECECE8;
 }
 
 html.dark, body.dark, .dark {
-  --bg-primary: #2C3E50;
-  --bg-surface: #1E2B38;
-  --bg-subtle: #3E5871;
-  --border-subtle: #3E5871;
-  --text-main: #F8FAFC;
-  --text-muted: #CBD5E1;
-  --accent: #507192;
-  --accent-bronze: #927B50;
-  --accent-bronze-light: #BCA685;
+  --bg-primary: #0D0F12;
+  --bg-surface: #171A21;
+  --bg-subtle: #1E222B;
+  --border-subtle: #2A2F3A;
+  --text-main: #F3F4F6;
+  --text-muted: #94A3B8;
+  --accent: #C5A880;
+  --accent-bronze: #C5A880;
+  --accent-bronze-light: #DFCAAB;
 
-  --et-bg: #2C3E50;
-  --et-dark: #F8FAFC;
-  --et-muted: #CBD5E1;
-  --et-border: #3E5871;
-  --et-accent: #927B50;
-  --et-surface-alt: #3E5871;
+  --et-bg: #0D0F12;
+  --et-dark: #F3F4F6;
+  --et-muted: #94A3B8;
+  --et-border: #2A2F3A;
+  --et-accent: #C5A880;
+  --et-surface-alt: #171A21;
+
+  --bracket-base-color: #C5A880;
+  --bracket-highlight-color: #F3F4F6;
 }
 
 html {
@@ -99,7 +102,7 @@ h1, h2, h3, .font-heading {
 /* Precision legal boutique button styles */
 .btn-legal-primary {
   background-color: var(--text-main);
-  color: #ffffff;
+  color: var(--bg-primary);
   border-radius: 2px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -109,9 +112,19 @@ h1, h2, h3, .font-heading {
   justify-content: center;
 }
 
+:root:not(.dark) .btn-legal-primary {
+  background-color: #141517;
+  color: #ffffff;
+}
+
+.dark .btn-legal-primary {
+  background-color: var(--accent-bronze);
+  color: #0D0F12;
+}
+
 .btn-legal-primary:hover {
   background-color: var(--accent);
-  box-shadow: 0 4px 14px rgba(30, 41, 59, 0.18);
+  box-shadow: 0 4px 14px rgba(197, 168, 128, 0.2);
   transform: translateY(-1px);
 }
 
@@ -134,13 +147,18 @@ h1, h2, h3, .font-heading {
 .btn-legal-outline:hover {
   border-color: var(--text-main);
   background-color: var(--text-main);
-  color: #ffffff;
+  color: var(--bg-primary);
 }
 
 /* Selection */
 ::selection {
   background-color: #1E293B;
   color: #FFFFFF;
+}
+
+.dark ::selection {
+  background-color: #C5A880;
+  color: #0D0F12;
 }
 
 /* Dynamic bracket & shimmer controls */

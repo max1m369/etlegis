@@ -13,6 +13,7 @@ const FRAGMENT_SHADER = `
   precision mediump float;
   uniform float u_time;
   uniform vec2 u_resolution;
+  uniform float u_dark;
 
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -62,13 +63,13 @@ const FRAGMENT_SHADER = `
     float n2 = 0.5 * snoise(deformedUV * 2.7 - vec2(fastTime * 0.12, -fastTime * 0.15));
     float n = clamp((n1 + n2) * 0.5 + 0.5, 0.0, 1.0);
 
-    // 5. Премиальная полутоновая палитра (на полутон/тон, 3–6% отличия от фона):
-    // Базовый цвет фона сайта #F7F8FA
-    vec3 bgBase = vec3(0.969, 0.973, 0.980);
-    // Легкая полутоновая дымка (едва заметный шелковистый градиент #EFF2F6)
-    vec3 mistTone = vec3(0.937, 0.949, 0.965);
-    // Тончайшая глубина вихрей #E7EDF3
-    vec3 accentTone = vec3(0.906, 0.925, 0.949);
+    // 5. Премиальная полутоновая палитра:
+    // Базовый цвет фона сайта #F7F8FA vs тёмный #0D0F12
+    vec3 bgBase = mix(vec3(0.969, 0.973, 0.980), vec3(0.051, 0.059, 0.071), u_dark);
+    // Легкая полутоновая дымка
+    vec3 mistTone = mix(vec3(0.937, 0.949, 0.965), vec3(0.086, 0.098, 0.118), u_dark);
+    // Тончайшая глубина вихрей
+    vec3 accentTone = mix(vec3(0.906, 0.925, 0.949), vec3(0.125, 0.137, 0.165), u_dark);
 
     vec3 smokeMix = mix(mistTone, accentTone, smoothstep(0.40, 0.85, n));
     // Мягкое наложение — дымка еле заметна, создает ощущение легкого живого воздуха
@@ -143,6 +144,7 @@ export default function HeroBackgroundShader() {
     const posAttr = gl.getAttribLocation(program, 'position');
     const timeUni = gl.getUniformLocation(program, 'u_time');
     const resUni = gl.getUniformLocation(program, 'u_resolution');
+    const darkUni = gl.getUniformLocation(program, 'u_dark');
 
     let animationFrameId: number;
     const startTime = performance.now();
@@ -173,6 +175,8 @@ export default function HeroBackgroundShader() {
 
       gl.uniform1f(timeUni, currentTime);
       gl.uniform2f(resUni, canvas.width, canvas.height);
+      const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+      gl.uniform1f(darkUni, isDark ? 1.0 : 0.0);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       animationFrameId = requestAnimationFrame(render);

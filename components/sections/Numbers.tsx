@@ -90,8 +90,8 @@ export default function Numbers() {
       className="relative z-20 py-24 sm:py-36 lg:py-48 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans"
     >
       {/* Прямоугольная плашка с 3 метриками: мягкая, плавная тень */}
-      <div className="bg-white border border-[#E8E8E2] rounded-none shadow-[0_8px_30px_rgba(20,21,23,0.035),0_1px_4px_rgba(20,21,23,0.02)] p-8 sm:p-12 lg:p-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-[#ECECE8]">
+      <div className="bg-white dark:bg-bg-surface border border-[#E8E8E2] dark:border-border-subtle rounded-none shadow-[0_8px_30px_rgba(20,21,23,0.035),0_1px_4px_rgba(20,21,23,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-8 sm:p-12 lg:p-14 transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-[#ECECE8] dark:divide-border-subtle">
           {STATS.map((item, index) => {
             let displayVal = '';
             if (item.staticText) {
@@ -114,20 +114,20 @@ export default function Numbers() {
               >
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-2">
-                    <span className="font-sans font-bold text-4xl sm:text-5xl lg:text-[52px] text-[#141517] tracking-tight leading-none">
+                    <span className="font-sans font-bold text-4xl sm:text-5xl lg:text-[52px] text-[#141517] dark:text-et-dark tracking-tight leading-none">
                       {displayVal}
                     </span>
                     {item.suffix && (
-                      <span className="font-sans font-medium text-xl sm:text-2xl text-[#9B815C]">
+                      <span className="font-sans font-medium text-xl sm:text-2xl text-[#9B815C] dark:text-accent-bronze">
                         {item.suffix}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-sm sm:text-[15px] font-sans font-semibold text-[#141517] mb-1.5 leading-snug">
+                  <h3 className="text-sm sm:text-[15px] font-sans font-semibold text-[#141517] dark:text-et-dark mb-1.5 leading-snug">
                     {item.label}
                   </h3>
                 </div>
-                <p className="text-xs sm:text-[13px] font-sans text-[#5E6267] leading-relaxed mt-2 font-normal">
+                <p className="text-xs sm:text-[13px] font-sans text-[#5E6267] dark:text-et-muted leading-relaxed mt-2 font-normal">
                   {item.description}
                 </p>
               </div>

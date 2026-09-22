@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -19,13 +20,15 @@ const config: Config = {
         "text-muted": "var(--text-muted, #5E6267)",
         "accent": "var(--accent, #1E293B)",
         "accent-bronze": "var(--accent-bronze, #9B815C)",
-        "accent-bronze-light": "#BCA685",
+        "accent-bronze-light": "var(--accent-bronze-light, #BCA685)",
         // Short aliases from prompt specification
-        "et-dark": "#141517",
-        "et-muted": "#5E6267",
-        "et-border": "#E2E2DC",
-        "et-accent": "#9B815C",
-        "et-bg": "#F8F9FA",
+        "et-dark": "var(--et-dark, #141517)",
+        "et-muted": "var(--et-muted, #5E6267)",
+        "et-border": "var(--et-border, #E2E2DC)",
+        "et-accent": "var(--et-accent, #9B815C)",
+        "et-bg": "var(--et-bg, #F8F9FA)",
+        "et-surface": "var(--bg-surface, #FFFFFF)",
+        "et-surface-alt": "var(--et-surface-alt, #ECECE8)",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Cormorant Garamond", "serif"],
