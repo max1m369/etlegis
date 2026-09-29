@@ -3,33 +3,47 @@
 import React from "react";
 import { useConsultationModal } from "@/components/providers/ModalProvider";
 import SpotlightButton from "@/components/ui/SpotlightButton";
-import HeroBackgroundShader from "@/components/ui/HeroBackgroundShader";
-import KineticReticle from "@/components/ui/KineticReticle";
+import Monument3D from "@/components/ui/Monument3D";
+import AfternoonSunlightShader from "@/components/ui/AfternoonSunlightShader";
 
 export default function Hero() {
   const { openModal } = useConsultationModal();
 
   return (
-    <section className="relative bg-et-bg min-h-screen lg:h-screen flex flex-col justify-between px-[clamp(1.5rem,4vw,6rem)] pt-[clamp(5.5rem,11vh,7.5rem)] pb-[clamp(2.5rem,6vh,4.5rem)] w-full overflow-hidden">
-      {/* Background Animated Shader */}
-      <HeroBackgroundShader />
+    <section className="relative bg-[#FAF6EE] dark:bg-[#0D0F12] min-h-screen lg:h-screen flex flex-col justify-between px-[clamp(1.5rem,4vw,6rem)] pt-[clamp(5.5rem,11vh,7.5rem)] pb-[clamp(2.5rem,6vh,4.5rem)] w-full overflow-hidden transition-colors duration-500">
+      {/* Слой 0: Галерейный мягкий градиент фоновой стены (как в 3D-Mark/monument.html) */}
+      <div 
+        className="absolute inset-0 pointer-events-none select-none z-0 transition-opacity duration-500"
+        style={{
+          background: 'radial-gradient(ellipse at 39% 21%, #f5f1e8 0%, #ece7dd 44%, #dfd8cb 100%)',
+        }}
+      />
+      <div 
+        className="absolute inset-0 pointer-events-none select-none z-0 opacity-0 dark:opacity-100 transition-opacity duration-500"
+        style={{
+          background: 'radial-gradient(ellipse at 42% 28%, #1c1f24 0%, #121418 52%, #0a0b0d 100%)',
+        }}
+      />
 
-      {/* 1. Верхний блок: Главный заголовок слева и Кинетический прицел справа */}
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 w-full my-auto">
-        <div className="w-full lg:w-auto">
-          <h1 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,9.5rem)] tracking-tight text-et-dark leading-[1.12] w-full max-w-[clamp(440px,46vw,1750px)]">
-            Защита бизнеса <br />
-            <span className="italic font-serif text-et-muted">в уголовных и сложных</span> <br />
-            арбитражных процессах.
+      {/* Слой 1: 3D Монумент (Знак ETLEGIS + Римский бюст + Студийный HDR свет + Параллакс курсора) */}
+      <Monument3D className="z-10 top-[33%] bottom-auto h-[45%] md:top-0 md:bottom-0 md:h-full" />
+
+      {/* Слой 2: Шейдер полуденного света (Afternoon Sunlight) НА СЛОЙ ВЫШЕ 3D-знака */}
+      <AfternoonSunlightShader overlay className="z-20 pointer-events-none" />
+
+      {/* Слой 3: Контент интерфейса */}
+      <div className="relative z-30 flex flex-col lg:flex-row items-center justify-between gap-6 w-full my-auto pointer-events-none">
+        <div className="w-full lg:w-auto pointer-events-auto">
+          <h1 className="font-heading font-normal text-[clamp(1.85rem,7.5vw,2.3rem)] lg:text-[clamp(2.15rem,4.15vw,9.5rem)] tracking-tight text-et-dark leading-[1.12] w-full max-w-[clamp(340px,52vw,1750px)]">
+            <span className="block">Мы — команда экспертов,</span>
+            <span className="italic font-serif text-et-muted block">которая знает, как защитить</span>
+            <span className="block">ваш бизнес.</span>
           </h1>
-        </div>
-        <div className="w-full lg:w-auto flex items-center justify-center lg:justify-end shrink-0">
-          <KineticReticle />
         </div>
       </div>
 
-      {/* 2. Правая часть экрана: чёткая линия на 78-80% высоты экрана + читаемый подзаголовок и кнопка */}
-      <div className="relative z-20 w-full mt-4">
+      {/* Правая часть экрана: чёткая линия на 78-80% высоты экрана + читаемый подзаголовок и кнопка */}
+      <div className="relative z-30 w-full mt-4 pointer-events-none">
         {/* Частичная линия-разделитель (от середины экрана до правого края) */}
         <div className="flex justify-end mb-[clamp(1rem,1.8vh,2.5rem)]">
           <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] border-t-2 border-et-dark/85" />
@@ -37,7 +51,7 @@ export default function Hero() {
 
         {/* Блок под чертой: контрастные текст и кнопка в точных пропорциях скриншота */}
         <div className="flex justify-end">
-          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] flex flex-col md:flex-row md:items-center justify-between gap-[clamp(1rem,1.8vw,3rem)]">
+          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] flex flex-col md:flex-row md:items-center justify-between gap-[clamp(1rem,1.8vw,3rem)] pointer-events-auto">
             <p className="text-[clamp(0.85rem,0.75vw,1.15rem)] text-et-dark/90 font-sans leading-[1.6] max-w-[clamp(280px,28vw,700px)] font-normal">
               Стратегическое ведение дел, защита активов и топ-менеджмента. Практика с подтвержденным результатом в 1,2+ млрд ₽ сохраненных средств.
             </p>

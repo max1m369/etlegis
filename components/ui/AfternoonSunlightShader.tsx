@@ -15,6 +15,7 @@ const FRAGMENT_SHADER = `
   uniform vec2 u_resolution;
   uniform float u_time;
   uniform float u_dark;
+  uniform float u_overlay;
 
   // 2D Hash function
   vec2 hash2(vec2 p) {
@@ -152,24 +153,43 @@ const FRAGMENT_SHADER = `
     // Seamless bottom fade so light beams dissolve naturally into the following section
     float bottomFade = smoothstep(0.0, 0.16, uv.y);
     float rayAlpha = mix(0.58, 0.32, u_dark) * windowMask * bottomFade;
-    vec3 finalColor = mix(bgBase, rayColor, rayAlpha);
 
-    // Subtle edge vignette
-    float edgeVignette = 1.0 - 0.06 * dot(uv - 0.5, uv - 0.5);
-    finalColor *= edgeVignette;
+    if (u_overlay > 0.5) {
+      // In overlay mode: renders radiant sunlight beams & chromatic dispersion directly over 3D mark
+      float causticLuma = (rAcc + gAcc + bAcc) * 0.3333;
+      float beamMask = smoothstep(0.22, 0.68, causticLuma);
 
-    gl_FragColor = vec4(finalColor, 1.0);
+      vec3 warmSunLight = vec3(1.0, 0.97, 0.90);
+      vec3 warmSunDark = vec3(1.0, 0.88, 0.65);
+      vec3 sunColor = mix(warmSunLight, warmSunDark, u_dark);
+
+      vec3 overlayColor = vec3(
+        sunColor.r * (1.0 + (rAcc - causticLuma) * 0.40),
+        sunColor.g,
+        sunColor.b * (1.0 + (bAcc - causticLuma) * 0.50)
+      );
+
+      float overlayAlpha = beamMask * windowMask * bottomFade * mix(0.52, 0.38, u_dark);
+      gl_FragColor = vec4(overlayColor, overlayAlpha);
+    } else {
+      vec3 finalColor = mix(bgBase, rayColor, rayAlpha);
+      float edgeVignette = 1.0 - 0.06 * dot(uv - 0.5, uv - 0.5);
+      finalColor *= edgeVignette;
+      gl_FragColor = vec4(finalColor, 1.0);
+    }
   }
 `;
 
 interface AfternoonSunlightShaderProps {
   className?: string;
   fixed?: boolean;
+  overlay?: boolean;
 }
 
 export default function AfternoonSunlightShader({
   className = '',
   fixed = false,
+  overlay = false,
 }: AfternoonSunlightShaderProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -184,7 +204,8 @@ export default function AfternoonSunlightShader({
     let gl: WebGLRenderingContext | null = null;
     try {
       gl = canvas.getContext('webgl', {
-        alpha: false,
+        alpha: overlay,
+        premultipliedAlpha: false,
         antialias: true,
         powerPreference: 'high-performance',
       });
@@ -192,6 +213,11 @@ export default function AfternoonSunlightShader({
       return;
     }
     if (!gl) return;
+
+    if (overlay) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    }
 
     const createShader = (glCtx: WebGLRenderingContext, type: number, src: string) => {
       const shader = glCtx.createShader(type);
@@ -238,6 +264,7 @@ export default function AfternoonSunlightShader({
     const timeUni = gl.getUniformLocation(program, 'u_time');
     const resUni = gl.getUniformLocation(program, 'u_resolution');
     const darkUni = gl.getUniformLocation(program, 'u_dark');
+    const overlayUni = gl.getUniformLocation(program, 'u_overlay');
 
     let animationFrameId: number;
     const startTime = performance.now();
@@ -295,6 +322,11 @@ export default function AfternoonSunlightShader({
         gl.uniform1f(timeUni, currentTime);
         gl.uniform2f(resUni, canvas.width, canvas.height);
         gl.uniform1f(darkUni, currentDark);
+        gl.uniform1f(overlayUni, overlay ? 1.0 : 0.0);
+        if (overlay) {
+          gl.clearColor(0.0, 0.0, 0.0, 0.0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+        }
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
       }
@@ -317,9 +349,10 @@ export default function AfternoonSunlightShader({
     };
   }, []);
 
+  const defaultZ = className.includes('z-') ? '' : 'z-0';
   const positionClasses = fixed
     ? 'fixed inset-0 pointer-events-none select-none -z-10 overflow-hidden'
-    : 'absolute inset-0 pointer-events-none select-none z-0 overflow-hidden';
+    : `absolute inset-0 pointer-events-none select-none ${defaultZ} overflow-hidden`;
 
   return (
     <div
