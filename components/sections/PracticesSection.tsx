@@ -46,7 +46,7 @@ export function PracticesSection() {
                   }`}
                 >
                   {/* Изображение с подложкой фирменного цвета при ховере */}
-                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-neutral-900">
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-neutral-900" style={{ position: 'relative' }}>
                     {practice.image && (
                       <Image
                         src={practice.image}

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { getLawyerBySlugAsync, getLawyerBySlug, getPracticesForLawyer, getCasesForLawyer, getAllLawyers } from '@/lib/data/queries';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -21,6 +22,46 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const lawyer = (await getLawyerBySlugAsync(slug)) || getLawyerBySlug(slug);
+
+  if (!lawyer) {
+    return {
+      title: 'Адвокат бюро | Адвокатское бюро Etlegis',
+    };
+  }
+
+  const title = `${lawyer.name} — ${lawyer.status} | Адвокатское бюро Etlegis`;
+  const description = `${lawyer.experienceYears} лет юридической практики. ${lawyer.specialization}. Комплексная правовая защита бизнеса в Москве и арбитражных судах РФ.`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `https://etlegis.ru/team/${lawyer.slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `https://etlegis.ru/team/${lawyer.slug}`,
+      siteName: 'Адвокатское бюро Etlegis',
+      locale: 'ru_RU',
+      type: 'profile',
+      images: lawyer.photoUrl
+        ? [
+            {
+              url: `https://etlegis.ru${lawyer.photoUrl}`,
+              width: 800,
+              height: 1100,
+              alt: lawyer.name,
+            },
+          ]
+        : [],
+    },
+  };
+}
+
 export default async function LawyerDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const lawyer = (await getLawyerBySlugAsync(slug)) || getLawyerBySlug(slug);
@@ -30,8 +71,43 @@ export default async function LawyerDetailPage({ params }: PageProps) {
   const practices = getPracticesForLawyer(Array.isArray(lawyer.practiceIds) ? lawyer.practiceIds : []);
   const cases = getCasesForLawyer(Array.isArray(lawyer.cases) ? lawyer.cases.map((c) => c.id) : []);
 
+  // Schema.org Structured Data for SearchGPT, Perplexity, Google, Yandex
+  const schemaJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Attorney',
+    name: lawyer.name,
+    jobTitle: lawyer.status,
+    description: lawyer.bio || lawyer.specialization,
+    image: lawyer.photoUrl ? `https://etlegis.ru${lawyer.photoUrl}` : undefined,
+    telephone: '+7 (495) 215-05-55',
+    email: 'info@etlegis.ru',
+    url: `https://etlegis.ru/team/${lawyer.slug}`,
+    worksFor: {
+      '@type': 'LegalService',
+      name: 'Адвокатское бюро Etlegis',
+      url: 'https://etlegis.ru',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Москва',
+        streetAddress: 'Пресненская набережная, 12',
+        addressCountry: 'RU',
+      },
+    },
+    knowsAbout: practices.map((p) => p.title),
+    alumniOf: Array.isArray(lawyer.education)
+      ? lawyer.education.map((edu) => ({
+          '@type': 'EducationalOrganization',
+          name: edu,
+        }))
+      : undefined,
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-et-bg text-et-dark">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJsonLd) }}
+      />
       <Header />
       <main className="flex-grow pt-28 pb-24">
         <div className="px-6 md:px-12 pt-12 md:pt-20 max-w-7xl mx-auto">

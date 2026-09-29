@@ -20,9 +20,7 @@ export default function HomePage() {
         <ScrollFadeIn>
           <Hero />
         </ScrollFadeIn>
-        <ScrollFadeIn delay={0.1}>
-          <Numbers />
-        </ScrollFadeIn>
+        <Numbers />
         <ScrollFadeIn delay={0.15}>
           <PracticesSection />
         </ScrollFadeIn>

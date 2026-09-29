@@ -124,13 +124,23 @@ export async function getDynamicEmployees() {
           photoUrl = `http://localhost:3001${photoUrl}`;
         }
       }
-      if (!photoUrl) {
-        if (doc.slug?.includes('biry') || doc.slug?.includes('biru') || doc.name?.includes('Бирюков')) {
-          photoUrl = '/team/biryukov.jpg';
-        } else if (doc.slug?.includes('luch') || doc.name?.includes('Лучников')) {
-          photoUrl = '/team/luchnikov.jpg';
+      if (doc.slug?.includes('biry') || doc.slug?.includes('biru') || doc.name?.includes('Бирюков')) {
+        photoUrl = '/team/t1.webp';
+      } else if (!photoUrl) {
+        if (doc.slug?.includes('luch') || doc.name?.includes('Лучников')) {
+          photoUrl = '/team/t2.webp';
+        } else if (doc.slug?.includes('sokol') || doc.name?.includes('Соколов')) {
+          photoUrl = '/team/t3.webp';
         } else if (doc.slug?.includes('roman') || doc.name?.includes('Романова')) {
-          photoUrl = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80';
+          photoUrl = '/team/t4.webp';
+        } else if (doc.slug?.includes('dmitr') || doc.name?.includes('Дмитриев')) {
+          photoUrl = '/team/t5.webp';
+        } else if (doc.slug?.includes('bulat') || doc.name?.includes('Булатова')) {
+          photoUrl = '/team/t6.webp';
+        } else if (doc.slug?.includes('moroz') || doc.name?.includes('Морозова')) {
+          photoUrl = '/team/t7.webp';
+        } else if (doc.slug?.includes('orlov') || doc.slug?.includes('miron') || doc.name?.includes('Орлов') || doc.name?.includes('Миронова')) {
+          photoUrl = '/team/t8.webp';
         }
       }
 

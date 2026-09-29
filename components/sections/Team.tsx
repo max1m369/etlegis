@@ -1,265 +1,794 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { lawyers } from '@/lib/data/mock-data';
-import { getDynamicEmployees } from '@/lib/data/payload-api';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import SpotlightButton from '@/components/ui/SpotlightButton';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import TeamProfileDrawer from './TeamProfileDrawer';
+
+export interface TeamMember {
+  id: string;
+  slug: string;
+  name: string;
+  role: string;
+  practice: string;
+  description: string;
+  photo: string;
+  fallbackPhoto: string;
+  position: string;
+  experience?: string;
+  education?: string[];
+  email?: string;
+  bioFull?: string;
+  palette?: string[];
+}
+
+export const team: TeamMember[] = [
+  {
+    id: 'biryukov-alexey',
+    slug: 'biryukov-alexey',
+    name: 'Алексей Бирюков',
+    role: 'Управляющий партнёр, адвокат',
+    practice: 'Стратегия защиты бизнеса',
+    description: '16 лет практики. Комплексная защита бенефициаров и генеральных директоров при уголовных и налоговых рисках высокой сложности.',
+    photo: '/team/t1.webp',
+    fallbackPhoto: '/assets/t1.png',
+    position: '50% 30%',
+    experience: '16 лет практики',
+    education: ['МГУ им. М.В. Ломоносова (Юридический факультет)', 'Аспирантура ИЗиСП при Правительстве РФ'],
+    email: 'biryukov@etlegis.ru',
+    bioFull: 'Специализируется на комплексной защите бенефициаров и генеральных директоров при уголовных и налоговых рисках высокой сложности. Представляет интересы доверителей в Верховном Суде РФ и арбитражных судах всех инстанций.',
+    palette: ['#C5A880', '#9B815C', '#141517'],
+  },
+  {
+    id: 'luchnikov-konstantin',
+    slug: 'luchnikov-konstantin',
+    name: 'Константин Лучников',
+    role: 'Партнёр',
+    practice: 'Корпоративное право и арбитраж',
+    description: '12 лет практики. Разрешение многомиллиардных корпоративных споров, ведение банкротства и защита от субсидиарной ответственности.',
+    photo: '/team/t2.webp',
+    fallbackPhoto: '/assets/t2.png',
+    position: '50% 30%',
+    experience: '12 лет практики',
+    education: ['МГЮА им. О.Е. Кутафина (Институт адвокатуры)'],
+    email: 'luchnikov@etlegis.ru',
+    bioFull: 'Ведущий эксперт бюро по разрешению сложных корпоративных конфликтов, сопровождению комплексных процедур банкротства и защите топ-менеджеров от многомиллиардной субсидиарной ответственности.',
+    palette: ['#C5A880', '#8B704C', '#171A21'],
+  },
+  {
+    id: 'sokolov-mikhail',
+    slug: 'sokolov-mikhail',
+    name: 'Михаил Соколов',
+    role: 'Партнёр, адвокат',
+    practice: 'Уголовно-правовая защита',
+    description: '15 лет практики. Предотвращение уголовных рисков на стадии доследственных проверок ОБЭП и СК РФ, экстренная помощь при обысках.',
+    photo: '/team/t3.webp',
+    fallbackPhoto: '/assets/t3.png',
+    position: '50% 30%',
+    experience: '15 лет практики',
+    education: ['СПбГУ (Юридический факультет)'],
+    email: 'sokolov@etlegis.ru',
+    bioFull: 'Специализируется на уголовно-правовой защите бизнеса при доследственных проверках и расследовании экономических преступлений Следственным комитетом и МВД РФ. Руководит группой экстренного реагирования при следственных действиях.',
+    palette: ['#C5A880', '#9B815C', '#11141A'],
+  },
+  {
+    id: 'romanova-ekaterina',
+    slug: 'romanova-ekaterina',
+    name: 'Екатерина Романова',
+    role: 'Партнёр',
+    practice: 'Защита бизнеса и активов',
+    description: '14 лет практики. Уголовно-правовой аудит бизнеса, защита топ-менеджмента по сложным экономическим и должностным делам.',
+    photo: '/team/t4.webp',
+    fallbackPhoto: '/assets/t4.png',
+    position: '50% 30%',
+    experience: '14 лет практики',
+    education: ['МГУ им. М.В. Ломоносова'],
+    email: 'romanova@etlegis.ru',
+    bioFull: 'Руководитель практики уголовно-правового комплаенса и форензик-аудита. Сопровождает комплексные сделки с повышенным регуляторным риском и защищает активы доверителей от недружественных поглощений.',
+    palette: ['#C5A880', '#A38762', '#141517'],
+  },
+  {
+    id: 'dmitriev-sergey',
+    slug: 'dmitriev-sergey',
+    name: 'Сергей Дмитриев',
+    role: 'Руководитель практики',
+    practice: 'Банкротство и реструктуризация',
+    description: '11 лет практики. Комплексное сопровождение банкротных процедур, оспаривание сделок должника и сохранение активов.',
+    photo: '/team/t5.webp',
+    fallbackPhoto: '/assets/t5.png',
+    position: '50% 30%',
+    experience: '11 лет практики',
+    education: ['НИУ ВШЭ (Факультет права)'],
+    email: 'dmitriev@etlegis.ru',
+    bioFull: 'Курирует практику банкротства и санации бизнеса. Обладает прецедентным опытом возврата выведенных активов, оспаривания сделок должников и представления интересов мажоритарных кредиторов.',
+    palette: ['#C5A880', '#8C7352', '#181B22'],
+  },
+  {
+    id: 'bulatova-kseniya',
+    slug: 'bulatova-kseniya',
+    name: 'Ксения Булатова',
+    role: 'Партнёр',
+    practice: 'Налоговые споры и комплаенс',
+    description: '13 лет практики. Налоговый консалтинг, сопровождение выездных проверок ФНС и защита от многомиллионных доначислений.',
+    photo: '/team/t6.webp',
+    fallbackPhoto: '/assets/t6.png',
+    position: '50% 30%',
+    experience: '13 лет практики',
+    education: ['Финансовый университет при Правительстве РФ'],
+    email: 'bulatova@etlegis.ru',
+    bioFull: 'Адвокат и налоговый консультант с 13-летним стажем. Успешно защищает корпоративных клиентов в арбитражных спорах с налоговыми органами и сопровождает комплексные выездные налоговые проверки (ВНП).',
+    palette: ['#C5A880', '#9B815C', '#141517'],
+  },
+  {
+    id: 'morozova-anna',
+    slug: 'morozova-anna',
+    name: 'Анна Морозова',
+    role: 'Старший юрист',
+    practice: 'Коммерческие споры',
+    description: '9 лет практики. Корпоративное управление, структурирование нестандартных сделок и защита от недружественного поглощения.',
+    photo: '/team/t7.webp',
+    fallbackPhoto: '/assets/t7.png',
+    position: '50% 30%',
+    experience: '9 лет практики',
+    education: ['МГЮА им. О.Е. Кутафина'],
+    email: 'morozova@etlegis.ru',
+    bioFull: 'Специализируется на комплексном сопровождении коммерческих споров, структурировании инвестиционных контрактов и защите корпоративных прав акционеров и участников обществ.',
+    palette: ['#C5A880', '#9B815C', '#161920'],
+  },
+  {
+    id: 'orlov-dmitriy',
+    slug: 'orlov-dmitriy',
+    name: 'Дмитрий Орлов',
+    role: 'Советник бюро, адвокат',
+    practice: 'Защита в высших судах',
+    description: '24 года практики. Прецедентная судебная защита в Верховном Суде РФ, разрешение комплексных арбитражных споров.',
+    photo: '/team/t8.webp',
+    fallbackPhoto: '/assets/t8.png',
+    position: '50% 30%',
+    experience: '24 года практики',
+    education: ['МГУ им. М.В. Ломоносова'],
+    email: 'orlov@etlegis.ru',
+    bioFull: 'Советник бюро с 24-летним опытом сложнейших судебных баталий. Специализируется на формировании прецедентных правовых позиций в Верховном Суде РФ и Конституционном Суде РФ по экономическим спорам высшей категории сложности.',
+    palette: ['#C5A880', '#8B704C', '#11141A'],
+  },
+];
 
 export default function Team() {
-  const [teamLawyers, setTeamLawyers] = useState(lawyers);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const activeIdxRef = useRef<number>(0);
+  const router = useRouter();
+  const [active, setActive] = useState<number | null>(null);
+  const activeRef = useRef<number | null>(null);
 
-  // Fetch dynamic employees sorted: 1st Biryukov, 2nd Luchnikov, others at end
-  useEffect(() => {
-    getDynamicEmployees().then((data) => {
-      if (data && data.length > 0) {
-        setTeamLawyers(data);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const resizeFrameRef = useRef<number | null>(null);
+
+  // Gesture & swipe refs
+  const isDraggingRef = useRef<boolean>(false);
+  const isPointerDownRef = useRef<boolean>(false);
+  const dragStartXRef = useRef<number>(0);
+  const dragStartYRef = useRef<number>(0);
+  const dragStartTimeRef = useRef<number>(0);
+  const startScrollLeftRef = useRef<number>(0);
+  const gestureLockRef = useRef<'horizontal' | 'vertical' | null>(null);
+  const ignoreClickUntilRef = useRef<number>(0);
+
+  // Mobile App-like Profile Drawer State
+  const [drawerMember, setDrawerMember] = useState<TeamMember | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const openDrawer = useCallback((member: TeamMember) => {
+    setDrawerMember(member);
+    setIsDrawerOpen(true);
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ profileDrawer: true, slug: member.slug }, '', `/team/${member.slug}`);
+    }
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    if (typeof window !== 'undefined') {
+      if (window.history.state?.profileDrawer) {
+        window.history.back();
+      } else {
+        window.history.replaceState(null, '', '/#team');
       }
+    }
+  }, []);
+
+  // Handle native mobile back gesture / Android Back button
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isDrawerOpen) {
+        setIsDrawerOpen(false);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isDrawerOpen]);
+
+  // Exact accordion layout logic:
+  // - On desktop resting (active === null): all 8 cards closed / equal width
+  // - On desktop hover: active card opens completely (expanded), others shrink
+  // - On mouse leave: card closes back, slider animates in reverse
+  // - On mobile: horizontal scrollable carousel with wide cards
+  const layout = useCallback((animate = true) => {
+    const gallery = galleryRef.current;
+    if (!gallery) return;
+    const width = gallery.clientWidth;
+    if (!width) return;
+
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const isTablet = window.matchMedia('(max-width: 1024px)').matches;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = animate && !reduce ? 0.72 : 0;
+    const currentActive = activeRef.current;
+
+    if (isMobile) {
+      // Mobile logic: horizontal scrollable carousel with wide cards
+      const expanded = width * 0.86;
+      let x = 0;
+      cardsRef.current.forEach((card, i) => {
+        if (!card) return;
+        const selected = i === (currentActive ?? 0);
+        card.classList.toggle('is-active', selected);
+        card.setAttribute('aria-expanded', String(selected));
+        card.style.width = `${expanded}px`;
+        gsap.to(card, {
+          x,
+          clipPath: 'inset(0px 0px 0px 0px)',
+          duration,
+          ease: 'power3.inOut',
+          overwrite: true,
+        });
+        const caption = card.querySelector('.person-caption');
+        if (caption) {
+          gsap.to(caption, {
+            opacity: selected ? 1 : 0,
+            y: selected ? 0 : 12,
+            duration: duration * 0.65,
+            overwrite: true,
+          });
+        }
+        x += expanded + 8;
+      });
+      return;
+    }
+
+    // Desktop logic: resting state vs hover state
+    if (currentActive === null) {
+      // Resting state: все 8 карточек закрыты / одинаковой ширины
+      const equalWidth = width / team.length;
+      const innerImgWidth = Math.max(equalWidth * 1.8, 500);
+      let x = 0;
+
+      cardsRef.current.forEach((card) => {
+        if (!card) return;
+        card.classList.remove('is-active');
+        card.setAttribute('aria-expanded', 'false');
+
+        gsap.to(card, {
+          x,
+          width: equalWidth,
+          clipPath: 'inset(0px 0px 0px 0px)',
+          duration,
+          ease: 'power3.out',
+          overwrite: true,
+        });
+
+        const img = card.querySelector('img');
+        if (img) {
+          img.style.width = `${innerImgWidth}px`;
+          gsap.to(img, {
+            x: (equalWidth - innerImgWidth) / 2,
+            duration,
+            ease: 'power3.out',
+            overwrite: true,
+          });
+        }
+
+        const caption = card.querySelector('.person-caption');
+        if (caption) {
+          gsap.to(caption, {
+            opacity: 0,
+            y: 12,
+            duration: 0.25,
+            overwrite: true,
+          });
+        }
+
+        x += equalWidth;
+      });
+      return;
+    }
+
+    // Hover state: открывается полностью, остальные сжимаются
+    const expanded = isTablet ? width * 0.48 : Math.min(width * 0.52, 540);
+    const narrow = (width - expanded) / (team.length - 1);
+    let x = 0;
+
+    cardsRef.current.forEach((card, i) => {
+      if (!card) return;
+      const selected = i === currentActive;
+      const visibleWidth = selected ? expanded : narrow;
+
+      card.classList.toggle('is-active', selected);
+      card.setAttribute('aria-expanded', String(selected));
+
+      gsap.to(card, {
+        x,
+        width: visibleWidth,
+        clipPath: 'inset(0px 0px 0px 0px)',
+        duration,
+        ease: 'power3.out',
+        overwrite: true,
+      });
+
+      const img = card.querySelector('img');
+      if (img) {
+        img.style.width = `${expanded}px`;
+        gsap.to(img, {
+          x: (visibleWidth - expanded) / 2,
+          duration,
+          ease: 'power3.out',
+          overwrite: true,
+        });
+      }
+
+      const caption = card.querySelector('.person-caption');
+      if (caption) {
+        gsap.to(caption, {
+          opacity: selected ? 1 : 0,
+          y: selected ? 0 : 12,
+          duration: selected ? duration * 0.7 : 0.25,
+          delay: selected ? duration * 0.18 : 0,
+          overwrite: true,
+        });
+      }
+
+      x += visibleWidth;
     });
   }, []);
 
-  // GSAP ScrollTrigger horizontal scroll with 100vh section pinning
+  const select = useCallback((index: number | null, { scroll = false, animate = true } = {}) => {
+    if (index === null) {
+      activeRef.current = null;
+      setActive(null);
+      layout(animate);
+      return;
+    }
+    const nextIdx = Math.max(0, Math.min(team.length - 1, index));
+    activeRef.current = nextIdx;
+    setActive(nextIdx);
+    layout(animate);
+
+    const gallery = galleryRef.current;
+    if (gallery && window.matchMedia('(max-width: 767px)').matches && scroll) {
+      const cardStep = gallery.clientWidth * 0.86 + 8;
+      gallery.scrollTo({
+        left: nextIdx * cardStep,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    }
+  }, [layout]);
+
+  // Initial layout and resize observer + Touch / Pointer swipe gesture recognition
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    gsap.registerPlugin(ScrollTrigger);
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (isMobile) {
+      select(0, { animate: false });
+    } else {
+      activeRef.current = null;
+      setActive(null);
+      layout(false);
+    }
 
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    const viewport = viewportRef.current;
-    if (!section || !track || !viewport) return;
+    const gallery = galleryRef.current;
+    if (!gallery) return;
 
-    let ctx: gsap.Context;
+    // Resize observer
+    const resizeObserver = new ResizeObserver(() => {
+      if (resizeFrameRef.current) cancelAnimationFrame(resizeFrameRef.current);
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        layout(false);
+        if (window.matchMedia('(max-width: 767px)').matches) {
+          gallery.scrollTo({
+            left: (activeRef.current ?? 0) * (gallery.clientWidth * 0.86 + 8),
+            behavior: 'instant',
+          });
+        }
+      });
+    });
 
-    const timer = setTimeout(() => {
-      // Kill previous instance if exists to avoid ghost triggers
-      ScrollTrigger.getById('team-scroll')?.kill();
+    resizeObserver.observe(gallery);
 
-      ctx = gsap.context(() => {
-        const getScrollAmount = () => Math.max(0, track.scrollWidth - viewport.clientWidth + 48);
-        const totalCards = teamLawyers.length;
+    // Sync active card if user performs native momentum scroll
+    let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+    const onScroll = () => {
+      if (!window.matchMedia('(max-width: 767px)').matches) return;
+      if (isDraggingRef.current || isPointerDownRef.current) return;
 
-        const scrollAmount = getScrollAmount();
-        if (scrollAmount <= 0) return;
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const cardStep = gallery.clientWidth * 0.86 + 8;
+        if (!cardStep) return;
+        const nearestIdx = Math.round(gallery.scrollLeft / cardStep);
+        const clampedIdx = Math.max(0, Math.min(team.length - 1, nearestIdx));
+        if (clampedIdx !== activeRef.current) {
+          select(clampedIdx, { scroll: false, animate: true });
+        }
+      }, 70);
+    };
 
-        const tween = gsap.to(track, {
-          x: () => -scrollAmount,
-          ease: 'none', // Линейное перемещение strictly 1:1 со скроллом
-        });
+    gallery.addEventListener('scroll', onScroll, { passive: true });
 
-        ScrollTrigger.create({
-          id: 'team-scroll',
-          trigger: section,
-          animation: tween,
-          pin: true,
-          pinSpacing: true,
-          start: 'top top', // Точная фиксация вверху экрана
-          end: () => `+=${scrollAmount * 1.25}`,
-          scrub: 1, // Мягкое сглаживание без рывков
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const idx = Math.min(totalCards - 1, Math.floor(self.progress * totalCards));
-            activeIdxRef.current = idx;
-            if (counterRef.current) {
-              counterRef.current.textContent = String(idx + 1).padStart(2, '0');
-            }
-          },
-        });
-      }, section);
+    // TOUCH SWIPE HANDLERS (Mobile touchscreens)
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      dragStartXRef.current = touch.clientX;
+      dragStartYRef.current = touch.clientY;
+      dragStartTimeRef.current = Date.now();
+      startScrollLeftRef.current = gallery.scrollLeft;
+      gestureLockRef.current = null;
+      isDraggingRef.current = false;
+    };
 
-      ScrollTrigger.refresh();
-    }, 150);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - dragStartXRef.current;
+      const deltaY = touch.clientY - dragStartYRef.current;
+
+      if (!gestureLockRef.current) {
+        if (Math.hypot(deltaX, deltaY) < 7) return;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          gestureLockRef.current = 'horizontal';
+          isDraggingRef.current = true;
+        } else {
+          gestureLockRef.current = 'vertical';
+        }
+      }
+
+      if (gestureLockRef.current === 'horizontal') {
+        // Prevent vertical scrolling jitter while swiping slider cards horizontally
+        if (e.cancelable) e.preventDefault();
+        isDraggingRef.current = true;
+        // Live drag tracking
+        gallery.scrollLeft = startScrollLeftRef.current - deltaX;
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!isDraggingRef.current && gestureLockRef.current !== 'horizontal') {
+        return;
+      }
+
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - dragStartXRef.current;
+      const deltaTime = Math.max(1, Date.now() - dragStartTimeRef.current);
+      const velocityX = deltaX / deltaTime; // px/ms
+
+      // Suppress synthesized button click events
+      ignoreClickUntilRef.current = Date.now() + 250;
+      isDraggingRef.current = true;
+      setTimeout(() => {
+        isDraggingRef.current = false;
+      }, 250);
+
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      if (!isMobile) return;
+
+      const cardStep = gallery.clientWidth * 0.86 + 8;
+      const currentIndex = activeRef.current ?? 0;
+      let targetIndex = currentIndex;
+
+      // Swipe thresholds: either distance > 35px or quick swipe (distance > 15px with velocity > 0.22)
+      if (deltaX < -35 || (deltaX < -15 && velocityX < -0.22)) {
+        targetIndex = Math.min(team.length - 1, currentIndex + 1);
+      } else if (deltaX > 35 || (deltaX > 15 && velocityX > 0.22)) {
+        targetIndex = Math.max(0, currentIndex - 1);
+      } else {
+        // Fallback: snap to nearest visible card
+        targetIndex = Math.max(0, Math.min(team.length - 1, Math.round(gallery.scrollLeft / cardStep)));
+      }
+
+      select(targetIndex, { scroll: true, animate: true });
+    };
+
+    // POINTER / MOUSE DRAG HANDLERS (for desktop / mouse testing)
+    const handlePointerDown = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return; // Handled by TouchEvent for optimal mobile response
+      if (e.button !== 0) return;
+
+      isPointerDownRef.current = true;
+      dragStartXRef.current = e.clientX;
+      dragStartYRef.current = e.clientY;
+      dragStartTimeRef.current = Date.now();
+      startScrollLeftRef.current = gallery.scrollLeft;
+      gestureLockRef.current = null;
+      isDraggingRef.current = false;
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isPointerDownRef.current || e.pointerType === 'touch') return;
+
+      const deltaX = e.clientX - dragStartXRef.current;
+      const deltaY = e.clientY - dragStartYRef.current;
+
+      if (!gestureLockRef.current) {
+        if (Math.hypot(deltaX, deltaY) < 6) return;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          gestureLockRef.current = 'horizontal';
+          isDraggingRef.current = true;
+        } else {
+          gestureLockRef.current = 'vertical';
+        }
+      }
+
+      if (gestureLockRef.current === 'horizontal') {
+        e.preventDefault();
+        isDraggingRef.current = true;
+        gallery.scrollLeft = startScrollLeftRef.current - deltaX;
+      }
+    };
+
+    const handlePointerUp = (e: PointerEvent) => {
+      if (!isPointerDownRef.current || e.pointerType === 'touch') return;
+      isPointerDownRef.current = false;
+
+      if (isDraggingRef.current || gestureLockRef.current === 'horizontal') {
+        const deltaX = e.clientX - dragStartXRef.current;
+        const deltaTime = Math.max(1, Date.now() - dragStartTimeRef.current);
+        const velocityX = deltaX / deltaTime;
+
+        ignoreClickUntilRef.current = Date.now() + 250;
+        isDraggingRef.current = true;
+        setTimeout(() => {
+          isDraggingRef.current = false;
+        }, 250);
+
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (isMobile) {
+          const cardStep = gallery.clientWidth * 0.86 + 8;
+          const currentIdx = activeRef.current ?? 0;
+          let targetIndex = currentIdx;
+          if (deltaX < -35 || (deltaX < -15 && velocityX < -0.22)) {
+            targetIndex = Math.min(team.length - 1, currentIdx + 1);
+          } else if (deltaX > 35 || (deltaX > 15 && velocityX > 0.22)) {
+            targetIndex = Math.max(0, currentIdx - 1);
+          } else {
+            targetIndex = Math.max(0, Math.min(team.length - 1, Math.round(gallery.scrollLeft / cardStep)));
+          }
+          select(targetIndex, { scroll: true, animate: true });
+        }
+      }
+    };
+
+    gallery.addEventListener('touchstart', handleTouchStart, { passive: true });
+    gallery.addEventListener('touchmove', handleTouchMove, { passive: false });
+    gallery.addEventListener('touchend', handleTouchEnd, { passive: true });
+    gallery.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    gallery.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
 
     return () => {
-      clearTimeout(timer);
-      if (ctx) ctx.revert();
-      ScrollTrigger.getById('team-scroll')?.kill();
-    };
-  }, [teamLawyers]);
+      resizeObserver.disconnect();
+      gallery.removeEventListener('scroll', onScroll);
+      gallery.removeEventListener('touchstart', handleTouchStart);
+      gallery.removeEventListener('touchmove', handleTouchMove);
+      gallery.removeEventListener('touchend', handleTouchEnd);
+      gallery.removeEventListener('touchcancel', handleTouchEnd);
 
-  const scrollToCard = (index: number) => {
-    const st = ScrollTrigger.getById('team-scroll');
-    if (st) {
-      const progress = index / Math.max(1, teamLawyers.length - 1);
-      const targetScroll = st.start + (st.end - st.start) * progress;
-      window.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth',
-      });
-    } else {
-      activeIdxRef.current = index;
-      if (counterRef.current) {
-        counterRef.current.textContent = String(index + 1).padStart(2, '0');
+      gallery.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      if (resizeFrameRef.current) cancelAnimationFrame(resizeFrameRef.current);
+      gsap.killTweensOf(cardsRef.current);
+    };
+  }, [select, layout]);
+
+  // Handle card click:
+  // - If user was swiping/dragging -> suppress click completely
+  // - On mobile -> open App-like fullscreen profile drawer with canvas waves and mosaic
+  // - On desktop -> navigate to full static lawyer page
+  // - If card is inactive -> expand it
+  const handleCardClick = (index: number) => {
+    if (isDraggingRef.current || Date.now() < ignoreClickUntilRef.current) {
+      return;
+    }
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (index === activeRef.current) {
+      if (isMobile) {
+        openDrawer(team[index]);
+      } else {
+        router.push(`/team/${team[index].slug}`);
       }
-      const track = trackRef.current;
-      if (!track) return;
-      const cardWidth = 384;
-      gsap.to(track, {
-        x: -index * cardWidth,
-        duration: 0.5,
-        ease: 'power2.out',
-      });
+    } else {
+      select(index, { scroll: true, animate: true });
     }
   };
 
-  const handlePrev = () => {
-    const current = activeIdxRef.current;
-    const nextIdx = current === 0 ? teamLawyers.length - 1 : current - 1;
-    scrollToCard(nextIdx);
+  const handlePointerEnter = (index: number) => {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const mobile = window.matchMedia('(max-width: 767px)');
+    if (fine.matches && !mobile.matches) {
+      select(index);
+    }
   };
 
-  const handleNext = () => {
-    const current = activeIdxRef.current;
-    const nextIdx = current === teamLawyers.length - 1 ? 0 : current + 1;
-    scrollToCard(nextIdx);
+  const handleGalleryMouseLeave = () => {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const mobile = window.matchMedia('(max-width: 767px)');
+    if (fine.matches && !mobile.matches) {
+      activeRef.current = null;
+      setActive(null);
+      layout(true);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    let next: number | undefined;
+    if (e.key === 'ArrowRight') next = Math.min(team.length - 1, index + 1);
+    if (e.key === 'ArrowLeft') next = Math.max(0, index - 1);
+    if (e.key === 'Home') next = 0;
+    if (e.key === 'End') next = team.length - 1;
+    if (next !== undefined) {
+      e.preventDefault();
+      cardsRef.current[next]?.focus({ preventScroll: true });
+      select(next, { scroll: true });
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      if (isMobile) {
+        openDrawer(team[index]);
+      } else {
+        router.push(`/team/${team[index].slug}`);
+      }
+    }
   };
 
   return (
     <section
-      ref={sectionRef}
       id="team"
-      className="team-section min-h-screen lg:h-screen w-full relative overflow-hidden bg-[#FFFFFF] dark:bg-et-bg border-t border-[#E2E2DC] dark:border-border-subtle flex flex-col justify-between pt-20 pb-10 px-[clamp(1.5rem,4vw,6rem)]"
+      className="team-section w-full relative bg-et-bg text-et-dark border-t border-et-border py-16 md:py-24 px-[clamp(1.5rem,4vw,6rem)]"
+      aria-labelledby="team-title"
     >
-      <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full my-auto">
-        {/* 1. Левая закрепленная колонка (team-sidebar) */}
-        <div className="team-sidebar w-full lg:w-[32%] xl:w-[30%] shrink-0 z-10 flex flex-col justify-between pt-1">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
-              Лидеры практик
-            </span>
-            <h2 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-6">
-              Команда бюро
-            </h2>
-            <p className="text-sm text-[#5E6267] dark:text-et-muted font-light leading-relaxed mb-8 max-w-sm">
-              Партнеры и адвокаты бюро с практическим опытом защиты бизнеса, активов и персональных интересов руководителей.
-            </p>
-          </div>
+      <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full">
+        {/* 1. Левая колонка: Заголовок + подзаголовок (до синей линии сетки, как в Ключевых практиках) */}
+        <div className="w-full lg:w-[32%] xl:w-[30%] lg:sticky lg:top-28 shrink-0">
+          <span className="text-xs uppercase tracking-widest text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
+            Лидеры практик
+          </span>
+          <h2
+            id="team-title"
+            className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-4"
+          >
+            Команда бюро
+          </h2>
+          <p className="text-sm text-[#5E6267] dark:text-et-muted font-light leading-relaxed max-w-sm mb-6">
+            Партнеры и адвокаты бюро с практическим опытом защиты бизнеса, активов и персональных интересов руководителей.
+          </p>
+          {/* Пустое пространство под заголовком */}
         </div>
 
-        {/* 2. Правая область (team-slider-viewport): Окно просмотра карточек */}
-        <div
-          ref={viewportRef}
-          className="team-slider-viewport w-full lg:w-[68%] xl:w-[70%] overflow-hidden flex flex-col"
-        >
-          {/* Длинная лента с карточками (team-track) */}
-          <div
-            ref={trackRef}
-            className="team-track flex gap-6 will-change-transform pt-1"
-          >
-            {teamLawyers.map((lawyer) => (
-              <div
-                key={lawyer.id}
-                className="team-card w-[300px] sm:w-[340px] xl:w-[360px] shrink-0 bg-[#F8F9FA] dark:bg-bg-surface border border-[#E2E2DC] dark:border-border-subtle rounded-[2px] p-5 sm:p-6 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] dark:hover:border-accent-bronze transition-all duration-300 group cursor-pointer"
+        {/* 2. Правая колонка: Элементы управления над фото + Слайдер (начинается от синей линии) */}
+        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-4">
+          <div className="gallery-controls flex items-center justify-between lg:justify-end gap-4 pb-1" role="group" aria-label="Переключение сотрудников">
+            <span className="counter font-mono text-xs tracking-wider" aria-hidden="true">
+              <span id="current-number">
+                {active !== null ? String(active + 1).padStart(2, '0') : '--'}
+              </span>
+              <span className="counter-divider"> / </span>
+              08
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                id="prev-person"
+                type="button"
+                className="gallery-nav-btn"
+                aria-label="Предыдущий сотрудник"
+                onClick={() => {
+                  const next = active === null ? team.length - 1 : (active === 0 ? team.length - 1 : active - 1);
+                  select(next, { scroll: true });
+                }}
               >
-                <div>
-                  {/* Портретная фотография адвоката */}
-                  <div className="relative aspect-[3/4] max-h-[380px] w-full overflow-hidden bg-[#ECECE8] dark:bg-bg-subtle rounded-[2px] mb-4 group/photo">
-                    {lawyer.photoUrl ? (
-                      <img
-                        src={lawyer.photoUrl}
-                        alt={lawyer.name}
-                        className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover/photo:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs font-mono text-[#5E6267] dark:text-et-muted bg-[#ECECE8] dark:bg-bg-subtle">
-                        Да, фотография
-                      </div>
-                    )}
-
-                    <div className="absolute top-3 left-3 bg-[#141517]/85 backdrop-blur-sm text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest rounded-[2px] z-10">
-                      Стаж {lawyer.experienceYears} лет
-                    </div>
-
-                    {/* Выплывающая всплывашка при наведении на фотографию: «Смотреть полный профиль» */}
-                    <Link
-                      href={`/team/${lawyer.slug}`}
-                      className="absolute inset-0 bg-[#141517]/75 backdrop-blur-sm opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 text-center z-20"
-                    >
-                      <span className="text-white text-[11px] font-mono font-medium uppercase tracking-widest border border-white/40 px-4 py-2.5 bg-white/10 hover:bg-white hover:text-[#141517] transition-all rounded-[2px]">
-                        Смотреть полный профиль →
-                      </span>
-                    </Link>
-                  </div>
-
-                  {/* Описание под фотографией: Статус, Имя, Специализация */}
-                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze block mb-1">
-                    {lawyer.status}
-                  </span>
-                  <h3 className="font-serif text-xl sm:text-2xl font-medium text-[#141517] dark:text-et-dark leading-snug mb-2 group-hover:text-[#507192] dark:group-hover:text-accent-bronze transition-colors">
-                    <Link href={`/team/${lawyer.slug}`}>
-                      {lawyer.name}
-                    </Link>
-                  </h3>
-                  <p className="text-xs text-[#5E6267] dark:text-et-muted font-light leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4">
-                    {Array.isArray((lawyer as any).specializations)
-                      ? (lawyer as any).specializations.join(', ')
-                      : lawyer.specialization || (lawyer as any).quote || (lawyer as any).bio}
-                  </p>
-                </div>
-
-                {/* Ссылка под карточкой */}
-                <div className="pt-4 border-t border-[#ECECE8] dark:border-border-subtle">
-                  <Link href={`/team/${lawyer.slug}`} className="block w-full">
-                    <SpotlightButton className="w-full py-3 px-4 text-xs">
-                      Смотреть профиль
-                    </SpotlightButton>
-                  </Link>
-                </div>
-              </div>
-            ))}
+                ←
+              </button>
+              <button
+                id="next-person"
+                type="button"
+                className="gallery-nav-btn"
+                aria-label="Следующий сотрудник"
+                onClick={() => {
+                  const next = active === null ? 0 : (active === team.length - 1 ? 0 : active + 1);
+                  select(next, { scroll: true });
+                }}
+              >
+                →
+              </button>
+            </div>
           </div>
 
-          {/* 3. Нижняя плашка прямо под карточками */}
-          <div className="mt-6 pt-5 border-t border-[#E2E2DC] dark:border-border-subtle flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
-            {/* Текст слева */}
-            <p className="text-sm text-[#5E6267] dark:text-et-muted max-w-md xl:max-w-lg font-light leading-relaxed">
-              Практический опыт и высокая личная экспертиза партнеров бюро для защиты вашего бизнеса.
-            </p>
+          {/* Анимированный слайдер-аккордеон */}
+          <div
+            className="team-gallery"
+            aria-label="Сотрудники бюро"
+            ref={galleryRef}
+            onMouseLeave={handleGalleryMouseLeave}
+          >
+            {team.map((p, i) => (
+              <button
+                key={p.id}
+                ref={(el) => {
+                  cardsRef.current[i] = el;
+                }}
+                className={`person-card ${i === active ? 'is-active' : ''}`}
+                data-index={i}
+                aria-label={`${p.name}, ${p.role}. Открыть профиль`}
+                type="button"
+                onClick={() => handleCardClick(i)}
+                onPointerEnter={() => handlePointerEnter(i)}
+                onFocus={() => select(i, { scroll: true })}
+                onKeyDown={(e) => handleKeyDown(e, i)}
+              >
+                <span className="photo-fallback" aria-hidden="true">
+                  {p.name.split(' ').map((n) => n[0]).join('')}
+                </span>
+                <img
+                  src={p.photo}
+                  alt=""
+                  width={800}
+                  height={1100}
+                  fetchPriority={i === 0 ? 'high' : undefined}
+                  draggable={false}
+                  style={{ objectPosition: p.position }}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.endsWith('.png')) {
+                      target.src = p.fallbackPhoto;
+                    }
+                  }}
+                />
+                <span className="person-shade" aria-hidden="true" />
+                
+                {/* Карточка: Слева имя/должность, справа - описание человека */}
+                <span className="person-caption" aria-hidden="true">
+                  <div className="person-caption-content">
+                    <div className="person-caption-main">
+                      <small>{p.role}</small>
+                      <strong>
+                        {p.name.split(' ')[0]}
+                        <br />
+                        {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
+                      </strong>
+                    </div>
 
-            {/* Справа: Переключатель слайдов (01 / 05 < >) + Кнопка "ВСЯ КОМАНДА БЮРО" */}
-            <div className="flex items-center gap-6 shrink-0">
-              <div className="text-xs font-mono font-medium text-[#141517] dark:text-et-dark tracking-wider flex items-center gap-4">
-                <div>
-                  <span ref={counterRef} className="text-sm font-bold text-[#507192] dark:text-accent-bronze">01</span>
-                  <span className="text-[#5E6267] dark:text-et-muted mx-1">/</span>
-                  <span className="text-[#5E6267] dark:text-et-muted">{String(teamLawyers.length).padStart(2, '0')}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handlePrev}
-                    aria-label="Предыдущий адвокат"
-                    className="w-10 h-10 border border-[#141517]/30 dark:border-border-subtle hover:border-[#507192] dark:hover:border-accent-bronze hover:text-[#507192] dark:hover:text-accent-bronze rounded-[2px] flex items-center justify-center transition-colors bg-white dark:bg-bg-surface text-[#141517] dark:text-et-dark"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    aria-label="Следующий адвокат"
-                    className="w-10 h-10 border border-[#141517]/30 dark:border-border-subtle hover:border-[#507192] dark:hover:border-accent-bronze hover:text-[#507192] dark:hover:text-accent-bronze rounded-[2px] flex items-center justify-center transition-colors bg-white dark:bg-bg-surface text-[#141517] dark:text-et-dark"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-
-              <Link href="/team" className="shrink-0">
-                <SpotlightButton className="px-6 py-3.5 text-xs uppercase tracking-wider">
-                  Вся команда бюро
-                </SpotlightButton>
-              </Link>
-            </div>
+                    <div className="person-caption-desc">
+                      <span className="caption-practice">{p.practice}</span>
+                      <p className="caption-bio">{p.description}</p>
+                    </div>
+                  </div>
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* 3. Мобильная полноэкранная шторка профиля */}
+      <TeamProfileDrawer
+        member={drawerMember}
+        isOpen={isDrawerOpen}
+        onClose={closeDrawer}
+      />
     </section>
   );
 }

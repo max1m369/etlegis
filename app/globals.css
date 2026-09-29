@@ -227,3 +227,331 @@ h1, h2, h3, .font-heading {
   opacity: var(--logo-shimmer-enabled, 0);
   transition: opacity 0.3s ease;
 }
+
+/* ========================================================
+   OUTLINE STAT NUMBERS (Numbers / О компании section)
+   ======================================================== */
+.stat-outline-num {
+  font-family: var(--font-heading), 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum" 1;
+  color: transparent;
+  -webkit-text-stroke: 1.4px #9B815C;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  user-select: none;
+  display: inline-block;
+  will-change: transform, opacity, filter;
+  transition: -webkit-text-stroke-color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+.dark .stat-outline-num {
+  -webkit-text-stroke: 1.4px #C5A880;
+}
+@media (min-width: 1024px) {
+  .stat-outline-num {
+    -webkit-text-stroke: 1.7px #9B815C;
+  }
+  .dark .stat-outline-num {
+    -webkit-text-stroke: 1.7px #C5A880;
+  }
+}
+.stat-col:hover .stat-outline-num {
+  -webkit-text-stroke-color: #C5A880;
+  filter: drop-shadow(0 0 16px rgba(197, 168, 128, 0.45));
+  transform: translateY(-3px);
+}
+
+/* ========================================================
+   TEAM GALLERY (Updated: taller height, top controls, card description)
+   ======================================================== */
+.team-gallery {
+  position: relative;
+  height: clamp(520px, 66vh, 760px);
+  overflow: hidden;
+  background: #e3e4dd;
+  isolation: isolate;
+  touch-action: pan-y;
+}
+.dark .team-gallery {
+  background: #171a21;
+}
+
+.person-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  text-align: left;
+  background: #d9dbd4;
+  isolation: isolate;
+  clip-path: inset(0 0 0 0);
+  will-change: transform, clip-path;
+  cursor: pointer;
+}
+.person-card.is-active {
+  z-index: 5;
+}
+.dark .person-card {
+  background: #1f242d;
+}
+
+.person-card img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.75s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.person-card.is-active img {
+  filter: grayscale(0.2) saturate(0.55);
+}
+.dark .person-card.is-active img {
+  filter: grayscale(0.1) saturate(0.85);
+}
+
+.person-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 25%, rgba(12, 18, 15, 0.45) 58%, rgba(8, 12, 10, 0.9) 100%);
+  pointer-events: none;
+}
+.person-card:not(.is-active) .person-shade {
+  background: linear-gradient(180deg, rgba(25, 32, 27, 0.08), rgba(12, 20, 16, 0.46));
+}
+
+.person-caption {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  display: block;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.person-caption-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+}
+
+.person-caption-main {
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.person-caption-main small {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-mono), monospace;
+  color: #c5a880;
+}
+
+.person-caption-main strong {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(28px, 2.5vw, 38px);
+  font-weight: 400;
+  display: block;
+  line-height: 1.12;
+  color: #fff;
+}
+
+.person-caption-main .caption-arrow {
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  margin-left: 10px;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.person-card:hover .caption-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Green box area: additional text / description */
+.person-caption-desc {
+  flex: 1;
+  max-width: 420px;
+  padding-left: 24px;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.caption-practice {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c5a880;
+}
+
+.caption-bio {
+  font-family: 'Manrope', Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 300;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.person-card:focus-visible {
+  outline: none;
+}
+.person-card:focus-visible:after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px solid #f6ead2;
+  pointer-events: none;
+}
+
+.photo-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font: 64px 'Cormorant Garamond', Georgia, serif;
+  color: #566453;
+  pointer-events: none;
+}
+.dark .photo-fallback {
+  color: #94a3b8;
+}
+
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.counter {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono), monospace;
+  color: inherit;
+}
+.counter-divider {
+  color: #8d9489;
+  margin: 0 4px;
+}
+.gallery-nav-btn {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid #bdc4b9;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+.dark .gallery-nav-btn {
+  border-color: #2a2f3a;
+  color: #f3f4f6;
+}
+.gallery-nav-btn:hover:not(:disabled) {
+  background: #e8eae2;
+  border-color: #949c8f;
+}
+.dark .gallery-nav-btn:hover:not(:disabled) {
+  background: #1f242d;
+  border-color: #4a5568;
+}
+.gallery-nav-btn:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+@media (min-width: 1600px) {
+  .team-gallery {
+    height: 70vh;
+    max-height: 820px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .person-caption {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+  .person-caption-main strong {
+    font-size: 26px;
+  }
+  .person-caption-desc {
+    max-width: 260px;
+    padding-left: 14px;
+  }
+  .caption-bio {
+    font-size: 11px;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .team-gallery {
+    height: 480px;
+    max-height: 64dvh;
+    min-height: 380px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .team-gallery::-webkit-scrollbar {
+    display: none;
+  }
+  .person-card {
+    will-change: transform;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .person-caption {
+    left: 18px;
+    right: 18px;
+    bottom: 20px;
+  }
+  .person-caption-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .person-caption-main strong {
+    font-size: 26px;
+  }
+  .person-caption-desc {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-left: 0;
+    padding-top: 8px;
+    max-width: 100%;
+  }
+}

@@ -153,7 +153,27 @@ export async function getAllLawyersAsync(): Promise<Lawyer[]> {
   try {
     const dynamicEmployees = await getDynamicEmployees();
     if (dynamicEmployees && dynamicEmployees.length > 0) {
-      return dynamicEmployees as any;
+      return LAWYERS_DATA.map((staticLawyer) => {
+        const dyn = (dynamicEmployees as any[]).find((d: any) =>
+          d.slug === staticLawyer.slug ||
+          (staticLawyer.slug.includes('biryukov') && (d.slug?.includes('biruk') || d.slug?.includes('biryuk'))) ||
+          (d.name && staticLawyer.name && d.name.toLowerCase().includes(staticLawyer.name.toLowerCase().split(' ')[0]))
+        );
+        if (dyn) {
+          const isBir = staticLawyer.slug.includes('biryukov') || (staticLawyer.name && staticLawyer.name.includes('Бирюков'));
+          return {
+            ...staticLawyer,
+            ...dyn,
+            id: staticLawyer.id,
+            slug: staticLawyer.slug,
+            photoUrl: isBir ? '/team/t1.webp' : (dyn.photoUrl || staticLawyer.photoUrl),
+            education: (dyn.education && dyn.education.length > 0) ? dyn.education : staticLawyer.education,
+            bio: (dyn.bio && dyn.bio.trim().length > 0) ? dyn.bio : staticLawyer.bio,
+            practiceIds: (dyn.practiceIds && dyn.practiceIds.length > 0) ? dyn.practiceIds : staticLawyer.practiceIds,
+          };
+        }
+        return staticLawyer;
+      });
     }
   } catch (err) {
     // fallback
@@ -185,7 +205,9 @@ export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undef
         return {
           ...staticMock,
           ...found,
-          photoUrl: found.photoUrl || staticMock.photoUrl,
+          id: staticMock.id,
+          slug: staticMock.slug,
+          photoUrl: isBir ? '/team/t1.webp' : (found.photoUrl || staticMock.photoUrl),
           education: (found.education && found.education.length > 0) ? found.education : staticMock.education,
           bio: (found.bio && found.bio.trim().length > 0) ? found.bio : ((found as any).quote || staticMock.bio),
           experienceYears: found.experienceYears || staticMock.experienceYears,
@@ -193,7 +215,10 @@ export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undef
           cases: (found.cases && found.cases.length > 0) ? found.cases : staticMock.cases,
         };
       }
-      return found;
+      return {
+        ...found,
+        photoUrl: isBir ? '/team/t1.webp' : found.photoUrl,
+      };
     }
   } catch (err) {
     // fallback
