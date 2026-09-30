@@ -2,40 +2,52 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { TEAM_MEMBERS, TeamBlueprintMember } from '@/lib/data/team-blueprint';
+import { Shield, Scale, Building2, Gavel } from 'lucide-react';
+import SpotlightButton from '@/components/ui/SpotlightButton';
+import { TEAM_MEMBERS_FULL, TeamMemberFull } from '@/lib/data/team-blueprint';
 
 interface TeamBlueprintGridProps {
-  members?: TeamBlueprintMember[];
+  members?: TeamMemberFull[];
 }
 
-export default function TeamBlueprintGrid({ members = TEAM_MEMBERS }: TeamBlueprintGridProps) {
+function PracticeIcon({ iconName }: { iconName: string }) {
+  switch (iconName) {
+    case 'shield':
+      return <Shield className="w-4 h-4 shrink-0 text-[#9B815C] dark:text-accent-bronze" />;
+    case 'scale':
+      return <Scale className="w-4 h-4 shrink-0 text-[#9B815C] dark:text-accent-bronze" />;
+    case 'building':
+      return <Building2 className="w-4 h-4 shrink-0 text-[#9B815C] dark:text-accent-bronze" />;
+    case 'gavel':
+      return <Gavel className="w-4 h-4 shrink-0 text-[#9B815C] dark:text-accent-bronze" />;
+    default:
+      return <Scale className="w-4 h-4 shrink-0 text-[#9B815C] dark:text-accent-bronze" />;
+  }
+}
+
+export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamBlueprintGridProps) {
   return (
     <section className="relative w-full overflow-hidden text-et-dark">
       {/* 
-        NO DOT-GRID BACKGROUND (as explicitly requested: "фон без вот этих точек")
+        NO DOT-GRID BACKGROUND (as requested: "фон без вот этих точек")
         Clean architectural background matching the site design system
       */}
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-10 md:py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-8 md:py-14">
         {/* ====================================================================
-            HEADER: Title with extending horizontal line and [KEY_ASSETS]
+            HEADER: Title with extending horizontal line (NO [KEY_ASSETS] as crossed out)
             Font is rendered in our design system typography
             ==================================================================== */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-et-dark/15 dark:border-white/15 pb-5 mb-16 md:mb-24">
-          <div className="flex items-center gap-6 flex-1">
-            <h1 className="font-heading font-normal uppercase tracking-[0.04em] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-et-dark select-none leading-none">
-              НАША КОМАНДА
-            </h1>
-            <div className="hidden sm:block flex-1 h-[1px] bg-et-dark/25 dark:bg-white/20" />
-          </div>
-
-          <div className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-[#9B815C] dark:text-accent-bronze shrink-0 self-start sm:self-center">
-            [KEY_ASSETS]
-          </div>
+        <div className="flex items-center gap-6 border-b border-et-dark/15 dark:border-white/15 pb-5 mb-16 md:mb-24">
+          <h2 className="font-heading font-normal uppercase tracking-[0.04em] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-et-dark select-none leading-none shrink-0">
+            НАША КОМАНДА
+          </h2>
+          <div className="hidden sm:block flex-1 h-[1px] bg-et-dark/25 dark:bg-white/20" />
         </div>
 
         {/* ====================================================================
             TEAM ROSTER: Alternating Zig-Zag Grid (Left/Right photo mirroring)
-            NOTE: Connector pin/circle is completely removed as requested
+            Order matches the main page exactly (t1 through t8)
+            NO PINS, NO CIRCLES
             ==================================================================== */}
         <div className="space-y-20 md:space-y-32">
           {members.map((partner, index) => {
@@ -58,11 +70,11 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS }: TeamBluepr
                       {partner.uid}
                     </div>
 
-                    {/* High-Contrast Monochrome Portrait */}
+                    {/* Studio High-Contrast Monochrome Portrait (centered, same as on main page) */}
                     <img
                       src={partner.photo}
                       alt={partner.name}
-                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 filter grayscale contrast-110 brightness-95"
+                      className="w-full h-full object-cover object-[50%_20%] transition-transform duration-700 ease-out group-hover:scale-105 filter grayscale contrast-110 brightness-95"
                       loading="eager"
                     />
 
@@ -70,7 +82,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS }: TeamBluepr
                     <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/40 pointer-events-none" />
                     <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/40 pointer-events-none" />
                   </div>
-                  {/* Pin and connector line are explicitly omitted */}
+                  {/* Pin and connector lines are completely removed */}
                 </div>
 
                 {/* INFO COLUMN */}
@@ -81,96 +93,97 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS }: TeamBluepr
                       : 'order-2 md:order-2 md:text-left'
                   } flex flex-col justify-start pt-1`}
                 >
-                  {/* Member Name in design-system typography */}
-                  <h2 className="font-heading font-normal uppercase tracking-[0.03em] text-2xl sm:text-3xl lg:text-4xl text-et-dark leading-tight">
+                  {/* Member Name */}
+                  <h3 className="font-heading font-normal uppercase tracking-[0.03em] text-2xl sm:text-3xl lg:text-4xl text-et-dark leading-tight">
                     <Link
                       href={`/team/${partner.slug}`}
                       className="hover:text-[#507192] dark:hover:text-accent-bronze transition-colors"
                     >
-                      {partner.shortName.toUpperCase()}
+                      {partner.name.toUpperCase()}
                     </Link>
-                  </h2>
+                  </h3>
 
-                  {/* Role / Subtitle */}
+                  {/* Role / Subtitle (SYSTEM_PARTNER removed as crossed out) */}
                   <div
-                    className={`font-mono text-xs sm:text-sm uppercase tracking-[0.14em] text-et-muted font-medium mt-1.5 flex items-center ${
+                    className={`font-mono text-xs sm:text-sm uppercase tracking-[0.14em] text-[#9B815C] dark:text-accent-bronze font-medium mt-1.5 flex items-center ${
                       isReversed ? 'md:justify-end' : 'md:justify-start'
                     }`}
                   >
-                    <span>{partner.status.toUpperCase()}</span>
-                    <span className="mx-2 opacity-50">/</span>
-                    <span className="text-[#9B815C] dark:text-accent-bronze">
-                      {partner.role === 'managing' ? 'SYSTEM_PARTNER' : 'LEGAL_ADVOCATE'}
-                    </span>
+                    <span>{partner.role}</span>
                   </div>
 
                   {/* Divider Line */}
                   <div className="w-full h-[1px] bg-et-dark/20 dark:bg-white/15 my-5" />
 
-                  {/* 2-Column Specs: Specialization & Experience */}
+                  {/* 2-Column Specs: Специализация & Опыт (на русском языке) */}
                   <div
                     className={`grid grid-cols-1 sm:grid-cols-2 gap-6 my-2 ${
                       isReversed ? 'text-left md:text-right' : 'text-left'
                     }`}
                   >
                     <div>
-                      <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1">
-                        - SPECIALIZATION:
+                      <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
+                        Специализация:
                       </div>
-                      <div className="font-sans text-xs md:text-sm font-semibold text-et-dark leading-snug">
-                        {partner.specializationLine}
+                      <div className="font-sans text-xs md:text-sm text-et-dark/90 leading-snug font-normal">
+                        {partner.specialization}
                       </div>
                     </div>
 
                     <div>
-                      <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1">
-                        - EXPERIENCE:
+                      <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
+                        Опыт:
                       </div>
-                      <div className="font-sans text-xs md:text-sm font-semibold text-et-dark leading-snug">
+                      <div className="font-sans text-xs md:text-sm text-et-dark/90 leading-snug font-normal">
                         {partner.experience}
                       </div>
                     </div>
                   </div>
 
-                  {/* Core Competencies Boxed Tags */}
-                  <div className="mt-5">
-                    <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-2.5">
-                      CORE_COMPETENCIES:
+                  {/* Профильные практики (крупные карточки с юридическими иконками и ссылками) */}
+                  <div className="mt-6">
+                    <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-3 font-semibold">
+                      Профильные практики:
                     </div>
                     <div
-                      className={`flex flex-wrap gap-2 ${
+                      className={`flex flex-wrap gap-2.5 ${
                         isReversed ? 'md:justify-end' : 'md:justify-start'
                       }`}
                     >
-                      {partner.specializations.map((spec) => (
-                        <span
-                          key={spec}
-                          className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider px-2.5 py-1 border border-et-dark/25 dark:border-white/20 text-et-dark dark:text-white/90 bg-white/70 dark:bg-white/5 hover:bg-et-dark hover:text-white dark:hover:bg-accent-bronze dark:hover:text-black transition-colors select-none"
+                      {partner.practices.map((practice) => (
+                        <Link
+                          key={practice.slug}
+                          href={`/uslugi#${practice.slug}`}
+                          className="inline-flex items-center gap-2.5 px-3.5 py-2 border border-et-dark/20 dark:border-white/15 bg-white/70 dark:bg-white/5 hover:border-et-dark dark:hover:border-accent-bronze hover:bg-white dark:hover:bg-white/10 transition-all duration-300 rounded-[2px] group/chip text-et-dark dark:text-white/90 shadow-2xs"
                         >
-                          [ {spec} ]
-                        </span>
+                          <span className="transition-transform duration-300 group-hover/chip:scale-110">
+                            <PracticeIcon iconName={practice.iconName} />
+                          </span>
+                          <span className="text-xs sm:text-sm font-medium tracking-tight font-sans">
+                            {practice.title}
+                          </span>
+                          <span className="text-xs opacity-40 font-mono transition-transform duration-300 group-hover/chip:translate-x-0.5">
+                            ↗
+                          </span>
+                        </Link>
                       ))}
                     </div>
                   </div>
 
-                  {/* Footer Link to Dossier */}
+                  {/* Footer: Кнопка «Открыть досье адвоката» + Реестровый номер */}
                   <div
-                    className={`pt-5 mt-6 border-t border-et-dark/15 dark:border-white/10 flex flex-wrap items-center gap-4 justify-between ${
+                    className={`pt-6 mt-8 border-t border-et-dark/15 dark:border-white/10 flex flex-wrap items-center gap-4 justify-between ${
                       isReversed ? 'md:flex-row-reverse' : ''
                     }`}
                   >
-                    <Link
-                      href={`/team/${partner.slug}`}
-                      className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-et-dark hover:text-[#507192] dark:hover:text-accent-bronze transition-colors group/link"
-                    >
-                      <span>ОТКРЫТЬ ДОСЬЕ АДВОКАТА</span>
-                      <span className="transition-transform group-hover/link:translate-x-1 font-mono">
-                        →
-                      </span>
+                    <Link href={`/team/${partner.slug}`}>
+                      <SpotlightButton className="px-6 py-2.5 text-xs font-mono tracking-wider uppercase">
+                        Открыть досье адвоката →
+                      </SpotlightButton>
                     </Link>
 
                     {partner.regNum && (
-                      <span className="font-mono text-[10px] uppercase text-et-muted tracking-wider">
+                      <span className="font-mono text-[11px] uppercase text-et-muted tracking-wider">
                         {partner.regNum}
                       </span>
                     )}

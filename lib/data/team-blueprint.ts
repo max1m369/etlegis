@@ -1,133 +1,140 @@
-export interface TeamBlueprintMember {
+export interface PracticeBadge {
+  slug: string;
+  title: string;
+  iconName: 'shield' | 'scale' | 'building' | 'gavel';
+}
+
+export interface TeamMemberFull {
   id: string;
   slug: string;
   name: string;
-  shortName: string;
-  role: 'managing' | 'advocate';
-  status: string;
-  regNum: string;
-  chamber: string;
-  specializationLine: string;
-  specializations: string[];
+  role: string;
+  uid: string;
+  regNum?: string;
+  specialization: string;
   experience: string;
   photo: string;
-  uid: string;
+  practices: PracticeBadge[];
 }
 
-export const TEAM_MEMBERS: TeamBlueprintMember[] = [
+export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
   {
-    id: 'p-biryukov',
+    id: 'biryukov-alexey',
     slug: 'biryukov-alexey',
-    name: 'Бирюков Алексей Сергеевич',
-    shortName: 'Алексей Бирюков',
-    role: 'managing',
-    status: 'Управляющий партнёр, адвокат',
-    regNum: '77/14820 в реестре АП г. Москвы',
-    chamber: 'Адвокатская палата города Москвы',
-    specializationLine: 'Защита по экономическим и должностным преступлениям, налоговые споры, арбитраж',
-    specializations: [
-      'Сопровождение уголовных дел в сфере экономики',
-      'Дела коррупционной направленности',
-      'Налоговый комплаенс и проверки ФНС',
-      'Защита топ-менеджмента от субсидиарной ответственности',
+    name: 'Алексей Бирюков',
+    role: 'Управляющий партнёр, адвокат',
+    uid: 'UID: 01_LEAD',
+    regNum: '№ 77/14820 в реестре АП г. Москвы',
+    specialization: 'Комплексная защита бенефициаров и генеральных директоров при уголовных и налоговых рисках высокой сложности, сложный арбитраж',
+    experience: '16 лет адвокатской практики',
+    photo: '/team/t1.webp',
+    practices: [
+      { slug: 'criminal-defense', title: 'Уголовно-правовая защита бизнеса', iconName: 'shield' },
+      { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
     ],
-    experience: '16 лет судебной и адвокатской практики',
-    photo: '/team/biryukov.png',
-    uid: 'UID: AV-091',
   },
   {
-    id: 'p-bulatova',
-    slug: 'bulatova-kseniya',
-    name: 'Булатова Ксения Александровна',
-    shortName: 'Ксения Булатова',
-    role: 'managing',
-    status: 'Партнёр, адвокат',
-    regNum: '77/15291 в реестре АП г. Москвы',
-    chamber: 'Адвокатская палата города Москвы',
-    specializationLine: 'Банкротство холдингов, защита контролирующих лиц, оспаривание подозрительных сделок',
-    specializations: [
-      'Сопровождение дел о несостоятельности (банкротстве)',
-      'Оспаривание сделок должника в банкротстве',
-      'Защита личных активов бенефициаров',
-    ],
-    experience: '14 лет практики в сфере банкротства и арбитража',
-    photo: '/team/bulatova.jpg',
-    uid: 'UID: 002_PARTNER',
-  },
-  {
-    id: 'p-luchnikov',
+    id: 'luchnikov-konstantin',
     slug: 'luchnikov-konstantin',
-    name: 'Лучников Константин Игоревич',
-    shortName: 'Константин Лучников',
-    role: 'advocate',
-    status: 'Ведущий юрист практики арбитража',
+    name: 'Константин Лучников',
+    role: 'Партнёр, руководитель арбитражной практики',
+    uid: 'UID: 02_LEAD',
     regNum: 'Член Ассоциации юристов России',
-    chamber: 'Московское отделение АЮР',
-    specializationLine: 'Строительные споры по 44-ФЗ и 223-ФЗ, взыскание долгов и неустоек по подряду',
-    specializations: [
-      'Хозяйственные и строительные споры в арбитраже',
-      'Защита поставщиков в государственных закупках',
-      'Взыскание задолженности по генеральному подряду',
+    specialization: 'Разрешение многомиллиардных корпоративных споров, комплексное ведение банкротства и защита топ-менеджеров от субсидиарной ответственности',
+    experience: '12 лет судебной практики',
+    photo: '/team/t2.webp',
+    practices: [
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+      { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
     ],
-    experience: '11 лет судебного представительства',
-    photo: '/team/luchnikov.jpg',
-    uid: 'UID: 003_ARBITR',
   },
   {
-    id: 'p-smirnova',
-    slug: 'smirnova-elena',
-    name: 'Смирнова Елена Викторовна',
-    shortName: 'Елена Смирнова',
-    role: 'advocate',
-    status: 'Адвокат, уголовно-правовая практика',
-    regNum: '77/16014 в реестре АП г. Москвы',
-    chamber: 'Адвокатская палата города Москвы',
-    specializationLine: 'Защита должностных лиц при ОРМ, обысках, допросах и проверках МВД и СК РФ',
-    specializations: [
-      'Уголовно-правовая защита бизнеса',
-      'Предотвращение ареста счетов и изъятия имущества',
-      'Защита по ст. 290, 291 УК РФ',
+    id: 'sokolov-mikhail',
+    slug: 'sokolov-mikhail',
+    name: 'Михаил Соколов',
+    role: 'Партнёр, адвокат',
+    uid: 'UID: 03_PARTNER',
+    regNum: '№ 77/15124 в реестре АП г. Москвы',
+    specialization: 'Предотвращение уголовных рисков на стадии доследственных проверок ОБЭП и СК РФ, экстренная помощь при обысках и выемках',
+    experience: '15 лет практики',
+    photo: '/team/t3.webp',
+    practices: [
+      { slug: 'criminal-defense', title: 'Уголовно-правовая защита бизнеса', iconName: 'shield' },
     ],
-    experience: '13 лет следственной и адвокатской работы',
-    photo: '/team/smirnova.jpg',
-    uid: 'UID: 004_CRIM',
   },
   {
-    id: 'p-dmitriev',
+    id: 'romanova-ekaterina',
+    slug: 'romanova-ekaterina',
+    name: 'Екатерина Романова',
+    role: 'Партнёр, адвокат',
+    uid: 'UID: 04_PARTNER',
+    regNum: '№ 77/15890 в реестре АП г. Москвы',
+    specialization: 'Уголовно-правовой комплаенс и форензик-аудит, защита топ-менеджмента по сложным экономическим и должностным делам',
+    experience: '14 лет практики',
+    photo: '/team/t4.webp',
+    practices: [
+      { slug: 'criminal-defense', title: 'Уголовно-правовая защита бизнеса', iconName: 'shield' },
+      { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
+    ],
+  },
+  {
+    id: 'dmitriev-sergey',
     slug: 'dmitriev-sergey',
-    name: 'Дмитриев Сергей Владимирович',
-    shortName: 'Сергей Дмитриев',
-    role: 'advocate',
-    status: 'Руководитель практики банкротства, адвокат',
-    regNum: '77/16012 в реестре АП г. Москвы',
-    chamber: 'Адвокатская палата города Москвы',
-    specializationLine: 'Комплексное ведение дел о банкротстве, защита бенефициаров и КДЛ, оспаривание сделок',
-    specializations: [
-      'Банкротство юридических лиц и групп компаний',
-      'Защита топ-менеджмента от субсидиарной ответственности',
-      'Оспаривание сделок должника и возврат активов',
-    ],
-    experience: '12 лет практики в сфере банкротного права',
+    name: 'Сергей Дмитриев',
+    role: 'Руководитель практики банкротства, адвокат',
+    uid: 'UID: 05_PARTNER',
+    regNum: '№ 77/16012 в реестре АП г. Москвы',
+    specialization: 'Комплексное сопровождение банкротных процедур, оспаривание сделок должника, возврат активов и защита КДЛ',
+    experience: '11 лет практики',
     photo: '/team/t5.webp',
-    uid: 'UID: 005_BANKR',
+    practices: [
+      { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+    ],
   },
   {
-    id: 'p-morozova',
-    slug: 'morozova-anna',
-    name: 'Морозова Анна Михайловна',
-    shortName: 'Анна Морозова',
-    role: 'advocate',
-    status: 'Ведущий юрист корпоративной практики',
-    regNum: 'Член Ассоциации юристов России',
-    chamber: 'Московское отделение АЮР',
-    specializationLine: 'Корпоративное право, M&A сделки, антимонопольные споры, структурирование бизнеса',
-    specializations: [
-      'Корпоративные конфликты и споры участников',
-      'Сделки слияния и поглощения (M&A)',
-      'Правовой аудит бизнеса (Legal Due Diligence)',
+    id: 'bulatova-kseniya',
+    slug: 'bulatova-kseniya',
+    name: 'Ксения Булатова',
+    role: 'Партнёр, руководитель налоговой практики',
+    uid: 'UID: 06_PARTNER',
+    regNum: '№ 77/15291 в реестре АП г. Москвы',
+    specialization: 'Налоговый консалтинг, сопровождение выездных проверок ФНС, защита от многомиллионных доначислений и ст. 199 УК РФ',
+    experience: '13 лет практики',
+    photo: '/team/t6.webp',
+    practices: [
+      { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
     ],
-    experience: '9 лет практики в сфере корпоративного права',
+  },
+  {
+    id: 'morozova-anna',
+    slug: 'morozova-anna',
+    name: 'Анна Морозова',
+    role: 'Ведущий юрист корпоративной практики',
+    uid: 'UID: 07_ASSOCIATE',
+    regNum: 'Член Ассоциации юристов России',
+    specialization: 'Корпоративное управление, структурирование нестандартных сделок (M&A) и защита от недружественного поглощения',
+    experience: '9 лет практики',
     photo: '/team/t7.webp',
-    uid: 'UID: 006_CORP',
+    practices: [
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+    ],
+  },
+  {
+    id: 'orlov-dmitriy',
+    slug: 'orlov-dmitriy',
+    name: 'Дмитрий Орлов',
+    role: 'Советник бюро, адвокат',
+    uid: 'UID: 08_COUNSEL',
+    regNum: '№ 77/9211 в реестре АП г. Москвы',
+    specialization: 'Судебная защита в Верховном Суде РФ, разрешение комплексных арбитражных споров и защита права собственности',
+    experience: '24 года практики',
+    photo: '/team/t8.webp',
+    practices: [
+      { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+      { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
+    ],
   },
 ];
