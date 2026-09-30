@@ -57,9 +57,9 @@ export default function Hero() {
 
       {/* Правая часть экрана: чёткая линия на 78-80% высоты экрана + читаемый подзаголовок и кнопка */}
       <div className="relative z-30 w-full mt-4 pointer-events-none">
-        {/* Частичная линия-разделитель (от середины экрана до правого края) */}
+        {/* Частичная линия-разделитель цветом логотипа #2C3E50 */}
         <div className="flex justify-end mb-[clamp(1rem,1.8vh,2.5rem)]">
-          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] border-t-2 border-et-dark/85" />
+          <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] border-t-2 border-[#2C3E50] dark:border-white/40" />
         </div>
 
         {/* Блок под чертой: контрастные текст и кнопка в точных пропорциях скриншота */}

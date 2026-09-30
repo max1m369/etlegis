@@ -149,6 +149,18 @@ export default function Monument3D({
             return;
           }
 
+          // Bronze underlay / reveal removed as requested by user ("бронзовая подложка вон там")
+          if (
+            object.name === 'Monument_Bronze_Reveal' ||
+            object.name.includes('Bronze_Reveal') ||
+            object.name === 'Bust_Plinth_Reveal'
+          ) {
+            object.visible = false;
+            object.castShadow = false;
+            object.receiveShadow = false;
+            return;
+          }
+
           if (object.name.startsWith('Bust_')) {
             busts.push(object);
             object.visible = showBust;
