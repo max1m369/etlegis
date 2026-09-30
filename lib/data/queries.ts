@@ -182,20 +182,44 @@ export async function getAllLawyersAsync(): Promise<Lawyer[]> {
 }
 
 export function getLawyerBySlug(slug: string): Lawyer | undefined {
-  const isBir = slug === 'birukov-aleksey' || slug === 'biryukov-alexey';
-  return LAWYERS_DATA.find((l) => l.slug === slug || (isBir && (l.slug === 'biryukov-alexey' || l.slug === 'birukov-aleksey')) || l.id === slug);
+  const norm = slug.toLowerCase();
+  return LAWYERS_DATA.find((l) => {
+    if (l.slug === slug || l.id === slug) return true;
+    if (norm === 'birukov-aleksey' || norm === 'biryukov-alexey' || norm === 'aleksey-biryukov') {
+      return l.slug === 'biryukov-alexey' || l.slug === 'birukov-aleksey' || l.name?.includes('Бирюков');
+    }
+    if (norm === 'luchnikov-konstantin' || norm === 'konstantin-luchnikov') {
+      return l.slug === 'luchnikov-konstantin' || l.name?.includes('Лучников');
+    }
+    if (norm === 'bulatova-kseniya' || norm === 'kseniya-bulatova') {
+      return l.slug === 'bulatova-kseniya' || l.name?.includes('Булатова');
+    }
+    if (norm === 'dmitriev-sergey' || norm === 'sergey-dmitriev') {
+      return l.slug === 'dmitriev-sergey' || l.name?.includes('Дмитриев');
+    }
+    if (norm === 'morozova-anna' || norm === 'anna-morozova') {
+      return l.slug === 'morozova-anna' || l.name?.includes('Морозова');
+    }
+    if (norm === 'smirnova-elena' || norm === 'elena-smirnova') {
+      return l.slug === 'smirnova-elena' || l.name?.includes('Смирнова');
+    }
+    return false;
+  });
 }
 
 export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undefined> {
   try {
     const lawyers = await getAllLawyersAsync();
-    const isBir = slug === 'birukov-aleksey' || slug === 'biryukov-alexey';
-    const isLuch = slug === 'luchnikov-konstantin';
+    const norm = slug.toLowerCase();
 
     const found = lawyers.find((l) => {
       if (l.slug === slug || l.id === slug) return true;
-      if (isBir && (l.slug === 'birukov-aleksey' || l.slug === 'biryukov-alexey' || l.name?.includes('Бирюков'))) return true;
-      if (isLuch && (l.slug === 'luchnikov-konstantin' || l.name?.includes('Лучников'))) return true;
+      if ((norm === 'birukov-aleksey' || norm === 'biryukov-alexey' || norm === 'aleksey-biryukov') && (l.slug?.includes('bir') || l.name?.includes('Бирюков'))) return true;
+      if ((norm === 'luchnikov-konstantin' || norm === 'konstantin-luchnikov') && (l.slug?.includes('luch') || l.name?.includes('Лучников'))) return true;
+      if ((norm === 'bulatova-kseniya' || norm === 'kseniya-bulatova') && (l.slug?.includes('bula') || l.name?.includes('Булатова'))) return true;
+      if ((norm === 'dmitriev-sergey' || norm === 'sergey-dmitriev') && (l.slug?.includes('dmit') || l.name?.includes('Дмитриев'))) return true;
+      if ((norm === 'morozova-anna' || norm === 'anna-morozova') && (l.slug?.includes('moro') || l.name?.includes('Морозова'))) return true;
+      if ((norm === 'smirnova-elena' || norm === 'elena-smirnova') && (l.slug?.includes('smir') || l.name?.includes('Смирнова'))) return true;
       return false;
     });
 
