@@ -34,6 +34,7 @@ export default function Monument3D({
     let camera: THREE.PerspectiveCamera | null = null;
     let animationFrameId: number;
     let markMesh: THREE.Mesh | null = null;
+    let monumentRoot: THREE.Group | null = null;
     let presets: { stone: THREE.Material; dark: THREE.Material; bronze: THREE.Material } | null = null;
     const floats: { object: THREE.Object3D; y: number; rotation: THREE.Euler; phase: number }[] = [];
     const busts: THREE.Object3D[] = [];
@@ -59,13 +60,14 @@ export default function Monument3D({
 
       if (!renderer) return;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1.5 : 2);
+      const isMobile = window.innerWidth < 768;
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 1.25);
       renderer.setPixelRatio(dpr);
       renderer.setClearColor(0x000000, 0);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.VSMShadowMap;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
@@ -99,6 +101,7 @@ export default function Monument3D({
         scene.environmentIntensity = 0.55;
 
         const root = gltf.scene;
+        monumentRoot = root;
         scene.add(root);
 
         // Lighting matching the Blender studio setup
@@ -107,7 +110,7 @@ export default function Monument3D({
         const key = new THREE.DirectionalLight(0xffedd2, 3.2);
         key.position.set(-3.5, 11, 5);
         key.castShadow = true;
-        key.shadow.mapSize.set(1024, 1024);
+        key.shadow.mapSize.set(isMobile ? 512 : 1024, isMobile ? 512 : 1024);
         Object.assign(key.shadow.camera, {
           left: -7,
           right: 7,
@@ -116,10 +119,9 @@ export default function Monument3D({
           near: 1,
           far: 30,
         });
-        key.shadow.normalBias = 0.018;
-        key.shadow.bias = -0.00015;
-        key.shadow.radius = 12;
-        key.shadow.blurSamples = 16;
+        key.shadow.normalBias = 0.02;
+        key.shadow.bias = -0.0002;
+        key.shadow.radius = 2.5;
         key.target.position.set(0, 1.5, 0);
         scene.add(key, key.target);
 
@@ -141,14 +143,10 @@ export default function Monument3D({
             object.material.envMapIntensity = 0.8;
           }
 
+          // Floating pieces removed as requested by user
           if (object.name.startsWith('Float_')) {
-            floats.push({
-              object,
-              y: object.position.y,
-              rotation: object.rotation.clone(),
-              phase: floats.length * 2.2,
-            });
-            object.visible = showFragments && typeof window !== 'undefined' && window.innerWidth > 768;
+            object.visible = false;
+            return;
           }
 
           if (object.name.startsWith('Bust_')) {
@@ -217,6 +215,9 @@ export default function Monument3D({
         // Viewport resize handling with viewOffset to place monument on the right
         let currentW = 0;
         let currentH = 0;
+        let needsRender = true;
+        let isIntersecting = true;
+        let isTabActive = document.visibilityState === 'visible';
 
         const updateProjection = () => {
           if (!container || !renderer || !camera) return;
@@ -249,82 +250,127 @@ export default function Monument3D({
               item.object.visible = isDesktop;
             }
           }
+          needsRender = true;
         };
 
         updateProjection();
         const resizeObserver = new ResizeObserver(() => updateProjection());
         resizeObserver.observe(container);
 
+        // IntersectionObserver to pause rendering when scrolled out of view
+        const intersectionObserver = new IntersectionObserver(
+          (entries) => {
+            if (entries[0]) {
+              isIntersecting = entries[0].isIntersecting;
+              if (isIntersecting) {
+                needsRender = true;
+              }
+            }
+          },
+          { threshold: 0.05 }
+        );
+        intersectionObserver.observe(container);
+
+        const handleVisibilityChange = () => {
+          isTabActive = document.visibilityState === 'visible';
+          if (isTabActive && isIntersecting) {
+            needsRender = true;
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
         // Pointer mouse parallax
         const handlePointerMove = (e: MouseEvent) => {
+          if (!isIntersecting || !isTabActive) return;
           const rect = container.getBoundingClientRect();
           if (rect.width <= 0 || rect.height <= 0) return;
           targetPos.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
           targetPos.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+          needsRender = true;
         };
 
         const handlePointerLeave = () => {
           targetPos.x = 0;
           targetPos.y = 0;
+          needsRender = true;
         };
 
         window.addEventListener('mousemove', handlePointerMove, { passive: true });
         window.addEventListener('mouseleave', handlePointerLeave, { passive: true });
 
-        // Animation render loop
+        // Animation render loop with on-demand dirty-checking & 60 FPS cap
         let lastTime = performance.now();
-        let elapsed = 0;
+        let lastRenderTime = 0;
+        const TARGET_FPS = 60;
+        const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
         const renderLoop = (now: number) => {
           if (destroyed) return;
+          animationFrameId = requestAnimationFrame(renderLoop);
+
+          // 1. If tab is in background or Hero is scrolled out of view, sleep completely
+          if (!isIntersecting || !isTabActive || !renderer || !scene || !camera) {
+            return;
+          }
+
+          // 2. Throttle rendering to max 60 FPS (prevents 144Hz/240Hz monitors from overworking GPU)
+          const elapsedSinceLast = now - lastRenderTime;
+          if (elapsedSinceLast < FRAME_INTERVAL) {
+            return;
+          }
 
           const deltaMs = now - lastTime;
           lastTime = now;
-          const delta = Math.min(deltaMs * 0.001, 0.05);
 
-          if (document.visibilityState === 'visible' && renderer && scene && camera) {
-            // Smooth mouse dampening
-            const alpha = 1 - Math.exp(-deltaMs / 220);
-            currentPos.x += (targetPos.x - currentPos.x) * alpha;
-            currentPos.y += (targetPos.y - currentPos.y) * alpha;
+          // 3. Smooth mouse dampening
+          const alpha = 1 - Math.exp(-Math.min(deltaMs, 100) / 180);
+          const diffX = targetPos.x - currentPos.x;
 
-            // Camera tilt
-            const isDesktop = window.innerWidth > 768;
-            camera.position.copy(baseCamera);
-            camera.position.x += currentPos.x * 0.38;
-            camera.position.y += currentPos.y * 0.12;
-            camera.lookAt(lookAt);
-
-            // Floating fragments animation (if enabled)
-            if (showFragments && floats.length > 0) {
-              elapsed += delta;
-              for (const item of floats) {
-                item.object.position.y =
-                  item.y +
-                  Math.sin(elapsed * 0.42 + item.phase) * 0.12 +
-                  0.8 * Math.exp(-elapsed * 1.8);
-                item.object.rotation.z =
-                  item.rotation.z + Math.sin(elapsed * 0.27 + item.phase) * 0.045;
-                item.object.rotation.y =
-                  item.rotation.y + Math.sin(elapsed * 0.32 + item.phase) * 0.065;
-              }
-            }
-
-            // Sync material if theme changes
-            if (markMesh && presets) {
-              const isDark =
-                themeRef.current === 'dark' ||
-                document.documentElement.classList.contains('dark');
-              const targetMat = isDark ? presets.dark : presets.stone;
-              if (markMesh.material !== targetMat) {
-                markMesh.material = targetMat;
-              }
-            }
-
-            renderer.render(scene, camera);
+          if (Math.abs(diffX) > 0.0002) {
+            currentPos.x += diffX * alpha;
+            needsRender = true;
+          } else if (currentPos.x !== targetPos.x) {
+            currentPos.x = targetPos.x;
+            needsRender = true;
           }
 
-          animationFrameId = requestAnimationFrame(renderLoop);
+          // 4. Sync material if theme changes
+          if (markMesh && presets) {
+            const isDark =
+              themeRef.current === 'dark' ||
+              document.documentElement.classList.contains('dark');
+            const targetMat = isDark ? presets.dark : presets.stone;
+            if (markMesh.material !== targetMat) {
+              markMesh.material = targetMat;
+              needsRender = true;
+            }
+          }
+
+          // 5. ON-DEMAND RENDERING: If scene has not changed and motion settled, SKIP RENDER (0% GPU!)
+          if (!needsRender) {
+            return;
+          }
+
+          lastRenderTime = now - (elapsedSinceLast % FRAME_INTERVAL);
+
+          // Direct 3D monument mark rotation with mouse movement:
+          // Horizontal mouse movement turns the sign left/right smoothly
+          if (monumentRoot) {
+            monumentRoot.rotation.y = currentPos.x * 0.16;
+            monumentRoot.rotation.x = 0;
+          }
+
+          // Camera horizontal parallax
+          camera.position.copy(baseCamera);
+          camera.position.x += currentPos.x * 0.55;
+          camera.lookAt(lookAt);
+
+          renderer.render(scene, camera);
+
+          // Once motion reaches target and state is current, enter idle state until next event
+          if (Math.abs(targetPos.x - currentPos.x) <= 0.0002) {
+            needsRender = false;
+          }
         };
 
         animationFrameId = requestAnimationFrame(renderLoop);
@@ -341,6 +387,8 @@ export default function Monument3D({
 
         return () => {
           resizeObserver.disconnect();
+          intersectionObserver.disconnect();
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('mousemove', handlePointerMove);
           window.removeEventListener('mouseleave', handlePointerLeave);
         };

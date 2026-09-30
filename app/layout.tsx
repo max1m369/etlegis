@@ -16,7 +16,7 @@ const cormorant = Cormorant_Garamond({
 
 const jost = Jost({
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-body",
   display: "swap",
 });

@@ -12,6 +12,7 @@ interface StatItem {
   decimals: number;
   suffix?: string;
   prefix?: string;
+  eyebrow: string;
   label: string;
   labelMobileLines: [string, string];
   viewBox: string;
@@ -28,13 +29,14 @@ const STATS_DATA: StatItem[] = [
     initialVal: 1960,
     targetVal: 2019,
     decimals: 0,
-    label: 'ГОД ОСНОВАНИЯ',
+    eyebrow: 'ОПЫТ ПРАКТИКИ',
+    label: 'ГОД ОСНОВАНИЯ БЮРО',
     labelMobileLines: ['ГОД', 'ОСНОВАНИЯ'],
-    viewBox: '0 0 280 120',
-    width: 280,
+    viewBox: '0 0 300 120',
+    width: 300,
     textX: '50%',
     textY: 96,
-    fontSize: 122,
+    fontSize: 104,
   },
   {
     id: 'deals',
@@ -43,13 +45,14 @@ const STATS_DATA: StatItem[] = [
     targetVal: 1.2,
     decimals: 1,
     suffix: '+',
-    label: 'СОВЕРШЁННЫХ СДЕЛОК',
-    labelMobileLines: ['СОВЕРШЁННЫХ', 'СДЕЛОК'],
-    viewBox: '0 0 240 120',
-    width: 240,
+    eyebrow: 'СОХРАНЁННЫЕ АКТИВЫ',
+    label: 'МЛРД ₽ В СУДАХ И СПОРАХ',
+    labelMobileLines: ['МЛРД ₽', 'СОХРАНЕНО'],
+    viewBox: '0 0 260 120',
+    width: 260,
     textX: '50%',
     textY: 96,
-    fontSize: 122,
+    fontSize: 104,
   },
   {
     id: 'disputes',
@@ -58,13 +61,14 @@ const STATS_DATA: StatItem[] = [
     targetVal: 94,
     decimals: 0,
     suffix: '%',
-    label: 'ВЫИГРАННЫХ СПОРОВ',
-    labelMobileLines: ['ВЫИГРАННЫХ', 'СПОРОВ'],
-    viewBox: '0 0 260 120',
-    width: 260,
+    eyebrow: 'РЕЗУЛЬТАТИВНОСТЬ',
+    label: 'ВЫИГРАННЫХ ДЕЛ И СПОРОВ',
+    labelMobileLines: ['ВЫИГРАННЫХ', 'ПРОЦЕССОВ'],
+    viewBox: '0 0 280 120',
+    width: 280,
     textX: '50%',
     textY: 96,
-    fontSize: 122,
+    fontSize: 104,
   },
 ];
 
@@ -74,17 +78,20 @@ export default function Numbers() {
   const textRefs = useRef<(SVGTextElement | null)[]>([]);
   const gradRefs = useRef<(SVGLinearGradientElement | null)[]>([]);
   const dividerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const eyebrowRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // Setup initial linearGradient positions (glare hidden before trigger)
+      // Setup initial linearGradient positions at 45 degrees
       gradRefs.current.forEach((grad) => {
         if (grad) {
           grad.setAttribute('x1', '-100%');
+          grad.setAttribute('y1', '-100%');
           grad.setAttribute('x2', '0%');
+          grad.setAttribute('y2', '0%');
         }
       });
 
@@ -97,13 +104,13 @@ export default function Numbers() {
         },
       });
 
-      // 1. Вращение и 3D-появление карточек с цифрами
+      // 1. Появление карточек фактоидов
       tl.fromTo(
         cardRefs.current,
         {
-          rotateX: -75,
-          scale: 0.86,
-          y: 45,
+          rotateX: -60,
+          scale: 0.88,
+          y: 40,
           opacity: 0,
         },
         {
@@ -111,13 +118,13 @@ export default function Numbers() {
           scale: 1,
           y: 0,
           opacity: 1,
-          duration: 1.15,
-          stagger: 0.14,
+          duration: 1.1,
+          stagger: 0.12,
           ease: 'power3.out',
         }
       );
 
-      // 2. Вращение/прокрутка счётчика цифр (циферки крутятся)
+      // 2. Вращение/прокрутка счётчика цифр
       STATS_DATA.forEach((stat, idx) => {
         const textEl = textRefs.current[idx];
         if (!textEl) return;
@@ -164,61 +171,95 @@ export default function Numbers() {
         '-=0.45'
       );
 
-      // 4. Появление текста подзаголовков
+      // 4. Появление верхних коротких текстов (eyebrows)
       tl.fromTo(
-        labelRefs.current,
+        eyebrowRefs.current,
         {
-          y: 16,
+          y: -10,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          duration: 0.6,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: 'power2.out',
+        },
+        '-=0.4'
+      );
+
+      // 5. Появление нижних подзаголовков
+      tl.fromTo(
+        labelRefs.current,
+        {
+          y: 14,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.55,
           stagger: 0.1,
           ease: 'power2.out',
         },
         '-=0.35'
       );
 
-      // 5. Градиентный световой блик, пробегающий прямо по контуру всех цифр
-      const gradState = { offset: -90 };
+      // 6. Градиентный световой блик под углом 45 градусов сверху вниз
+      // Медленный, аккуратный и редкий блик, плавно проходящий по граням
+      const gradStates = [
+        { p: -120 },
+        { p: -120 },
+        { p: -120 },
+      ];
 
-      const updateGradients = () => {
-        const x1 = `${gradState.offset}%`;
-        const x2 = `${gradState.offset + 100}%`;
-        gradRefs.current.forEach((g) => {
-          if (g) {
-            g.setAttribute('x1', x1);
-            g.setAttribute('x2', x2);
-          }
-        });
+      const applyGrad45 = (idx: number) => {
+        const grad = gradRefs.current[idx];
+        if (grad) {
+          const p = gradStates[idx].p;
+          grad.setAttribute('x1', `${p}%`);
+          grad.setAttribute('y1', `${p}%`);
+          grad.setAttribute('x2', `${p + 100}%`);
+          grad.setAttribute('y2', `${p + 100}%`);
+        }
       };
 
-      // Первичный яркий пробег блика после появления
-      tl.to(
-        gradState,
-        {
-          offset: 120,
-          duration: 1.8,
-          ease: 'power1.inOut',
-          onUpdate: updateGradients,
-        },
-        '+=0.1'
-      );
-
-      // 6. Цикличный лёгкий блик каждые 3.5 секунды
-      gsap.to(gradState, {
-        offset: 120,
-        duration: 2.1,
-        ease: 'power1.inOut',
-        repeat: -1,
-        repeatDelay: 3.5,
-        onUpdate: updateGradients,
-        delay: 2.6,
+      // Первичный плавный каскадный пробег бликов
+      gradStates.forEach((state, idx) => {
+        tl.to(
+          state,
+          {
+            p: 130,
+            duration: 2.4,
+            ease: 'power2.inOut',
+            onUpdate: () => applyGrad45(idx),
+          },
+          `+=0.${idx * 3 + 2}`
+        );
       });
 
-      // 7. Постоянное плавное дыхание / парение ("чтобы всё было в движении")
+      // 7. Постоянный цикличный блик в РАЗНОЕ ВРЕМЯ на всех 3 фактоидах:
+      // Спокойный, не частый и не резкий цикл (длительность 2.8s, пауза 5.2s, интервал 2.2s)
+      // Фактоид 0 (2019): delay 2.5s
+      // Фактоид 1 (1,2+): delay 4.7s
+      // Фактоид 2 (94%):  delay 6.9s
+      gradStates.forEach((state, idx) => {
+        gsap.to(state, {
+          p: 130,
+          duration: 2.8,
+          ease: 'power2.inOut',
+          repeat: -1,
+          repeatDelay: 5.2,
+          delay: 2.5 + idx * 2.2,
+          onUpdate: () => applyGrad45(idx),
+          onRepeat: () => {
+            state.p = -120;
+            applyGrad45(idx);
+          },
+        });
+      });
+
+      // 8. Постоянное плавное парение
       gsap.to(cardRefs.current, {
         y: '-=4',
         duration: 2.5,
@@ -253,7 +294,17 @@ export default function Numbers() {
                 className="stat-col flex flex-col items-center justify-center text-center w-full px-1 sm:px-3 lg:px-4 group cursor-default"
                 style={{ perspective: 1200 }}
               >
-                {/* SVG-контур числа с градиентным световым бликом */}
+                {/* Верхний короткий текст для смыслового контекста */}
+                <span
+                  ref={(el) => {
+                    eyebrowRefs.current[idx] = el;
+                  }}
+                  className="font-sans text-[8px] sm:text-[10px] md:text-[11px] tracking-[0.22em] text-[#9B815C] dark:text-[#C5A880] font-semibold uppercase text-center mb-1.5 sm:mb-2.5 opacity-90 select-none"
+                >
+                  {stat.eyebrow}
+                </span>
+
+                {/* SVG-контур числа шрифтом Jost (black 900) с градиентным световым бликом под 45 градусов */}
                 <div className="stat-svg-wrap w-full max-w-[170px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[300px] select-none transition-transform duration-300 group-hover:scale-105">
                   <svg
                     viewBox={stat.viewBox}
@@ -266,19 +317,19 @@ export default function Numbers() {
                           gradRefs.current[idx] = el;
                         }}
                         x1="-100%"
-                        y1="0%"
+                        y1="-100%"
                         x2="0%"
                         y2="0%"
                       >
-                        {/* Базовый благородный бронзовый контур */}
+                        {/* Базовый бронзовый благородный цвет */}
                         <stop offset="0%" stopColor="var(--accent-bronze, #9B815C)" />
-                        <stop offset="32%" stopColor="var(--accent-bronze, #9B815C)" />
-                        {/* Световой блик, пробегающий прямо по контуру */}
-                        <stop offset="46%" stopColor="#FFFFFF" stopOpacity="0.95" />
-                        <stop offset="50%" stopColor="#FFE082" stopOpacity="1" />
-                        <stop offset="54%" stopColor="#FFFFFF" stopOpacity="0.95" />
-                        {/* Возврат в бронзовый контур */}
-                        <stop offset="68%" stopColor="var(--accent-bronze, #9B815C)" />
+                        <stop offset="38%" stopColor="var(--accent-bronze, #9B815C)" />
+                        {/* Мягкий аккуратный световой блик под углом 45 градусов */}
+                        <stop offset="47%" stopColor="#DFBF7A" stopOpacity="0.9" />
+                        <stop offset="50%" stopColor="#FFF5E0" stopOpacity="1" />
+                        <stop offset="53%" stopColor="#DFBF7A" stopOpacity="0.9" />
+                        {/* Плавный переход обратно в бронзу */}
+                        <stop offset="62%" stopColor="var(--accent-bronze, #9B815C)" />
                         <stop offset="100%" stopColor="var(--accent-bronze, #9B815C)" />
                       </linearGradient>
                     </defs>
@@ -289,26 +340,28 @@ export default function Numbers() {
                       x={stat.textX}
                       y={stat.textY}
                       textAnchor="middle"
-                      fontFamily="var(--font-condensed), 'Oswald', sans-serif"
-                      fontWeight="700"
+                      style={{
+                        fontFamily: "var(--font-body), 'Jost', -apple-system, BlinkMacSystemFont, sans-serif",
+                        fontWeight: 900,
+                      }}
                       fontSize={stat.fontSize}
-                      letterSpacing="1"
-                      fill="none"
+                      letterSpacing="0.5"
+                      fill={`url(#contour-shimmer-${idx})`}
                       stroke={`url(#contour-shimmer-${idx})`}
-                      strokeWidth="2.5"
-                      className="transition-colors"
+                      strokeWidth="0.8"
+                      className="transition-colors font-body"
                     >
                       {stat.number}
                     </text>
                   </svg>
                 </div>
 
-                {/* Подзаголовок */}
+                {/* Нижний подзаголовок */}
                 <span
                   ref={(el) => {
                     labelRefs.current[idx] = el;
                   }}
-                  className="font-sans text-[10px] sm:text-xs md:text-[13px] tracking-[0.22em] text-[#141517]/80 dark:text-[#E4E6DE]/80 font-medium mt-3 sm:mt-5 lg:mt-7 uppercase text-center leading-tight sm:leading-normal"
+                  className="font-sans text-[10px] sm:text-xs md:text-[13px] tracking-[0.20em] text-[#141517]/80 dark:text-[#E4E6DE]/80 font-medium mt-2 sm:mt-4 lg:mt-6 uppercase text-center leading-tight sm:leading-normal select-none"
                 >
                   <span className="sm:hidden block">
                     {stat.labelMobileLines[0]}

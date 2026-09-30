@@ -5,6 +5,7 @@ import { useConsultationModal } from "@/components/providers/ModalProvider";
 import SpotlightButton from "@/components/ui/SpotlightButton";
 import Monument3D from "@/components/ui/Monument3D";
 import AfternoonSunlightShader from "@/components/ui/AfternoonSunlightShader";
+import SeregaGentleText from "@/components/ui/SeregaGentleText";
 
 export default function Hero() {
   const { openModal } = useConsultationModal();
@@ -35,9 +36,21 @@ export default function Hero() {
       <div className="relative z-30 flex flex-col lg:flex-row items-center justify-between gap-6 w-full my-auto pointer-events-none">
         <div className="w-full lg:w-auto pointer-events-auto">
           <h1 className="font-heading font-normal text-[clamp(1.85rem,7.5vw,2.3rem)] lg:text-[clamp(2.15rem,4.15vw,9.5rem)] tracking-tight text-et-dark leading-[1.12] w-full max-w-[clamp(340px,52vw,1750px)]">
-            <span className="block">Мы — команда экспертов,</span>
-            <span className="italic font-serif text-et-muted block">которая знает, как защитить</span>
-            <span className="block">ваш бизнес.</span>
+            <span className="block">
+              <SeregaGentleText delay={120} stagger={18}>
+                Мы — команда экспертов,
+              </SeregaGentleText>
+            </span>
+            <span className="block">
+              <SeregaGentleText delay={560} stagger={16} className="italic font-serif text-et-muted">
+                которая знает, как защитить
+              </SeregaGentleText>
+            </span>
+            <span className="block">
+              <SeregaGentleText delay={1020} stagger={20}>
+                ваш бизнес.
+              </SeregaGentleText>
+            </span>
           </h1>
         </div>
       </div>
@@ -53,7 +66,7 @@ export default function Hero() {
         <div className="flex justify-end">
           <div className="w-full md:w-7/12 lg:w-[clamp(420px,48vw,1850px)] flex flex-col md:flex-row md:items-center justify-between gap-[clamp(1rem,1.8vw,3rem)] pointer-events-auto">
             <p className="text-[clamp(0.85rem,0.75vw,1.15rem)] text-et-dark/90 font-sans leading-[1.6] max-w-[clamp(280px,28vw,700px)] font-normal">
-              Стратегическое ведение дел, защита активов и топ-менеджмента. Практика с подтвержденным результатом в 1,2+ млрд ₽ сохраненных средств.
+              Стратегическое ведение дел, защита активов и&nbsp;топ-менеджмента. Практика с&nbsp;подтверждённым результатом в&nbsp;1,2+&nbsp;млрд&nbsp;₽ сохранённых средств.
             </p>
 
             <SpotlightButton

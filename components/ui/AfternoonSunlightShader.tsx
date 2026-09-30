@@ -72,21 +72,21 @@ const FRAGMENT_SHADER = `
     vec2 dir = vec2(cos(angle), sin(angle));
     vec2 norm = vec2(-dir.y, dir.x);
 
-    // Ray scale: tight across ray, stretched along ray
-    float crossScale = 3.6;
-    float alongScale = 0.38;
+    // Ray scale: exactly ~2 wide soft waves across the entire screen
+    float crossScale = 0.48;
+    float alongScale = 0.15;
 
     vec2 rayCoord = vec2(
       dot(p, norm) * crossScale,
       dot(p, dir) * alongScale
     );
 
-    float t = u_time * 0.16;
+    float t = u_time * 0.07;
 
-    // Directional linear blur integration with chromatic dispersion
-    const int SAMPLES = 20;
-    float blurLength = 0.95;
-    float chromaOffset = 0.055;
+    // Directional linear blur integration with chromatic dispersion (8 samples optimized for smooth diffuse light)
+    const int SAMPLES = 8;
+    float blurLength = 1.15;
+    float chromaOffset = 0.08;
 
     float rAcc = 0.0;
     float gAcc = 0.0;
@@ -95,18 +95,18 @@ const FRAGMENT_SHADER = `
 
     for (int i = 0; i < SAMPLES; i++) {
       float step = (float(i) / float(SAMPLES - 1) - 0.5) * blurLength;
-      float weight = exp(-step * step * 4.5);
+      float weight = exp(-step * step * 3.8);
       totalWeight += weight;
 
-      // Red channel offset slightly along normal (warm amber fringe)
+      // Red channel offset (warm amber / peach)
       vec2 rCoord = rayCoord + vec2(-chromaOffset, step);
       rAcc += causticNoise(rCoord, t) * weight;
 
-      // Green channel centered
+      // Green channel centered (golden sunshine)
       vec2 gCoord = rayCoord + vec2(0.0, step);
       gAcc += causticNoise(gCoord, t) * weight;
 
-      // Blue channel offset opposite along normal (cool sky/violet fringe)
+      // Blue channel offset (cool cyan / violet prism)
       vec2 bCoord = rayCoord + vec2(chromaOffset, step);
       bAcc += causticNoise(bCoord, t) * weight;
     }
@@ -115,63 +115,78 @@ const FRAGMENT_SHADER = `
     gAcc /= totalWeight;
     bAcc /= totalWeight;
 
-    // Contrast shaping
-    rAcc = smoothstep(0.12, 0.68, rAcc);
-    gAcc = smoothstep(0.12, 0.68, gAcc);
-    bAcc = smoothstep(0.12, 0.68, bAcc);
+    // Raw integrated channels
+    float rawR = rAcc;
+    float rawG = gAcc;
+    float rawB = bAcc;
+    float rawLuma = (rawR + rawG + rawB) * 0.3333;
 
-    // Window mask: smooth soft bloom from right/top-right, keeping left readable
-    float windowMask = smoothstep(0.20, 0.96, uv.x * 0.78 + uv.y * 0.52);
+    // Window mask: soft diagonal beam from top-right down across scene
+    float windowMask = smoothstep(0.06, 0.94, uv.x * 0.75 + uv.y * 0.55);
 
-    // Color palettes
-    // Light theme:
-    vec3 bgBaseLight = vec3(0.972, 0.975, 0.980); // #F8F9FA
-    vec3 shadowLight = vec3(0.72, 0.70, 0.70);    // #a69f9f
-    vec3 highlightLight = vec3(1.0, 0.988, 0.965); // #fcf8f0
-    vec3 warmFringeLight = vec3(1.06, 0.94, 0.82);
-    vec3 coolFringeLight = vec3(0.88, 0.95, 1.05);
-
-    // Dark theme:
-    vec3 bgBaseDark = vec3(0.051, 0.059, 0.071);  // #0D0F12
-    vec3 shadowDark = vec3(0.09, 0.08, 0.07);
-    vec3 highlightDark = vec3(0.77, 0.66, 0.50);  // ET LEGIS #C5A880 warm bronze
-    vec3 warmFringeDark = vec3(1.15, 0.92, 0.68);
-    vec3 coolFringeDark = vec3(0.65, 0.82, 1.12);
-
-    vec3 bgBase = mix(bgBaseLight, bgBaseDark, u_dark);
-    vec3 shadow = mix(shadowLight, shadowDark, u_dark);
-    vec3 highlight = mix(highlightLight, highlightDark, u_dark);
-    vec3 wFringe = mix(warmFringeLight, warmFringeDark, u_dark);
-    vec3 cFringe = mix(coolFringeLight, coolFringeDark, u_dark);
-
-    vec3 rayColor = vec3(
-      mix(shadow.r, highlight.r * wFringe.r, rAcc),
-      mix(shadow.g, highlight.g, gAcc),
-      mix(shadow.b, highlight.b * cFringe.b, bAcc)
-    );
-
-    // Seamless bottom fade so light beams dissolve naturally into the following section
-    float bottomFade = smoothstep(0.0, 0.16, uv.y);
-    float rayAlpha = mix(0.58, 0.32, u_dark) * windowMask * bottomFade;
+    // Seamless bottom fade
+    float bottomFade = smoothstep(0.0, 0.15, uv.y);
 
     if (u_overlay > 0.5) {
-      // In overlay mode: renders radiant sunlight beams & chromatic dispersion directly over 3D mark
-      float causticLuma = (rAcc + gAcc + bAcc) * 0.3333;
-      float beamMask = smoothstep(0.22, 0.68, causticLuma);
+      // Warm 400-600W incandescent golden-amber sunlight with subtle dust motes (no rainbow)
+      // Exactly ~2 wide, delicate waves that gently glide across the 3D monument
+      float wave = smoothstep(0.14, 0.40, rawLuma);
 
-      vec3 warmSunLight = vec3(1.0, 0.97, 0.90);
-      vec3 warmSunDark = vec3(1.0, 0.88, 0.65);
-      vec3 sunColor = mix(warmSunLight, warmSunDark, u_dark);
+      // Warm 400-600W golden-amber tone (rich golden honey / amber glow)
+      vec3 warmAmberLight = vec3(0.95, 0.76, 0.44);  // Warm 400-600W golden amber
+      vec3 warmCreamLight = vec3(1.0, 0.92, 0.72);   // Luminous pastel gold
+      vec3 warmSunLight = mix(warmAmberLight, warmCreamLight, smoothstep(0.16, 0.42, rawLuma));
 
-      vec3 overlayColor = vec3(
-        sunColor.r * (1.0 + (rAcc - causticLuma) * 0.40),
-        sunColor.g,
-        sunColor.b * (1.0 + (bAcc - causticLuma) * 0.50)
-      );
+      vec3 warmAmberDark = vec3(0.92, 0.74, 0.46);    // ET LEGIS architectural bronze-gold
+      vec3 warmCreamDark = vec3(1.0, 0.88, 0.65);
+      vec3 warmSunDark = mix(warmAmberDark, warmCreamDark, smoothstep(0.16, 0.42, rawLuma));
 
-      float overlayAlpha = beamMask * windowMask * bottomFade * mix(0.52, 0.38, u_dark);
+      vec3 warmSun = mix(warmSunLight, warmSunDark, u_dark);
+
+      // Very subtle floating golden dust micro-texture
+      vec2 dustCoord = uv * u_resolution.xy * 0.35 + vec2(sin(u_time * 0.12) * 5.0, u_time * 0.7);
+      float dustNoise = fract(sin(dot(dustCoord, vec2(12.9898, 78.233))) * 43758.5453);
+      float dust = (dustNoise - 0.5) * 0.065;
+
+      vec3 overlayColor = warmSun * (1.0 + dust);
+
+      // Clear, warm, soft presence across the 3D monument and room (zero gray shadows)
+      float overlayAlpha = wave * windowMask * bottomFade * mix(0.30, 0.38, u_dark);
       gl_FragColor = vec4(overlayColor, overlayAlpha);
     } else {
+      // Background mode
+      float rAccS = smoothstep(0.18, 0.70, rawR);
+      float gAccS = smoothstep(0.18, 0.70, rawG);
+      float bAccS = smoothstep(0.18, 0.70, rawB);
+
+      // Color palettes
+      // Light theme:
+      vec3 bgBaseLight = vec3(0.972, 0.975, 0.980);
+      vec3 shadowLight = vec3(0.72, 0.70, 0.70);
+      vec3 highlightLight = vec3(1.0, 0.988, 0.965);
+      vec3 warmFringeLight = vec3(1.06, 0.94, 0.82);
+      vec3 coolFringeLight = vec3(0.88, 0.95, 1.05);
+
+      // Dark theme:
+      vec3 bgBaseDark = vec3(0.051, 0.059, 0.071);
+      vec3 shadowDark = vec3(0.09, 0.08, 0.07);
+      vec3 highlightDark = vec3(0.77, 0.66, 0.50);
+      vec3 warmFringeDark = vec3(1.15, 0.92, 0.68);
+      vec3 coolFringeDark = vec3(0.65, 0.82, 1.12);
+
+      vec3 bgBase = mix(bgBaseLight, bgBaseDark, u_dark);
+      vec3 shadow = mix(shadowLight, shadowDark, u_dark);
+      vec3 highlight = mix(highlightLight, highlightDark, u_dark);
+      vec3 wFringe = mix(warmFringeLight, warmFringeDark, u_dark);
+      vec3 cFringe = mix(coolFringeLight, coolFringeDark, u_dark);
+
+      vec3 rayColor = vec3(
+        mix(shadow.r, highlight.r * wFringe.r, rAccS),
+        mix(shadow.g, highlight.g, gAccS),
+        mix(shadow.b, highlight.b * cFringe.b, bAccS)
+      );
+
+      float rayAlpha = mix(0.58, 0.32, u_dark) * windowMask * bottomFade;
       vec3 finalColor = mix(bgBase, rayColor, rayAlpha);
       float edgeVignette = 1.0 - 0.06 * dot(uv - 0.5, uv - 0.5);
       finalColor *= edgeVignette;
@@ -213,11 +228,6 @@ export default function AfternoonSunlightShader({
       return;
     }
     if (!gl) return;
-
-    if (overlay) {
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    }
 
     const createShader = (glCtx: WebGLRenderingContext, type: number, src: string) => {
       const shader = glCtx.createShader(type);
@@ -274,11 +284,14 @@ export default function AfternoonSunlightShader({
 
     const handleResize = () => {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const isMobile = window.innerWidth < 768;
+      // Sunlight is a soft diffuse volumetric beam; rendering at internal 0.75x (desktop) / 0.6x (mobile)
+      // with CSS object-cover bilinear filtering produces softer, more organic light with ~75% lower GPU cost
+      const scale = isMobile ? 0.6 : 0.75;
       const width = canvas.parentElement?.clientWidth || window.innerWidth;
       const height = canvas.parentElement?.clientHeight || window.innerHeight;
-      canvas.width = Math.max(width, 320) * dpr;
-      canvas.height = Math.max(height, 320) * dpr;
+      canvas.width = Math.max(Math.floor(Math.min(width * scale, 1280)), 320);
+      canvas.height = Math.max(Math.floor(Math.min(height * scale, 800)), 240);
       if (gl) {
         gl.viewport(0, 0, canvas.width, canvas.height);
       }
@@ -293,7 +306,7 @@ export default function AfternoonSunlightShader({
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Optional observer to pause when scrolled far out of view
+    // Pause when scrolled far out of view
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]) {
@@ -306,34 +319,42 @@ export default function AfternoonSunlightShader({
       observer.observe(containerRef.current);
     }
 
-    const render = () => {
-      if (isVisible && gl && canvas) {
-        const currentTime = (performance.now() - startTime) * 0.001;
+    let lastRenderTime = 0;
+    const TARGET_FPS = 30; // 30 FPS cap for atmospheric slow light drift
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
-        // Smooth transition when theme changes
-        targetDark = themeRef.current === 'dark' || document.documentElement.classList.contains('dark') ? 1.0 : 0.0;
-        currentDark += (targetDark - currentDark) * 0.08;
-
-        gl.useProgram(program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.enableVertexAttribArray(posAttr);
-        gl.vertexAttribPointer(posAttr, 2, gl.FLOAT, false, 0, 0);
-
-        gl.uniform1f(timeUni, currentTime);
-        gl.uniform2f(resUni, canvas.width, canvas.height);
-        gl.uniform1f(darkUni, currentDark);
-        gl.uniform1f(overlayUni, overlay ? 1.0 : 0.0);
-        if (overlay) {
-          gl.clearColor(0.0, 0.0, 0.0, 0.0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-        }
-
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-      }
+    const render = (now: number) => {
       animationFrameId = requestAnimationFrame(render);
+      if (!isVisible || !gl || !canvas) return;
+
+      const elapsed = now - lastRenderTime;
+      if (elapsed < FRAME_INTERVAL) return;
+      lastRenderTime = now - (elapsed % FRAME_INTERVAL);
+
+      const currentTime = (now - startTime) * 0.001;
+
+      // Smooth transition when theme changes
+      targetDark = themeRef.current === 'dark' || document.documentElement.classList.contains('dark') ? 1.0 : 0.0;
+      currentDark += (targetDark - currentDark) * 0.08;
+
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.enableVertexAttribArray(posAttr);
+      gl.vertexAttribPointer(posAttr, 2, gl.FLOAT, false, 0, 0);
+
+      gl.uniform1f(timeUni, currentTime);
+      gl.uniform2f(resUni, canvas.width, canvas.height);
+      gl.uniform1f(darkUni, currentDark);
+      gl.uniform1f(overlayUni, overlay ? 1.0 : 0.0);
+      if (overlay) {
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
     };
 
-    render();
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
