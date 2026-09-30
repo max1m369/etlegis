@@ -166,7 +166,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
               Нужна защита по аналогичному делу?
             </h3>
             <p className="text-sm text-neutral-300 font-light max-w-xl mx-auto mb-8 leading-relaxed">
-              Адвокаты Etlegis изучат вашу ситуацию, оценят риски и разработают индивидуальную стратегию защиты.
+              Etlegis изучит вашу ситуацию, оценит риски и разработает индивидуальную стратегию защиты.
             </p>
 
             <SpotlightButton variant="dark" className="px-8 py-4 text-xs mx-auto">

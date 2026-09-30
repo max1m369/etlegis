@@ -12,8 +12,8 @@ export default function Footer() {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [agreePrivacy, setAgreePrivacy] = useState(true);
-  const [agreePersonalData, setAgreePersonalData] = useState(true);
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [agreePersonalData, setAgreePersonalData] = useState(false);
 
   // Phone input formatting (+7 (XXX) XXX-XX-XX)
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,9 +136,6 @@ export default function Footer() {
             {/* Left Col: Heading + Description + LeadForm */}
             <div className="lg:col-span-6 max-w-[580px] space-y-6">
               <div>
-                <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#C5A059] font-medium mb-3">
-                  Консультация адвоката
-                </div>
                 <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium leading-[1.15] mb-4 text-[#F9F8F5]">
                   Первичная консультация — бесплатно
                 </h2>
