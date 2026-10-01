@@ -558,15 +558,15 @@ h1, h2, h3, .font-heading {
 
 /* Architectural blueprint dividers matching site palette */
 .blueprint-divider {
-  border-color: rgba(20, 21, 23, 0.18);
+  border-color: rgba(20, 21, 23, 0.22);
 }
 .dark .blueprint-divider {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 .blueprint-hairline {
-  border-color: rgba(20, 21, 23, 0.09);
+  border-color: rgba(20, 21, 23, 0.12);
 }
 .dark .blueprint-hairline {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.10);
 }
 
