@@ -20,9 +20,7 @@ export default function Hero() {
     }
 
     let targetX = 0;
-    let targetY = 0;
     let currentX = 0;
-    let currentY = 0;
     let animId: number;
     let isVisible = true;
     let lastTime = performance.now();
@@ -30,12 +28,10 @@ export default function Hero() {
     const handleMouseMove = (e: MouseEvent) => {
       // Normalized between -1 and 1
       targetX = (e.clientX / window.innerWidth) * 2 - 1;
-      targetY = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
     const handleMouseLeave = () => {
       targetX = 0;
-      targetY = 0;
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
@@ -56,29 +52,17 @@ export default function Hero() {
       const deltaMs = now - lastTime;
       lastTime = now;
 
-      // Smooth dampening factor matching Monument3D
-      const alpha = 1 - Math.exp(-Math.min(deltaMs, 100) / 180);
+      // Ultra-soft, gentle dampening (no sudden jumps or sharp movement)
+      const alpha = 1 - Math.exp(-Math.min(deltaMs, 100) / 400);
       currentX += (targetX - currentX) * alpha;
-      currentY += (targetY - currentY) * alpha;
 
-      // Subtle organic sway over time
-      const time = now * 0.001;
-      const swayRotY = Math.sin(time * 0.8) * 0.8;
-      const swayRotX = Math.cos(time * 0.6) * 0.6;
-      const swayRotZ = Math.sin(time * 0.5) * 0.4;
-      const swayTransX = Math.sin(time * 0.7) * 2.5;
-      const swayTransY = Math.cos(time * 0.9) * 2.0;
+      // Strictly horizontal rotation (rotateY only, no rotateX/Z): very weak, barely perceptible (~0.75deg max)
+      const rotY = (currentX * 0.75).toFixed(3);
 
-      // 3D rotation angles: rotates and gently sways with mouse movement
-      const rotY = (currentX * 5.5 + swayRotY).toFixed(3);
-      const rotX = (-currentY * 4.2 + swayRotX).toFixed(3);
-      const rotZ = (currentX * 1.2 + swayRotZ).toFixed(3);
+      // Strictly horizontal translation: very weak (max ~2.5px)
+      const transX = (currentX * 2.5).toFixed(2);
 
-      // Subtle 3D translation for depth parallax
-      const transX = (currentX * 14 + swayTransX).toFixed(2);
-      const transY = (currentY * 10 + swayTransY).toFixed(2);
-
-      el.style.transform = `perspective(1200px) translate3d(${transX}px, ${transY}px, 0) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+      el.style.transform = `perspective(1200px) translate3d(${transX}px, 0px, 0) rotateY(${rotY}deg)`;
     };
 
     animId = requestAnimationFrame(animate);

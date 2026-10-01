@@ -334,24 +334,15 @@ export default function Monument3D({
           const deltaMs = now - lastTime;
           lastTime = now;
 
-          // 3. Smooth mouse dampening
+          // 3. Smooth horizontal mouse dampening (strictly left-right)
           const alpha = 1 - Math.exp(-Math.min(deltaMs, 100) / 180);
           const diffX = targetPos.x - currentPos.x;
-          const diffY = targetPos.y - currentPos.y;
 
           if (Math.abs(diffX) > 0.0001) {
             currentPos.x += diffX * alpha;
             needsRender = true;
           } else if (currentPos.x !== targetPos.x) {
             currentPos.x = targetPos.x;
-            needsRender = true;
-          }
-
-          if (Math.abs(diffY) > 0.0001) {
-            currentPos.y += diffY * alpha;
-            needsRender = true;
-          } else if (currentPos.y !== targetPos.y) {
-            currentPos.y = targetPos.y;
             needsRender = true;
           }
 
@@ -367,27 +358,31 @@ export default function Monument3D({
             }
           }
 
-          lastRenderTime = now - (elapsedSinceLast % FRAME_INTERVAL);
-
-          // Subtle organic sway over time
-          const time = now * 0.001;
-          const subtleSwayY = Math.sin(time * 0.8) * 0.012;
-          const subtleSwayX = Math.cos(time * 0.6) * 0.008;
-
-          // Direct 3D monument mark rotation with mouse movement + gentle sway
-          if (monumentRoot) {
-            monumentRoot.rotation.y = currentPos.x * 0.16 + subtleSwayY;
-            monumentRoot.rotation.x = currentPos.y * 0.07 + subtleSwayX;
-            monumentRoot.rotation.z = -currentPos.x * 0.025;
+          // 5. ON-DEMAND RENDERING: If scene has not changed and motion settled, SKIP RENDER (0% GPU!)
+          if (!needsRender) {
+            return;
           }
 
-          // Camera horizontal and vertical parallax
+          lastRenderTime = now - (elapsedSinceLast % FRAME_INTERVAL);
+
+          // Direct 3D monument mark rotation with mouse movement: strictly horizontal (Y axis)
+          if (monumentRoot) {
+            monumentRoot.rotation.y = currentPos.x * 0.14;
+            monumentRoot.rotation.x = 0;
+            monumentRoot.rotation.z = 0;
+          }
+
+          // Camera horizontal parallax only (strictly no vertical movement)
           camera.position.copy(baseCamera);
-          camera.position.x += currentPos.x * 0.45;
-          camera.position.y += -currentPos.y * 0.22;
+          camera.position.x += currentPos.x * 0.40;
           camera.lookAt(lookAt);
 
           renderer.render(scene, camera);
+
+          // Once motion reaches target and state is current, enter idle state until next event
+          if (Math.abs(targetPos.x - currentPos.x) <= 0.0001) {
+            needsRender = false;
+          }
         };
 
         animationFrameId = requestAnimationFrame(renderLoop);
