@@ -62,12 +62,12 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                     isReversed ? 'order-1 md:order-2' : 'order-1 md:order-1'
                   } relative flex flex-col min-h-[420px] md:min-h-0`}
                 >
-                  <div className="relative w-full h-full min-h-[420px] md:min-h-0 flex-1 overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm">
-                    {/* Studio High-Contrast Monochrome Portrait */}
+                  <div className="relative w-full h-full min-h-[420px] md:min-h-0 flex-1 overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm group/photo cursor-pointer">
+                    {/* Studio Portrait: Monochrome by default, blooms into full color on hover */}
                     <img
                       src={partner.photo}
                       alt={partner.name}
-                      className="w-full h-full object-cover object-[50%_20%] transition-transform duration-700 ease-out group-hover:scale-105 filter grayscale contrast-110 brightness-95"
+                      className="w-full h-full object-cover object-[50%_20%] filter grayscale contrast-110 brightness-95 transition-all duration-700 ease-out group-hover/photo:grayscale-0 group-hover/photo:contrast-100 group-hover/photo:brightness-100 group-hover/photo:scale-105 hover:grayscale-0 hover:contrast-100 hover:brightness-100 hover:scale-105"
                       loading="eager"
                     />
                   </div>
@@ -79,7 +79,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                     isReversed
                       ? 'order-2 md:order-1 md:text-right'
                       : 'order-2 md:order-2 md:text-left'
-                  } relative p-6 sm:p-8 flex flex-col justify-between`}
+                  } relative px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-1 sm:pb-1.5 flex flex-col justify-between`}
                 >
                   {/* ==========================================================
                       CHESS-ORDER CORNER BRACKETS (ТРЕУГОЛЬНЫЕ / УГЛОВЫЕ СКОБОЧКИ):
@@ -227,17 +227,25 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                   </div>
 
                   {/* ==========================================================
-                      FOOTER: ТЕКСТОВАЯ КНОПКА БЕЗ ГРАНИЦ + РЕЕСТРОВЫЙ НОМЕР
-                      У кнопки убраны границы, остался просто интерактивный текст
+                      FOOTER: НОМЕР СЛЕВА, КНОПКА ВСЕГДА СПРАВА
+                      Привязано к нижнему краю карточки (уровень синей линии)
                       ========================================================== */}
-                  <div
-                    className={`pt-6 mt-8 border-t blueprint-divider flex flex-wrap items-center gap-4 justify-between ${
-                      isReversed ? 'md:flex-row-reverse' : ''
-                    }`}
-                  >
+                  <div className="pt-4 sm:pt-5 mt-auto border-t blueprint-divider flex flex-wrap items-center justify-between gap-4 pb-0.5 sm:pb-1">
+                    {/* LEFT: Реестровый номер / организация (всегда с левой стороны) */}
+                    <div className="text-left flex items-center">
+                      {partner.regNum ? (
+                        <span className="font-mono text-[11px] uppercase text-et-muted tracking-wider">
+                          {partner.regNum}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                    </div>
+
+                    {/* RIGHT: «Открыть досье адвоката» (всегда с правой стороны) */}
                     <Link
                       href={`/team/${partner.slug}`}
-                      className="group/btn inline-flex items-center gap-2.5 font-mono text-xs sm:text-[13px] uppercase tracking-[0.14em] font-medium text-et-dark dark:text-white hover:text-[#9B815C] dark:hover:text-accent-bronze transition-colors duration-300 py-1"
+                      className="group/btn inline-flex items-center gap-2.5 font-mono text-xs sm:text-[13px] uppercase tracking-[0.14em] font-medium text-et-dark dark:text-white hover:text-[#9B815C] dark:hover:text-accent-bronze transition-colors duration-300 py-1 ml-auto"
                     >
                       <span className="relative pb-0.5">
                         Открыть досье адвоката
@@ -248,12 +256,6 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                         →
                       </span>
                     </Link>
-
-                    {partner.regNum && (
-                      <span className="font-mono text-[11px] uppercase text-et-muted tracking-wider">
-                        {partner.regNum}
-                      </span>
-                    )}
                   </div>
                 </div>
               </article>
