@@ -198,7 +198,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                         {partner.practices.map((practice) => (
                           <Link
                             key={practice.slug}
-                            href={`/uslugi#${practice.slug}`}
+                            href={`/practices/${practice.slug}`}
                             className="group/card relative p-4 sm:p-5 border border-et-border dark:border-white/15 bg-transparent hover:bg-white dark:hover:bg-white/10 hover:border-[#9B815C] dark:hover:border-accent-bronze transition-all duration-300 rounded-[2px] hover:shadow-md flex flex-col justify-between min-h-[110px] sm:min-h-[125px] text-left overflow-hidden"
                           >
                             {/* Top Row: Large Icon in Accent Box + Arrow ↗ */}

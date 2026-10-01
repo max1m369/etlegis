@@ -2,8 +2,25 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getLawyerBySlugAsync, getLawyerBySlug, getPracticesForLawyer, getCasesForLawyer, getAllLawyers } from '@/lib/data/queries';
+import { TEAM_MEMBERS_FULL, PracticeBadge } from '@/lib/data/team-blueprint';
+import { Shield, Scale, Building2, Gavel } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+
+function PracticeIcon({ iconName, className = "w-5 h-5 shrink-0" }: { iconName: string; className?: string }) {
+  switch (iconName) {
+    case 'shield':
+      return <Shield className={className} strokeWidth={1.8} />;
+    case 'scale':
+      return <Scale className={className} strokeWidth={1.8} />;
+    case 'building':
+      return <Building2 className={className} strokeWidth={1.8} />;
+    case 'gavel':
+      return <Gavel className={className} strokeWidth={1.8} />;
+    default:
+      return <Scale className={className} strokeWidth={1.8} />;
+  }
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -69,7 +86,32 @@ export default async function LawyerDetailPage({ params }: PageProps) {
   if (!lawyer) notFound();
 
   const practices = getPracticesForLawyer(Array.isArray(lawyer.practiceIds) ? lawyer.practiceIds : []);
-  const cases = getCasesForLawyer(Array.isArray(lawyer.cases) ? lawyer.cases.map((c) => c.id) : []);
+  const directCaseIds = Array.isArray(lawyer.cases) ? lawyer.cases.map((c: any) => c.id || c.slug) : [];
+  const cases = getCasesForLawyer(directCaseIds, lawyer.id, lawyer.slug);
+
+  // Resolve practices with icons and proper URLs matching /team page
+  const blueprintMember = TEAM_MEMBERS_FULL.find(
+    (m) => m.slug === lawyer.slug || m.id === lawyer.id || (m.slug.includes('bir') && lawyer.slug.includes('bir'))
+  );
+
+  let resolvedPractices: PracticeBadge[] = [];
+
+  if (blueprintMember && blueprintMember.practices && blueprintMember.practices.length > 0) {
+    resolvedPractices = blueprintMember.practices;
+  } else {
+    resolvedPractices = practices.map((p) => {
+      let iconName: 'shield' | 'scale' | 'building' | 'gavel' = 'scale';
+      if (p.slug.includes('criminal')) iconName = 'shield';
+      else if (p.slug.includes('tax')) iconName = 'building';
+      else if (p.slug.includes('subsidiary') || p.slug.includes('bankrot')) iconName = 'gavel';
+
+      return {
+        slug: p.slug,
+        title: p.title,
+        iconName,
+      };
+    });
+  }
 
   // Schema.org Structured Data for SearchGPT, Perplexity, Google, Yandex
   const schemaJsonLd = {
@@ -93,7 +135,7 @@ export default async function LawyerDetailPage({ params }: PageProps) {
         addressCountry: 'RU',
       },
     },
-    knowsAbout: practices.map((p) => p.title),
+    knowsAbout: resolvedPractices.map((p) => p.title),
     alumniOf: Array.isArray(lawyer.education)
       ? lawyer.education.map((edu) => ({
           '@type': 'EducationalOrganization',
@@ -160,39 +202,82 @@ export default async function LawyerDetailPage({ params }: PageProps) {
                 <p className="text-xs sm:text-sm text-et-muted leading-relaxed font-light">{lawyer.bio}</p>
               </div>
 
-              {/* Курируемые практики */}
-              {practices.length > 0 && (
+              {/* Профильные практики: такие же стильные плашки с иконками, как на странице "Команда" */}
+              {resolvedPractices.length > 0 && (
                 <div className="border-t border-et-border pt-8 mb-12">
-                  <h2 className="font-serif text-xl font-medium mb-4">Профильные практики</h2>
-                  <div className="flex flex-wrap gap-3">
-                    {practices.map((p) => (
+                  <h2 className="font-serif text-xl font-medium mb-5">Профильные практики</h2>
+                  <div
+                    className={`grid gap-3.5 sm:gap-4 ${
+                      resolvedPractices.length === 3
+                        ? 'grid-cols-1 sm:grid-cols-3'
+                        : resolvedPractices.length === 2
+                        ? 'grid-cols-1 sm:grid-cols-2'
+                        : 'grid-cols-1 sm:grid-cols-2 max-w-sm'
+                    }`}
+                  >
+                    {resolvedPractices.map((practice) => (
                       <Link
-                        key={p.id}
-                        href={`/practices/${p.slug}`}
-                        className="px-4 py-2 border border-et-border text-xs bg-white dark:bg-bg-surface hover:border-et-dark dark:hover:border-accent-bronze transition-all rounded-[2px]"
+                        key={practice.slug}
+                        href={`/practices/${practice.slug}`}
+                        className="group/card relative p-4 sm:p-5 border border-et-border dark:border-white/15 bg-transparent hover:bg-white dark:hover:bg-white/10 hover:border-[#9B815C] dark:hover:border-accent-bronze transition-all duration-300 rounded-[2px] hover:shadow-md flex flex-col justify-between min-h-[110px] sm:min-h-[125px] text-left overflow-hidden"
                       >
-                        {p.title} →
+                        {/* Top Row: Large Icon in Accent Box + Arrow ↗ */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="w-10 h-10 rounded-[2px] bg-transparent border border-et-border dark:border-white/15 flex items-center justify-center text-[#9B815C] dark:text-accent-bronze group-hover/card:scale-105 group-hover/card:border-[#9B815C] group-hover/card:bg-white/60 dark:group-hover/card:bg-white/10 transition-all duration-300 shrink-0">
+                            <PracticeIcon iconName={practice.iconName} className="w-5 h-5 shrink-0 text-[#9B815C] dark:text-accent-bronze" />
+                          </div>
+                          <span className="font-mono text-xs text-et-muted/50 dark:text-white/40 group-hover/card:text-[#9B815C] dark:group-hover/card:text-accent-bronze group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5 transition-transform duration-300">
+                            ↗
+                          </span>
+                        </div>
+
+                        {/* Bottom: Practice Title */}
+                        <div className="mt-3">
+                          <div className="font-sans font-medium text-xs sm:text-[13px] text-et-dark dark:text-white leading-snug group-hover/card:text-[#507192] dark:group-hover/card:text-accent-bronze transition-colors">
+                            {practice.title}
+                          </div>
+                        </div>
+
+                        {/* Subtle Bottom Accent Line on Hover */}
+                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#9B815C] dark:bg-accent-bronze scale-x-0 group-hover/card:scale-x-100 transition-transform duration-300 origin-left" />
                       </Link>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Выигранные дела юриста */}
+              {/* Знаковые кейсы юриста: интерактивные карточки-ссылки на кейсы */}
               {cases.length > 0 && (
                 <div className="border-t border-et-border pt-8">
                   <h2 className="font-serif text-xl font-medium mb-6">Знаковые кейсы юриста</h2>
                   <div className="space-y-4">
                     {cases.map((c) => (
-                      <div key={c.id} className="bg-white border border-et-border p-6 rounded-[2px]">
-                        {c.claimAmount && (
-                          <span className="text-lg font-serif font-bold text-et-accent block mb-1">
-                            {c.claimAmount}
+                      <Link
+                        key={c.slug}
+                        href={`/cases/${c.slug}`}
+                        className="group block bg-white dark:bg-bg-surface border border-et-border dark:border-white/12 p-6 rounded-[2px] hover:border-[#9B815C] dark:hover:border-accent-bronze transition-all duration-300 hover:shadow-md relative overflow-hidden"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            {c.claimAmount && (
+                              <span className="text-lg font-serif font-bold text-et-accent dark:text-accent-bronze block mb-1.5">
+                                {c.claimAmount}
+                              </span>
+                            )}
+                            <h3 className="font-serif text-lg sm:text-xl font-medium text-et-dark dark:text-white group-hover:text-[#507192] dark:group-hover:text-accent-bronze transition-colors">
+                              {c.title}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-et-muted dark:text-white/60 mt-2 font-light leading-relaxed">
+                              {c.resultSummary}
+                            </p>
+                          </div>
+                          <span className="font-mono text-sm text-et-muted/50 dark:text-white/40 group-hover:text-[#9B815C] dark:group-hover:text-accent-bronze group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0 mt-1">
+                            ↗
                           </span>
-                        )}
-                        <h3 className="font-serif text-lg font-medium">{c.title}</h3>
-                        <p className="text-xs text-et-muted mt-2 font-light">{c.resultSummary}</p>
-                      </div>
+                        </div>
+                        {/* Hover accent line */}
+                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#9B815C] dark:bg-accent-bronze scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                      </Link>
                     ))}
                   </div>
                 </div>

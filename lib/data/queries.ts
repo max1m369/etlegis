@@ -72,8 +72,9 @@ export const ALL_CATALOG_CASES: DetailedCase[] = [
   {
     id: '4',
     slug: 'kdl-subsidiarnaya-otvetstvennost',
-    categoryLabel: 'Банкротство',
-    title: 'Привлечение / защита контролирующего должника лица к субсидиарной ответственности',
+    aliases: ['zashchita-ot-subsidiarnoy-otvetstvennosti-388-mln'],
+    categoryLabel: 'Банкротство и субсидиарная ответственность',
+    title: 'Защита контролирующего должника лица (КДЛ) от субсидиарной ответственности',
     claimAmount: '388 млн ₽',
     resultSummary: 'Обоснована добросовестность бизнес-решений директора, с доверителя полностью сняты финансовые претензии.',
     challenge: 'Конкурсный управляющий и пул кредиторов требовали привлечь бывшего генерального директора к субсидиарной ответственности на сумму 388 млн рублей, обвиняя в заключении невыгодных контрактов и несвоевременной подаче заявления о банкротстве.',
@@ -85,6 +86,7 @@ export const ALL_CATALOG_CASES: DetailedCase[] = [
   {
     id: '5',
     slug: 'arbitrazh-podryad-vzyskanie',
+    aliases: ['vzyskanie-po-dogovoru-podryada-20-mln'],
     categoryLabel: 'Арбитражное судопроизводство',
     title: 'Взыскание денежных средств по договору строительного подряда',
     claimAmount: '20+ млн ₽',
@@ -254,13 +256,106 @@ export function getPracticesForLawyer(practiceIds: string[]) {
   return mockPractices.filter((p) => practiceIds.includes(p.id) || practiceIds.includes(p.slug));
 }
 
-export function getCasesForLawyer(caseIds?: string[]) {
-  if (!caseIds || caseIds.length === 0) return [];
-  return CASES_DATA.filter((c) => caseIds.includes(c.id));
+export function getCasesForLawyer(caseIds?: string[], lawyerId?: string, lawyerSlug?: string) {
+  const matched = new Map<string, {
+    id: string;
+    slug: string;
+    title: string;
+    claimAmount?: string;
+    resultSummary: string;
+  }>();
+
+  // 1. Direct case IDs or slugs
+  if (caseIds && caseIds.length > 0) {
+    CASES_DATA.forEach((c) => {
+      if (caseIds.includes(c.id) || caseIds.includes(c.slug)) {
+        matched.set(c.slug, {
+          id: c.id,
+          slug: c.slug,
+          title: c.title,
+          claimAmount: c.claimAmount,
+          resultSummary: c.resultSummary,
+        });
+      }
+    });
+    ALL_CATALOG_CASES.forEach((c) => {
+      if (caseIds.includes(c.id) || caseIds.includes(c.slug) || (c.aliases && c.aliases.some((a) => caseIds.includes(a)))) {
+        if (!matched.has(c.slug)) {
+          matched.set(c.slug, {
+            id: c.id,
+            slug: c.slug,
+            title: c.title,
+            claimAmount: c.claimAmount,
+            resultSummary: c.resultSummary,
+          });
+        }
+      }
+    });
+  }
+
+  // 2. Cases associated by lawyerId / lawyerSlug in CASES_DATA
+  CASES_DATA.forEach((c) => {
+    const isLawyerId = lawyerId && c.lawyerIds?.includes(lawyerId);
+    const isLawyerSlug = lawyerSlug && (c.lawyerIds?.includes(lawyerSlug) || (c as any).lawyerSlug === lawyerSlug);
+    if (isLawyerId || isLawyerSlug) {
+      if (!matched.has(c.slug)) {
+        matched.set(c.slug, {
+          id: c.id,
+          slug: c.slug,
+          title: c.title,
+          claimAmount: c.claimAmount,
+          resultSummary: c.resultSummary,
+        });
+      }
+    }
+  });
+
+  // 3. Cases associated by lawyerSlug in ALL_CATALOG_CASES
+  ALL_CATALOG_CASES.forEach((c) => {
+    const isLawyer = lawyerSlug && (
+      c.lawyerSlug === lawyerSlug ||
+      (lawyerSlug.includes('bir') && c.lawyerSlug?.includes('bir')) ||
+      (lawyerSlug.includes('luch') && c.lawyerSlug?.includes('luch')) ||
+      c.lawyers?.some((l) => l.slug === lawyerSlug || (lawyerId && l.id === lawyerId))
+    );
+
+    if (isLawyer) {
+      const alreadyHas = matched.has(c.slug) || (c.aliases && c.aliases.some((a) => matched.has(a)));
+      if (!alreadyHas) {
+        matched.set(c.slug, {
+          id: c.id,
+          slug: c.slug,
+          title: c.title,
+          claimAmount: c.claimAmount,
+          resultSummary: c.resultSummary,
+        });
+      }
+    }
+  });
+
+  return Array.from(matched.values());
 }
 
 export function getAllCases() {
-  return ALL_CATALOG_CASES;
+  const all = [...ALL_CATALOG_CASES];
+  CASES_DATA.forEach((mc) => {
+    if (!all.some((c) => c.slug === mc.slug || (c.aliases && c.aliases.includes(mc.slug)))) {
+      all.push({
+        id: mc.id,
+        slug: mc.slug,
+        categoryLabel: mc.practiceId || 'Арбитражное судопроизводство',
+        title: mc.title,
+        claimAmount: mc.claimAmount,
+        resultSummary: mc.resultSummary,
+        challenge: mc.challenge,
+        solution: mc.solution,
+        courtInstance: mc.courtInstance,
+        date: mc.date,
+        lawyerSlug: mc.lawyerIds?.[0] ? LAWYERS_DATA.find((l) => l.id === mc.lawyerIds[0])?.slug : undefined,
+      });
+    }
+  });
+  return all;
 }
 
 export function getCaseBySlug(slug: string): DetailedCase | undefined {
