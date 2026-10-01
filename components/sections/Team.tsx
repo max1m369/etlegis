@@ -156,8 +156,8 @@ export const team: TeamMember[] = [
 
 export default function Team() {
   const router = useRouter();
-  const [active, setActive] = useState<number | null>(null);
-  const activeRef = useRef<number | null>(null);
+  const [active, setActive] = useState<number>(0);
+  const activeRef = useRef<number>(0);
 
   const galleryRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -207,11 +207,7 @@ export default function Team() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDrawerOpen]);
 
-  // Exact accordion layout logic:
-  // - On desktop resting (active === null): all 8 cards closed / equal width
-  // - On desktop hover: active card opens completely (expanded), others shrink
-  // - On mouse leave: card closes back, slider animates in reverse
-  // - On mobile: horizontal scrollable carousel with wide cards
+  // Exact accordion layout logic from http://127.0.0.1:5173/team.html (D:\web\ET-CODEX\3D-Mark\src\team.js)
   const layout = useCallback((animate = true) => {
     const gallery = galleryRef.current;
     if (!gallery) return;
@@ -219,118 +215,36 @@ export default function Team() {
     if (!width) return;
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    const isTablet = window.matchMedia('(max-width: 1024px)').matches;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = animate && !reduce ? 0.72 : 0;
-    const currentActive = activeRef.current;
-
-    if (isMobile) {
-      // Mobile logic: horizontal scrollable carousel with wide cards
-      const expanded = width * 0.86;
-      let x = 0;
-      cardsRef.current.forEach((card, i) => {
-        if (!card) return;
-        const selected = i === (currentActive ?? 0);
-        card.classList.toggle('is-active', selected);
-        card.setAttribute('aria-expanded', String(selected));
-        card.style.width = `${expanded}px`;
-        gsap.to(card, {
-          x,
-          clipPath: 'inset(0px 0px 0px 0px)',
-          duration,
-          ease: 'power3.inOut',
-          overwrite: true,
-        });
-        const caption = card.querySelector('.person-caption');
-        if (caption) {
-          gsap.to(caption, {
-            opacity: selected ? 1 : 0,
-            y: selected ? 0 : 12,
-            duration: duration * 0.65,
-            overwrite: true,
-          });
-        }
-        x += expanded + 8;
-      });
-      return;
-    }
-
-    // Desktop logic: resting state vs hover state
-    if (currentActive === null) {
-      // Resting state: все 8 карточек закрыты / одинаковой ширины
-      const equalWidth = width / team.length;
-      const innerImgWidth = Math.max(equalWidth * 1.8, 500);
-      let x = 0;
-
-      cardsRef.current.forEach((card) => {
-        if (!card) return;
-        card.classList.remove('is-active');
-        card.setAttribute('aria-expanded', 'false');
-
-        gsap.to(card, {
-          x,
-          width: equalWidth,
-          clipPath: 'inset(0px 0px 0px 0px)',
-          duration,
-          ease: 'power3.out',
-          overwrite: true,
-        });
-
-        const img = card.querySelector('img');
-        if (img) {
-          img.style.width = `${innerImgWidth}px`;
-          gsap.to(img, {
-            x: (equalWidth - innerImgWidth) / 2,
-            duration,
-            ease: 'power3.out',
-            overwrite: true,
-          });
-        }
-
-        const caption = card.querySelector('.person-caption');
-        if (caption) {
-          gsap.to(caption, {
-            opacity: 0,
-            y: 12,
-            duration: 0.25,
-            overwrite: true,
-          });
-        }
-
-        x += equalWidth;
-      });
-      return;
-    }
-
-    // Hover state: открывается полностью, остальные сжимаются
-    const expanded = isTablet ? width * 0.48 : Math.min(width * 0.52, 540);
-    const narrow = (width - expanded) / (team.length - 1);
+    const duration = animate && !reduce ? 0.82 : 0;
+    const expanded = isMobile ? width * 0.86 : width * 0.34;
+    const narrow = isMobile ? expanded : (width - expanded) / (team.length - 1);
     let x = 0;
 
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
-      const selected = i === currentActive;
-      const visibleWidth = selected ? expanded : narrow;
+      const selected = i === activeRef.current;
+      const visibleWidth = selected || isMobile ? expanded : narrow;
 
       card.classList.toggle('is-active', selected);
       card.setAttribute('aria-expanded', String(selected));
+      card.style.width = `${expanded}px`;
 
+      // Animate clipped frames and translations; no per-frame layout recalculation.
       gsap.to(card, {
         x,
-        width: visibleWidth,
-        clipPath: 'inset(0px 0px 0px 0px)',
+        clipPath: `inset(0px ${Math.max(0, expanded - visibleWidth)}px 0px 0px)`,
         duration,
-        ease: 'power3.out',
+        ease: 'power3.inOut',
         overwrite: true,
       });
 
       const img = card.querySelector('img');
       if (img) {
-        img.style.width = `${expanded}px`;
         gsap.to(img, {
           x: (visibleWidth - expanded) / 2,
           duration,
-          ease: 'power3.out',
+          ease: 'power3.inOut',
           overwrite: true,
         });
       }
@@ -340,23 +254,17 @@ export default function Team() {
         gsap.to(caption, {
           opacity: selected ? 1 : 0,
           y: selected ? 0 : 12,
-          duration: selected ? duration * 0.7 : 0.25,
-          delay: selected ? duration * 0.18 : 0,
+          duration: duration * 0.65,
+          delay: selected ? duration * 0.22 : 0,
           overwrite: true,
         });
       }
 
-      x += visibleWidth;
+      x += visibleWidth + (isMobile ? 8 : 0);
     });
   }, []);
 
-  const select = useCallback((index: number | null, { scroll = false, animate = true } = {}) => {
-    if (index === null) {
-      activeRef.current = null;
-      setActive(null);
-      layout(animate);
-      return;
-    }
+  const select = useCallback((index: number, { scroll = false, animate = true } = {}) => {
     const nextIdx = Math.max(0, Math.min(team.length - 1, index));
     activeRef.current = nextIdx;
     setActive(nextIdx);
@@ -374,14 +282,7 @@ export default function Team() {
 
   // Initial layout and resize observer + Touch / Pointer swipe gesture recognition
   useEffect(() => {
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    if (isMobile) {
-      select(0, { animate: false });
-    } else {
-      activeRef.current = null;
-      setActive(null);
-      layout(false);
-    }
+    select(0, { animate: false });
 
     const gallery = galleryRef.current;
     if (!gallery) return;
@@ -393,7 +294,7 @@ export default function Team() {
         layout(false);
         if (window.matchMedia('(max-width: 767px)').matches) {
           gallery.scrollTo({
-            left: (activeRef.current ?? 0) * (gallery.clientWidth * 0.86 + 8),
+            left: activeRef.current * (gallery.clientWidth * 0.86 + 8),
             behavior: 'instant',
           });
         }
@@ -615,21 +516,11 @@ export default function Team() {
     }
   };
 
-  const handlePointerEnter = (index: number) => {
+  const handlePointerEnter = (e: React.PointerEvent, index: number) => {
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
     const mobile = window.matchMedia('(max-width: 767px)');
-    if (fine.matches && !mobile.matches) {
+    if (fine.matches && !mobile.matches && e.pointerType !== 'touch') {
       select(index);
-    }
-  };
-
-  const handleGalleryMouseLeave = () => {
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const mobile = window.matchMedia('(max-width: 767px)');
-    if (fine.matches && !mobile.matches) {
-      activeRef.current = null;
-      setActive(null);
-      layout(true);
     }
   };
 
@@ -695,9 +586,9 @@ export default function Team() {
                 type="button"
                 className="gallery-nav-btn"
                 aria-label="Предыдущий сотрудник"
+                disabled={active === 0}
                 onClick={() => {
-                  const next = active === null ? team.length - 1 : (active === 0 ? team.length - 1 : active - 1);
-                  select(next, { scroll: true });
+                  select(active - 1, { scroll: true });
                 }}
               >
                 ←
@@ -707,9 +598,9 @@ export default function Team() {
                 type="button"
                 className="gallery-nav-btn"
                 aria-label="Следующий сотрудник"
+                disabled={active === team.length - 1}
                 onClick={() => {
-                  const next = active === null ? 0 : (active === team.length - 1 ? 0 : active + 1);
-                  select(next, { scroll: true });
+                  select(active + 1, { scroll: true });
                 }}
               >
                 →
@@ -722,7 +613,6 @@ export default function Team() {
             className="team-gallery"
             aria-label="Сотрудники бюро"
             ref={galleryRef}
-            onMouseLeave={handleGalleryMouseLeave}
           >
             {team.map((p, i) => (
               <button
@@ -735,7 +625,7 @@ export default function Team() {
                 aria-label={`${p.name}, ${p.role}. Открыть профиль`}
                 type="button"
                 onClick={() => handleCardClick(i)}
-                onPointerEnter={() => handlePointerEnter(i)}
+                onPointerEnter={(e) => handlePointerEnter(e, i)}
                 onFocus={() => select(i, { scroll: true })}
                 onKeyDown={(e) => handleKeyDown(e, i)}
               >
@@ -759,23 +649,14 @@ export default function Team() {
                 />
                 <span className="person-shade" aria-hidden="true" />
                 
-                {/* Карточка: Слева имя/должность, справа - описание человека */}
+                {/* Карточка: Роль, Имя Фамилия и стрелка как в оригинале team.html */}
                 <span className="person-caption" aria-hidden="true">
-                  <div className="person-caption-content">
-                    <div className="person-caption-main">
-                      <small>{p.role}</small>
-                      <strong>
-                        {p.name.split(' ')[0]}
-                        <br />
-                        {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
-                      </strong>
-                    </div>
-
-                    <div className="person-caption-desc">
-                      <span className="caption-practice">{p.practice}</span>
-                      <p className="caption-bio">{p.description}</p>
-                    </div>
-                  </div>
+                  <small>{p.role}</small>
+                  <strong>
+                    {p.name.split(' ')[0]}
+                    <br />
+                    {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
+                  </strong>
                 </span>
               </button>
             ))}
