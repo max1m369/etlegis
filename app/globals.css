@@ -555,3 +555,18 @@ h1, h2, h3, .font-heading {
     max-width: 100%;
   }
 }
+
+/* Architectural blueprint dividers matching site palette */
+.blueprint-divider {
+  border-color: rgba(20, 21, 23, 0.18);
+}
+.dark .blueprint-divider {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.blueprint-hairline {
+  border-color: rgba(20, 21, 23, 0.09);
+}
+.dark .blueprint-hairline {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
