@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useConsultationModal } from "@/components/providers/ModalProvider";
 import SpotlightButton from "@/components/ui/SpotlightButton";
 import Monument3D from "@/components/ui/Monument3D";
@@ -9,6 +9,87 @@ import SeregaGentleText from "@/components/ui/SeregaGentleText";
 
 export default function Hero() {
   const { openModal } = useConsultationModal();
+  const headlineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = headlineRef.current;
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let animId: number;
+    let isVisible = true;
+    let lastTime = performance.now();
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalized between -1 and 1
+      targetX = (e.clientX / window.innerWidth) * 2 - 1;
+      targetY = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+
+    const handleMouseLeave = () => {
+      targetX = 0;
+      targetY = 0;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+
+    const animate = (now: number) => {
+      animId = requestAnimationFrame(animate);
+      if (!isVisible || document.visibilityState !== "visible") return;
+
+      const deltaMs = now - lastTime;
+      lastTime = now;
+
+      // Smooth dampening factor matching Monument3D
+      const alpha = 1 - Math.exp(-Math.min(deltaMs, 100) / 180);
+      currentX += (targetX - currentX) * alpha;
+      currentY += (targetY - currentY) * alpha;
+
+      // Subtle organic sway over time
+      const time = now * 0.001;
+      const swayRotY = Math.sin(time * 0.8) * 0.8;
+      const swayRotX = Math.cos(time * 0.6) * 0.6;
+      const swayRotZ = Math.sin(time * 0.5) * 0.4;
+      const swayTransX = Math.sin(time * 0.7) * 2.5;
+      const swayTransY = Math.cos(time * 0.9) * 2.0;
+
+      // 3D rotation angles: rotates and gently sways with mouse movement
+      const rotY = (currentX * 5.5 + swayRotY).toFixed(3);
+      const rotX = (-currentY * 4.2 + swayRotX).toFixed(3);
+      const rotZ = (currentX * 1.2 + swayRotZ).toFixed(3);
+
+      // Subtle 3D translation for depth parallax
+      const transX = (currentX * 14 + swayTransX).toFixed(2);
+      const transY = (currentY * 10 + swayTransY).toFixed(2);
+
+      el.style.transform = `perspective(1200px) translate3d(${transX}px, ${transY}px, 0) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+    };
+
+    animId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <section className="relative bg-[#FAF6EE] dark:bg-[#0D0F12] min-h-screen lg:h-screen flex flex-col justify-between px-[clamp(1.5rem,4vw,6rem)] pt-[clamp(5.5rem,11vh,7.5rem)] pb-[clamp(2.5rem,6vh,4.5rem)] w-full overflow-hidden transition-colors duration-500">
@@ -34,7 +115,10 @@ export default function Hero() {
 
       {/* Слой 3: Контент интерфейса */}
       <div className="relative z-30 flex flex-col lg:flex-row items-center justify-between gap-6 w-full my-auto pointer-events-none">
-        <div className="w-full lg:w-auto pointer-events-auto">
+        <div
+          ref={headlineRef}
+          className="w-full lg:w-auto pointer-events-auto [transform-style:preserve-3d] will-change-transform origin-left"
+        >
           <h1 className="font-heading font-normal text-[clamp(1.85rem,7.5vw,2.3rem)] lg:text-[clamp(2.15rem,4.15vw,9.5rem)] tracking-tight text-et-dark leading-[1.12] w-full max-w-[clamp(340px,52vw,1750px)]">
             <span className="block">
               <SeregaGentleText delay={120} stagger={18}>
