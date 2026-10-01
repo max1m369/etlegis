@@ -43,9 +43,19 @@ export default function Blog() {
 
               <div>
                 <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#ECECE8] dark:border-border-subtle">
-                  <span className="text-[11px] uppercase tracking-wider font-semibold text-[#9B815C] dark:text-accent-bronze font-mono">
-                    {article.category}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] uppercase tracking-wider font-semibold text-[#9B815C] dark:text-accent-bronze font-mono">
+                      {article.category}
+                    </span>
+                    {article.videoUrl && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded-[2px] bg-red-500/10 text-red-600 dark:text-red-400 font-medium">
+                        <svg className="w-2 h-2 fill-current" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <span>Видео</span>
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-[#5E6267] dark:text-et-muted font-mono">
                     {article.date}
                   </span>

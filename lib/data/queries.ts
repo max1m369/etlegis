@@ -226,6 +226,7 @@ export async function getLawyerBySlugAsync(slug: string): Promise<Lawyer | undef
     });
 
     if (found) {
+      const isBir = found.slug?.includes('bir') || (found.name && found.name.includes('Бирюков'));
       const staticMock = getLawyerBySlug(slug);
       if (staticMock) {
         return {
@@ -489,5 +490,17 @@ export function getAllArticles() {
 }
 
 export function getArticleBySlug(slug: string) {
-  return ARTICLES_DATA.find((a) => a.slug === slug || a.id === slug);
+  const norm = slug.toLowerCase();
+  let decoded = norm;
+  try {
+    decoded = decodeURIComponent(slug).toLowerCase();
+  } catch (e) {}
+
+  return ARTICLES_DATA.find((a) => {
+    if (a.slug === slug || a.id === slug) return true;
+    if (a.slug.toLowerCase() === norm || a.slug.toLowerCase() === decoded) return true;
+    if (a.aliases && a.aliases.some((al) => al === slug || al.toLowerCase() === norm || al.toLowerCase() === decoded)) return true;
+    return false;
+  });
 }
+

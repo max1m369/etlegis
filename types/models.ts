@@ -58,10 +58,15 @@ export interface Case {
 export interface Article {
   id: string;
   slug: string;
+  aliases?: string[];
   title: string;
   category: string;
   previewText: string;
   content: string;
+  videoUrl?: string | null;
+  fullArticleUrl?: string | null;
   authorId?: string;
   date: string;
+  rawDate?: string;
 }
+
