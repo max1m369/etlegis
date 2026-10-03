@@ -31,8 +31,8 @@ const config: Config = {
         "et-surface-alt": "var(--et-surface-alt, #ECECE8)",
       },
       fontFamily: {
-        heading: ["var(--font-heading)", "Cormorant Garamond", "serif"],
-        serif: ["var(--font-heading)", "Cormorant Garamond", "serif"],
+        heading: ["var(--font-heading)", "Amstelvar", "Cormorant Garamond", "serif"],
+        serif: ["var(--font-heading)", "Amstelvar", "Cormorant Garamond", "serif"],
         body: ["var(--font-body)", "Jost", "sans-serif"],
       },
       borderRadius: {

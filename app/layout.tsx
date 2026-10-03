@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Jost, Oswald } from "next/font/google";
+import localFont from "next/font/local";
+import { Jost, Oswald } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ConsultationModal } from "@/components/ui/ConsultationModal";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+const amstelvar = localFont({
+  src: [
+    {
+      path: "../public/fonts/Amstelvar-Roman.ttf",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Amstelvar-Italic.ttf",
+      style: "italic",
+    },
+  ],
   variable: "--font-heading",
   display: "swap",
+  fallback: ["Cormorant Garamond", "serif"],
 });
 
 const jost = Jost({
@@ -42,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${cormorant.variable} ${jost.variable} ${oswald.variable}`}>
+    <html lang="ru" className={`${amstelvar.variable} ${jost.variable} ${oswald.variable}`}>
       <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white overflow-x-hidden max-w-full">
         <ThemeProvider>
           <SmoothScrollProvider>

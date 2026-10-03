@@ -87,7 +87,7 @@ html.lenis, html.lenis body {
 
 /* Serif headings */
 h1, h2, h3, .font-heading {
-  font-family: var(--font-heading), 'Cormorant Garamond', serif;
+  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', serif;
 }
 
 /* Hide scrollbar for mobile swipe carousels */
@@ -232,7 +232,7 @@ h1, h2, h3, .font-heading {
    OUTLINE STAT NUMBERS (Numbers / О компании section)
    ======================================================== */
 .stat-outline-num {
-  font-family: var(--font-heading), 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
   font-weight: 300;
   font-variant-numeric: lining-nums;
   font-feature-settings: "lnum" 1;
@@ -352,7 +352,7 @@ h1, h2, h3, .font-heading {
 }
 
 .person-caption strong {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(28px, 2.3vw, 36px);
   font-weight: 400;
   display: block;
@@ -387,7 +387,7 @@ h1, h2, h3, .font-heading {
   display: grid;
   place-items: center;
   height: 100%;
-  font: 64px 'Cormorant Garamond', Georgia, serif;
+  font: 64px var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
   color: #566453;
   pointer-events: none;
 }
