@@ -6,6 +6,7 @@ import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ConsultationModal } from "@/components/ui/ConsultationModal";
+import FontSwitcherToolbar from "@/components/ui/FontSwitcherToolbar";
 
 const amstelvar = localFont({
   src: [
@@ -18,9 +19,53 @@ const amstelvar = localFont({
       style: "italic",
     },
   ],
-  variable: "--font-heading",
+  variable: "--font-amstelvar",
   display: "swap",
-  fallback: ["Cormorant Garamond", "serif"],
+  fallback: ["serif"],
+});
+
+const jun = localFont({
+  src: [
+    {
+      path: "../public/fonts/Jun-Regular.otf",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Jun-Italic.otf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-jun",
+  display: "swap",
+  fallback: ["serif"],
+});
+
+const synerga = localFont({
+  src: [
+    {
+      path: "../public/fonts/SynergaPro-Regular.otf",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/SynergaPro-Italic.otf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-synerga",
+  display: "swap",
+  fallback: ["serif"],
+});
+
+const metrika = localFont({
+  src: [
+    {
+      path: "../public/fonts/Metrika-Regular.otf",
+      style: "normal",
+    },
+  ],
+  variable: "--font-metrika",
+  display: "swap",
+  fallback: ["serif"],
 });
 
 const jost = Jost({
@@ -51,13 +96,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${amstelvar.variable} ${jost.variable} ${oswald.variable}`}>
+    <html
+      lang="ru"
+      data-heading-font="amstelvar"
+      className={`${amstelvar.variable} ${jun.variable} ${synerga.variable} ${metrika.variable} ${jost.variable} ${oswald.variable}`}
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var f=localStorage.getItem('etlegis_heading_font');if(f){document.documentElement.setAttribute('data-heading-font',f);document.documentElement.style.setProperty('--font-heading','var(--font-'+f+'), serif');}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white overflow-x-hidden max-w-full">
         <ThemeProvider>
           <SmoothScrollProvider>
             <ModalProvider>
               {children}
               <ConsultationModal />
+              <FontSwitcherToolbar />
             </ModalProvider>
           </SmoothScrollProvider>
         </ThemeProvider>

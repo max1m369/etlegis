@@ -85,9 +85,41 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 
+/* Heading font configuration & dynamic variants (Amstelvar, Jun, Synerga Pro, Metrika) */
+:root,
+html[data-heading-font="amstelvar"] {
+  --font-heading: var(--font-amstelvar), 'Amstelvar', serif;
+}
+
+html[data-heading-font="jun"] {
+  --font-heading: var(--font-jun), 'Jun', serif;
+}
+
+html[data-heading-font="synerga"] {
+  --font-heading: var(--font-synerga), 'Synerga Pro', serif;
+}
+
+html[data-heading-font="metrika"] {
+  --font-heading: var(--font-metrika), 'Metrika', serif;
+}
+
 /* Serif headings */
 h1, h2, h3, .font-heading {
-  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', serif;
+  font-family: var(--font-heading), serif;
+}
+
+/* Specific font utility classes for canvas comparison */
+.font-preview-amstelvar {
+  font-family: var(--font-amstelvar), 'Amstelvar', serif !important;
+}
+.font-preview-jun {
+  font-family: var(--font-jun), 'Jun', serif !important;
+}
+.font-preview-synerga {
+  font-family: var(--font-synerga), 'Synerga Pro', serif !important;
+}
+.font-preview-metrika {
+  font-family: var(--font-metrika), 'Metrika', serif !important;
 }
 
 /* Hide scrollbar for mobile swipe carousels */
@@ -232,7 +264,7 @@ h1, h2, h3, .font-heading {
    OUTLINE STAT NUMBERS (Numbers / О компании section)
    ======================================================== */
 .stat-outline-num {
-  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-heading), serif;
   font-weight: 300;
   font-variant-numeric: lining-nums;
   font-feature-settings: "lnum" 1;
@@ -352,7 +384,7 @@ h1, h2, h3, .font-heading {
 }
 
 .person-caption strong {
-  font-family: var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-heading), serif;
   font-size: clamp(28px, 2.3vw, 36px);
   font-weight: 400;
   display: block;
@@ -387,7 +419,7 @@ h1, h2, h3, .font-heading {
   display: grid;
   place-items: center;
   height: 100%;
-  font: 64px var(--font-heading), 'Amstelvar', 'Cormorant Garamond', Georgia, serif;
+  font: 64px var(--font-heading), serif;
   color: #566453;
   pointer-events: none;
 }
