@@ -555,9 +555,6 @@ export default function Team() {
       <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full">
         {/* 1. Левая колонка: Заголовок + подзаголовок (до синей линии сетки, как в Ключевых практиках) */}
         <div className="w-full lg:w-[32%] xl:w-[30%] lg:sticky lg:top-28 shrink-0">
-          <span className="text-xs uppercase tracking-widest text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
-            Лидеры практик
-          </span>
           <h2
             id="team-title"
             className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-4"

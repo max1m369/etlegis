@@ -15,9 +15,6 @@ export function PracticesSection() {
       <div className="flex flex-col lg:flex-row gap-8 xl:gap-14 items-start w-full">
         {/* Левая колонка: Большой заголовок (соразмерный с Hero) */}
         <div className="w-full lg:w-[32%] xl:w-[30%] lg:sticky lg:top-28 shrink-0">
-          <span className="text-xs uppercase tracking-widest text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
-            Компетенции
-          </span>
           <h2 className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-et-dark leading-[1.08]">
             Ключевые практики
           </h2>
