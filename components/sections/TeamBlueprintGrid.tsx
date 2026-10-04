@@ -54,20 +54,20 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
             return (
               <article
                 key={partner.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-stretch group relative"
+                className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-start group relative"
               >
-                {/* PHOTO COLUMN: Stretches to match top and bottom corner brackets */}
+                {/* PHOTO COLUMN: Strictly locks to exact 1048:1400 portrait aspect ratio matching source files */}
                 <div
                   className={`md:col-span-5 ${
                     isReversed ? 'order-1 md:order-2' : 'order-1 md:order-1'
-                  } relative flex flex-col min-h-[420px] md:min-h-0`}
+                  } relative flex flex-col justify-start`}
                 >
-                  <div className="relative w-full h-full min-h-[420px] md:min-h-0 flex-1 overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm group/photo cursor-pointer">
+                  <div className="relative w-full aspect-[1048/1400] overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm group/photo cursor-pointer">
                     {/* Studio Portrait: Monochrome by default, blooms into full color on hover */}
                     <img
                       src={partner.photo}
                       alt={partner.name}
-                      className="w-full h-full object-cover object-[50%_20%] filter grayscale contrast-110 brightness-95 transition-all duration-700 ease-out group-hover/photo:grayscale-0 group-hover/photo:contrast-100 group-hover/photo:brightness-100 group-hover/photo:scale-105 hover:grayscale-0 hover:contrast-100 hover:brightness-100 hover:scale-105"
+                      className="w-full h-full object-cover object-top filter grayscale contrast-110 brightness-95 transition-all duration-700 ease-out group-hover/photo:grayscale-0 group-hover/photo:contrast-100 group-hover/photo:brightness-100 group-hover/photo:scale-105 hover:grayscale-0 hover:contrast-100 hover:brightness-100 hover:scale-105"
                       loading="eager"
                     />
                   </div>
@@ -79,7 +79,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                     isReversed
                       ? 'order-2 md:order-1 md:text-right'
                       : 'order-2 md:order-2 md:text-left'
-                  } relative px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-1 sm:pb-1.5 flex flex-col justify-between`}
+                  } relative px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-3 sm:pb-4 flex flex-col justify-between`}
                 >
                   {/* ==========================================================
                       CHESS-ORDER CORNER BRACKETS (ТРЕУГОЛЬНЫЕ / УГЛОВЫЕ СКОБОЧКИ):
@@ -139,9 +139,9 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                       </Link>
                     </h3>
 
-                    {/* Role / Subtitle */}
+                    {/* Role / Subtitle (+2pt) */}
                     <div
-                      className={`font-mono text-xs sm:text-sm uppercase tracking-[0.14em] text-[#9B815C] dark:text-accent-bronze font-medium flex items-center mt-2 ${
+                      className={`font-mono text-sm sm:text-base uppercase tracking-[0.14em] text-[#9B815C] dark:text-accent-bronze font-medium flex items-center mt-2 ${
                         isReversed ? 'md:justify-end' : 'md:justify-start'
                       }`}
                     >
@@ -153,37 +153,38 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                         ========================================================== */}
                     <div className="w-full border-b-2 blueprint-divider mt-3 mb-6" />
 
-                    {/* 2-Column Specs: Специализация & Опыт (на русском языке) */}
-                    <div
-                      className={`grid grid-cols-1 sm:grid-cols-2 gap-6 my-2 ${
-                        isReversed ? 'text-left md:text-right' : 'text-left'
-                      }`}
-                    >
-                      <div>
-                        <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
-                          Специализация:
-                        </div>
-                        <div className="font-sans text-xs md:text-sm text-et-dark/90 leading-snug font-normal">
-                          {partner.specialization}
-                        </div>
+                    {/* ==========================================================
+                        VERTICAL STACK: 1. ОПЫТ -> 2. СПЕЦИАЛИЗАЦИЯ
+                        ========================================================== */}
+                    {/* 1. ОПЫТ */}
+                    <div className={`mb-5 ${isReversed ? 'text-left md:text-right' : 'text-left'}`}>
+                      <div className="font-mono text-xs md:text-[13px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
+                        Опыт:
                       </div>
+                      <div className="font-sans text-sm md:text-base text-et-dark/90 dark:text-white/90 leading-relaxed font-normal">
+                        {partner.experience}
+                      </div>
+                    </div>
 
-                      <div>
-                        <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
-                          Опыт:
-                        </div>
-                        <div className="font-sans text-xs md:text-sm text-et-dark/90 leading-snug font-normal">
-                          {partner.experience}
-                        </div>
+                    {/* 2. СПЕЦИАЛИЗАЦИЯ */}
+                    <div className={`mb-6 ${isReversed ? 'text-left md:text-right' : 'text-left'}`}>
+                      <div className="font-mono text-xs md:text-[13px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
+                        Специализация:
+                      </div>
+                      <div className="font-sans text-sm md:text-base text-et-dark/90 dark:text-white/90 leading-relaxed font-normal">
+                        {partner.specialization}
                       </div>
                     </div>
 
                     {/* ==========================================================
-                        ПРОФИЛЬНЫЕ ПРАКТИКИ: ПЛАШКИ С КОНТУРОМ
-                        Прозрачный фон, контур, появление светлого фона при наведении
+                        3. ПРОФИЛЬНЫЕ ПРАКТИКИ: ПЛАШКИ С КОНТУРОМ
                         ========================================================== */}
-                    <div className="mt-7">
-                      <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-3.5 font-semibold">
+                    <div className="mb-6">
+                      <div
+                        className={`font-mono text-xs md:text-[13px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-3.5 font-semibold ${
+                          isReversed ? 'text-left md:text-right' : 'text-left'
+                        }`}
+                      >
                         Профильные практики:
                       </div>
                       <div
@@ -211,9 +212,9 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                               </span>
                             </div>
 
-                            {/* Bottom: Practice Title (Word 'ПРАКТИКА' removed) */}
+                            {/* Bottom: Practice Title (+2pt) */}
                             <div className="mt-3">
-                              <div className="font-sans font-medium text-xs sm:text-[13px] text-et-dark dark:text-white leading-snug group-hover/card:text-[#507192] dark:group-hover/card:text-accent-bronze transition-colors">
+                              <div className="font-sans font-medium text-sm sm:text-[15px] text-et-dark dark:text-white leading-snug group-hover/card:text-[#507192] dark:group-hover/card:text-accent-bronze transition-colors">
                                 {practice.title}
                               </div>
                             </div>
@@ -226,47 +227,48 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                     </div>
 
                     {/* ==========================================================
-                        ОБРАЗОВАНИЕ И КВАЛИФИКАЦИЯ:
+                        4. ОБРАЗОВАНИЕ И КВАЛИФИКАЦИЯ:
                         ========================================================== */}
                     {partner.education && partner.education.length > 0 && (
-                      <div className="mt-6 sm:mt-7">
+                      <div className="mb-6">
                         <div
-                          className={`font-mono text-[10px] md:text-[11px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-2.5 font-semibold ${
+                          className={`font-mono text-xs md:text-[13px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-2.5 font-semibold ${
                             isReversed ? 'text-left md:text-right' : 'text-left'
                           }`}
                         >
                           Образование:
                         </div>
-                        <ul
-                          className={`space-y-1.5 flex flex-col ${
+                        <div
+                          className={`flex flex-col ${
                             isReversed ? 'items-start md:items-end' : 'items-start'
                           }`}
                         >
-                          {partner.education.map((item, idx) => (
-                            <li
-                              key={idx}
-                              className="font-sans text-xs md:text-sm text-et-dark/85 dark:text-white/80 leading-snug font-normal flex items-start gap-2 text-left"
-                            >
-                              <span className="text-[#9B815C] dark:text-accent-bronze font-mono text-xs select-none shrink-0 mt-0.5">
-                                —
-                              </span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
+                          <ul className="space-y-2 flex flex-col items-start">
+                            {partner.education.map((item, idx) => (
+                              <li
+                                key={idx}
+                                className="font-sans text-sm md:text-base text-et-dark/85 dark:text-white/80 leading-relaxed font-normal flex items-start gap-2.5 text-left"
+                              >
+                                <span className="text-[#9B815C] dark:text-accent-bronze font-mono text-sm select-none shrink-0 mt-0.5">
+                                  —
+                                </span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     )}
                   </div>
 
                   {/* ==========================================================
-                      FOOTER: НОМЕР СЛЕВА, КНОПКА ВСЕГДА СПРАВА
-                      Привязано к нижнему краю карточки (уровень синей линии)
+                      FOOTER: НОМЕР СЛЕВА (+2pt), КНОПКА ВСЕГДА СПРАВА (+2pt)
                       ========================================================== */}
-                  <div className="pt-4 sm:pt-5 mt-auto border-t blueprint-divider flex flex-wrap items-center justify-between gap-4 pb-0.5 sm:pb-1">
-                    {/* LEFT: Реестровый номер / организация (всегда с левой стороны) */}
+                  <div className="pt-5 mt-auto border-t blueprint-divider flex flex-wrap items-center justify-between gap-4 pb-0.5 sm:pb-1">
+                    {/* LEFT: Реестровый номер / организация (всегда с левой стороны, +2pt) */}
                     <div className="text-left flex items-center">
                       {partner.regNum ? (
-                        <span className="font-mono text-[11px] uppercase text-et-muted tracking-wider">
+                        <span className="font-mono text-[13px] md:text-sm uppercase text-et-muted tracking-wider">
                           {partner.regNum}
                         </span>
                       ) : (
@@ -274,10 +276,10 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                       )}
                     </div>
 
-                    {/* RIGHT: «Открыть досье адвоката» (всегда с правой стороны) */}
+                    {/* RIGHT: «Открыть досье адвоката» (всегда с правой стороны, +2pt) */}
                     <Link
                       href={`/team/${partner.slug}`}
-                      className="group/btn inline-flex items-center gap-2.5 font-mono text-xs sm:text-[13px] uppercase tracking-[0.14em] font-medium text-et-dark dark:text-white hover:text-[#9B815C] dark:hover:text-accent-bronze transition-colors duration-300 py-1 ml-auto"
+                      className="group/btn inline-flex items-center gap-2.5 font-mono text-sm sm:text-[15px] uppercase tracking-[0.14em] font-medium text-et-dark dark:text-white hover:text-[#9B815C] dark:hover:text-accent-bronze transition-colors duration-300 py-1 ml-auto"
                     >
                       <span className="relative pb-0.5">
                         Открыть досье адвоката
