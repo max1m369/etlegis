@@ -105,17 +105,17 @@ export default function Hero() {
         >
           <h1 className="font-heading font-normal text-[clamp(1.85rem,7.5vw,2.3rem)] lg:text-[clamp(2.15rem,4.15vw,9.5rem)] tracking-tight text-et-dark leading-[1.12] w-full max-w-[clamp(340px,52vw,1750px)]">
             <span className="block">
-              <SeregaGentleText delay={120} stagger={18}>
+              <SeregaGentleText delay={40} stagger={16}>
                 Мы — команда экспертов,
               </SeregaGentleText>
             </span>
             <span className="block">
-              <SeregaGentleText delay={560} stagger={16} className="italic font-serif text-et-muted">
+              <SeregaGentleText delay={220} stagger={14} className="italic font-serif text-et-muted">
                 которая знает, как защитить
               </SeregaGentleText>
             </span>
             <span className="block">
-              <SeregaGentleText delay={1020} stagger={20}>
+              <SeregaGentleText delay={420} stagger={16}>
                 ваш бизнес.
               </SeregaGentleText>
             </span>

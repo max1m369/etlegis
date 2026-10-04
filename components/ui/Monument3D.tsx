@@ -18,6 +18,7 @@ export default function Monument3D({
   showFragments = true,
 }: Monument3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasHostRef = useRef<HTMLDivElement | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isFallback, setIsFallback] = useState(false);
   const { theme } = useTheme();
@@ -26,7 +27,8 @@ export default function Monument3D({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    const canvasHost = canvasHostRef.current;
+    if (!container || !canvasHost) return;
 
     let destroyed = false;
     let renderer: THREE.WebGLRenderer | null = null;
@@ -44,7 +46,7 @@ export default function Monument3D({
     const currentPos = { x: 0, y: 0 };
 
     async function initScene() {
-      if (!container) return;
+      if (!container || !canvasHost) return;
 
       try {
         renderer = new THREE.WebGLRenderer({
@@ -72,8 +74,8 @@ export default function Monument3D({
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
       renderer.domElement.style.display = 'block';
-      container.innerHTML = '';
-      container.appendChild(renderer.domElement);
+      canvasHost.innerHTML = '';
+      canvasHost.appendChild(renderer.domElement);
 
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(32, 1, 0.1, 150);
@@ -434,12 +436,10 @@ export default function Monument3D({
       className={`absolute inset-0 select-none overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {/* Fallback image when 3D is still loading or WebGL is lost */}
-      <img
-        src="/monument-render.png"
-        alt="ETLEGIS 3D Monument"
-        className={`absolute right-0 top-0 w-full lg:w-[62%] h-full object-contain pointer-events-none transition-opacity duration-700 ${
-          isLoaded && !isFallback ? 'opacity-0' : 'opacity-100'
+      <div
+        ref={canvasHostRef}
+        className={`w-full h-full transition-opacity duration-700 ease-out ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
       />
     </div>

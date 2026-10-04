@@ -6,7 +6,9 @@ const getApiUrl = (endpoint: string) => {
   if (typeof window !== 'undefined') {
     return `/api/payload/${endpoint}`;
   }
-  return `http://localhost:3001/api/payload/${endpoint}`;
+  const payloadUrl = process.env.PAYLOAD_URL;
+  if (!payloadUrl) return null;
+  return `${payloadUrl}/api/payload/${endpoint}`;
 };
 
 export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
@@ -56,6 +58,7 @@ export function mapPayloadCaseToDetailedCase(doc: any): DetailedCase {
 export async function getDynamicCases() {
   try {
     const url = getApiUrl('cases?depth=2&limit=100');
+    if (!url) return fallbackCases;
     const res = await fetch(url, {
       cache: 'no-store',
     });
@@ -80,7 +83,6 @@ export async function getDynamicCases() {
 
     return mapped;
   } catch (err) {
-    console.warn('[Payload API] Failed to fetch cases, using fallback:', err);
     return fallbackCases;
   }
 }
@@ -88,6 +90,7 @@ export async function getDynamicCases() {
 export async function getDynamicPractices() {
   try {
     const url = getApiUrl('practices?depth=1&limit=50');
+    if (!url) return fallbackPractices;
     const res = await fetch(url, {
       cache: 'no-store',
     });
@@ -109,7 +112,12 @@ export async function getDynamicPractices() {
 
 export async function getDynamicEmployees() {
   try {
-    const res = await fetch('http://localhost:3001/api/employees?depth=2&limit=100', {
+    const payloadUrl = process.env.PAYLOAD_URL;
+    if (!payloadUrl && typeof window === 'undefined') return null;
+    const url = typeof window !== 'undefined'
+      ? '/api/payload/employees?depth=2&limit=100'
+      : `${payloadUrl}/api/employees?depth=2&limit=100`;
+    const res = await fetch(url, {
       cache: 'no-store',
     });
     if (!res.ok) return null;

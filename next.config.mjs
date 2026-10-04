@@ -6,6 +6,7 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH !== undefined
 
 const nextConfig = {
   reactStrictMode: true,
+  devIndicators: false,
   output: isStaticExport ? 'export' : undefined,
   basePath: basePath || undefined,
   assetPrefix: basePath || undefined,
@@ -17,16 +18,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
-  ...(isStaticExport ? {} : {
-    async rewrites() {
-      return [
-        {
-          source: '/api/payload/:path*',
-          destination: 'http://localhost:3001/api/payload/:path*',
-        },
-      ];
-    },
-  }),
 };
 
 export default nextConfig;
