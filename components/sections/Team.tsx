@@ -217,7 +217,7 @@ export default function Team() {
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const duration = animate && !reduce ? 0.82 : 0;
-    const expanded = isMobile ? width * 0.86 : width * 0.34;
+    const expanded = isMobile ? width * 0.86 : Math.min(Math.max(width * 0.52, 460), width - (team.length - 1) * 45);
     const narrow = isMobile ? expanded : (width - expanded) / (team.length - 1);
     let x = 0;
 
@@ -649,14 +649,23 @@ export default function Team() {
                 />
                 <span className="person-shade" aria-hidden="true" />
                 
-                {/* Карточка: Роль, Имя Фамилия и стрелка как в оригинале team.html */}
+                {/* Карточка: Слева имя/должность, справа - краткая информация */}
                 <span className="person-caption" aria-hidden="true">
-                  <small>{p.role}</small>
-                  <strong>
-                    {p.name.split(' ')[0]}
-                    <br />
-                    {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
-                  </strong>
+                  <div className="person-caption-content">
+                    <div className="person-caption-main">
+                      <small>{p.role}</small>
+                      <strong>
+                        {p.name.split(' ')[0]}
+                        <br />
+                        {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
+                      </strong>
+                    </div>
+
+                    <div className="person-caption-desc">
+                      <span className="caption-practice">{p.practice}</span>
+                      <p className="caption-bio">{p.description}</p>
+                    </div>
+                  </div>
                 </span>
               </button>
             ))}

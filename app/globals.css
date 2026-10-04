@@ -336,17 +336,29 @@ h1, h2, h3, .font-heading {
 
 .person-caption {
   position: absolute;
-  left: 26px;
-  bottom: 27px;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
   display: block;
   color: #fff;
-  white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   z-index: 10;
 }
 
-.person-caption small {
+.person-caption-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.person-caption-main {
+  flex-shrink: 0;
+}
+
+.person-caption-main small {
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -356,25 +368,82 @@ h1, h2, h3, .font-heading {
   color: #c5a880;
 }
 
-.person-caption strong {
-  font-family: var(--font-heading), serif;
-  font-size: clamp(28px, 2.3vw, 36px);
+.person-caption-main strong {
+  font-family: var(--font-heading), 'Amstelvar', serif;
+  font-size: clamp(24px, 2.1vw, 34px);
   font-weight: 400;
   display: block;
   line-height: 1.05;
   color: #fff;
+  white-space: nowrap;
 }
 
-.person-caption .caption-arrow {
+.person-caption-main .caption-arrow {
   font-family: Arial, sans-serif;
-  font-size: 22px;
-  margin-left: 12px;
+  font-size: 18px;
+  margin-left: 6px;
   display: inline-block;
   transition: transform 0.2s ease;
 }
 
 .person-card:hover .caption-arrow {
   transform: translate(3px, -3px);
+}
+
+.person-caption-desc {
+  flex: 1;
+  min-width: 0;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.caption-practice {
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c5a880;
+  line-height: 1.25;
+}
+
+.caption-bio {
+  font-family: var(--font-body), 'Jost', sans-serif;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .person-caption {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+  }
+  .person-caption-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .person-caption-desc {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 6px;
+    max-width: 100%;
+  }
+  .caption-bio {
+    -webkit-line-clamp: 2;
+  }
 }
 
 .person-card:focus-visible {
