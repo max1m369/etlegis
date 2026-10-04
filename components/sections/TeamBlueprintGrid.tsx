@@ -54,15 +54,15 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
             return (
               <article
                 key={partner.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-start group relative"
+                className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-stretch group relative"
               >
-                {/* PHOTO COLUMN: Strictly locks to exact 1048:1400 portrait aspect ratio matching source files */}
+                {/* PHOTO COLUMN: Stretches to align perfectly with info column footer */}
                 <div
                   className={`md:col-span-5 ${
                     isReversed ? 'order-1 md:order-2' : 'order-1 md:order-1'
-                  } relative flex flex-col justify-start`}
+                  } relative flex flex-col justify-between h-full`}
                 >
-                  <div className="relative w-full aspect-[1048/1400] overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm group/photo cursor-pointer">
+                  <div className="relative w-full aspect-[1048/1400] md:aspect-auto md:h-full overflow-hidden bg-[#141A23] border border-et-border dark:border-white/15 shadow-sm group/photo cursor-pointer">
                     {/* Studio Portrait: Monochrome by default, blooms into full color on hover */}
                     <img
                       src={partner.photo}
@@ -79,7 +79,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                     isReversed
                       ? 'order-2 md:order-1 md:text-right'
                       : 'order-2 md:order-2 md:text-left'
-                  } relative px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-3 sm:pb-4 flex flex-col justify-between`}
+                  } relative px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-0 flex flex-col justify-between h-full`}
                 >
                   {/* ==========================================================
                       CHESS-ORDER CORNER BRACKETS (ТРЕУГОЛЬНЫЕ / УГЛОВЫЕ СКОБОЧКИ):
@@ -166,8 +166,12 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                       </div>
                     </div>
 
-                    {/* 2. СПЕЦИАЛИЗАЦИЯ */}
-                    <div className={`mb-6 ${isReversed ? 'text-left md:text-right' : 'text-left'}`}>
+                    {/* 2. СПЕЦИАЛИЗАЦИЯ (контейнер в половину ширины) */}
+                    <div
+                      className={`mb-6 w-full md:w-1/2 ${
+                        isReversed ? 'text-left md:text-right md:ml-auto' : 'text-left'
+                      }`}
+                    >
                       <div className="font-mono text-xs md:text-[13px] uppercase tracking-wider text-[#9B815C] dark:text-accent-bronze mb-1 font-semibold">
                         Специализация:
                       </div>
@@ -264,7 +268,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                   {/* ==========================================================
                       FOOTER: НОМЕР СЛЕВА (+2pt), КНОПКА ВСЕГДА СПРАВА (+2pt)
                       ========================================================== */}
-                  <div className="pt-5 mt-auto border-t blueprint-divider flex flex-wrap items-center justify-between gap-4 pb-0.5 sm:pb-1">
+                  <div className="pt-4 sm:pt-5 mt-auto border-t blueprint-divider flex flex-wrap items-center justify-between gap-4 pb-2 sm:pb-3">
                     {/* LEFT: Реестровый номер / организация (всегда с левой стороны, +2pt) */}
                     <div className="text-left flex items-center">
                       {partner.regNum ? (
