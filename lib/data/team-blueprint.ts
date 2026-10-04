@@ -15,6 +15,7 @@ export interface TeamMemberFull {
   experience: string;
   photo: string;
   practices: PracticeBadge[];
+  education: string[];
 }
 
 export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
@@ -33,6 +34,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
       { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
     ],
+    education: [
+      'Московский государственный юридический университет им. О.Е. Кутафина (МГЮА), диплом с отличием',
+      'Аспирантура Института законодательства и сравнительного правоведения при Правительстве РФ (ИЗиСП)',
+    ],
   },
   {
     id: 'luchnikov-konstantin',
@@ -48,6 +53,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
       { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
     ],
+    education: [
+      'Национальный исследовательский университет «Высшая школа экономики» (НИУ ВШЭ), факультет права',
+      'Магистратура по программе «Корпоративное и предпринимательское право»',
+    ],
   },
   {
     id: 'sokolov-mikhail',
@@ -61,6 +70,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
     photo: '/team/t3.webp',
     practices: [
       { slug: 'criminal-defense', title: 'Уголовно-правовая защита бизнеса', iconName: 'shield' },
+    ],
+    education: [
+      'МГЮА им. О.Е. Кутафина, Институт адвокатуры',
+      'Квалификационный аттестат адвоката Адвокатской палаты города Москвы',
     ],
   },
   {
@@ -77,6 +90,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
       { slug: 'criminal-defense', title: 'Уголовно-правовая защита бизнеса', iconName: 'shield' },
       { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
     ],
+    education: [
+      'Московский государственный университет им. М.В. Ломоносова (МГУ), Юридический факультет',
+      'Адвокатская палата города Москвы',
+    ],
   },
   {
     id: 'dmitriev-sergey',
@@ -91,6 +108,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
     practices: [
       { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+    ],
+    education: [
+      'Санкт-Петербургский государственный университет (СПбГУ), юридический факультет',
+      'Специализация: антикризисное управление и банкротство',
     ],
   },
   {
@@ -107,6 +128,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
       { slug: 'tax-disputes', title: 'Налоговый консалтинг и споры с ФНС', iconName: 'building' },
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
     ],
+    education: [
+      'Московский государственный юридический университет им. О.Е. Кутафина (МГЮА)',
+      'Палата налоговых консультантов Российской Федерации',
+    ],
   },
   {
     id: 'morozova-anna',
@@ -120,6 +145,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
     photo: '/team/t7.webp',
     practices: [
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
+    ],
+    education: [
+      'НИУ ВШЭ, факультет права',
+      'Магистратура «Правовое регулирование бизнеса»',
     ],
   },
   {
@@ -135,6 +164,10 @@ export const TEAM_MEMBERS_FULL: TeamMemberFull[] = [
     practices: [
       { slug: 'corporate-disputes', title: 'Корпоративные споры и защита активов', iconName: 'scale' },
       { slug: 'subsidiary-liability', title: 'Банкротство и субсидиарная ответственность', iconName: 'gavel' },
+    ],
+    education: [
+      'МГУ им. М.В. Ломоносова, Юридический факультет (диплом с отличием)',
+      'Адвокатская палата города Москвы (реестровый № 77/9211)',
     ],
   },
 ];

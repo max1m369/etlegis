@@ -224,6 +224,38 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
                         ))}
                       </div>
                     </div>
+
+                    {/* ==========================================================
+                        ОБРАЗОВАНИЕ И КВАЛИФИКАЦИЯ:
+                        ========================================================== */}
+                    {partner.education && partner.education.length > 0 && (
+                      <div className="mt-6 sm:mt-7">
+                        <div
+                          className={`font-mono text-[10px] md:text-[11px] uppercase tracking-[0.16em] text-[#9B815C] dark:text-accent-bronze mb-2.5 font-semibold ${
+                            isReversed ? 'text-left md:text-right' : 'text-left'
+                          }`}
+                        >
+                          Образование:
+                        </div>
+                        <ul
+                          className={`space-y-1.5 flex flex-col ${
+                            isReversed ? 'items-start md:items-end' : 'items-start'
+                          }`}
+                        >
+                          {partner.education.map((item, idx) => (
+                            <li
+                              key={idx}
+                              className="font-sans text-xs md:text-sm text-et-dark/85 dark:text-white/80 leading-snug font-normal flex items-start gap-2 text-left"
+                            >
+                              <span className="text-[#9B815C] dark:text-accent-bronze font-mono text-xs select-none shrink-0 mt-0.5">
+                                —
+                              </span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
 
                   {/* ==========================================================
