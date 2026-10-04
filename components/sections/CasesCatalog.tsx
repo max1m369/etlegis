@@ -159,7 +159,7 @@ export function CasesCatalog({ initialDynamicCases }: { initialDynamicCases?: an
   }, [selectedCategory, catalogItems]);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-20">
+    <section className="w-full py-8 md:py-16">
       {/* Верхнее таб-меню (вместо левой боковой колонки) */}
       <div className="border-b border-et-border mb-12">
         <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-4 scrollbar-none snap-x">

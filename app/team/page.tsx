@@ -15,7 +15,7 @@ export default function TeamPage() {
       <Header />
       <main className="flex-grow pt-24 sm:pt-28 pb-16">
         {/* Breadcrumbs Navigation */}
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-6">
+        <div className="w-full px-4 sm:px-8 lg:px-[15vw] pt-6">
           <nav
             className="flex items-center gap-2 font-mono text-xs text-et-muted font-medium"
             aria-label="Хлебные крошки"
@@ -32,10 +32,7 @@ export default function TeamPage() {
         </div>
 
         {/* 1. Блок "О компании" (Большой заголовок, история и ключевые метрики) */}
-        <section className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-10 pb-16">
-          <span className="text-xs uppercase tracking-[0.25em] text-[#9B815C] dark:text-accent-bronze font-mono font-semibold block mb-3">
-            О компании
-          </span>
+        <section className="w-full px-4 sm:px-8 lg:px-[15vw] pt-10 pb-16">
           <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-normal tracking-tight text-et-dark leading-[1.05] mb-8 max-w-5xl">
             Адвокатское бюро «ЭТЛЕГИС»
           </h1>

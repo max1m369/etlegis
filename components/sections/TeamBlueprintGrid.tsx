@@ -30,7 +30,7 @@ export default function TeamBlueprintGrid({ members = TEAM_MEMBERS_FULL }: TeamB
       {/* 
         NO DOT-GRID BACKGROUND (clean architectural background matching site design system)
       */}
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-8 md:py-14">
+      <div className="relative z-10 w-full px-4 sm:px-8 lg:px-[15vw] py-8 md:py-14">
         {/* ====================================================================
             HEADER: Title with slightly thicker underline
             ==================================================================== */}

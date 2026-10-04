@@ -16,7 +16,7 @@ export default function BlogPage() {
     <div className="flex flex-col min-h-screen bg-bg-primary text-text-main transition-colors duration-300">
       <Header />
       <main className="flex-grow pt-28 pb-24">
-        <div className="px-4 sm:px-6 md:px-12 pt-8 max-w-7xl mx-auto">
+        <div className="w-full px-4 sm:px-8 lg:px-[15vw] pt-8">
           {/* Назад */}
           <div className="mb-6">
             <Link
@@ -28,11 +28,8 @@ export default function BlogPage() {
             </Link>
           </div>
 
-          {/* Заголовок секции 1-в-1 как на etlegis.ru/blog */}
+          {/* Заголовок секции */}
           <div className="mb-12 sm:mb-16">
-            <span className="text-xs uppercase tracking-[0.25em] text-accent-bronze font-mono font-semibold block mb-3">
-              Пресса и правовая аналитика
-            </span>
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-medium mt-2 mb-6 text-text-main uppercase tracking-tight leading-tight">
               О нас в СМИ: достижения и новости
             </h1>
