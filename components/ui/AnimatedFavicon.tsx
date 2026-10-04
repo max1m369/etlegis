@@ -8,8 +8,8 @@ const SVG_PATH =
 
 const CANVAS_SIZE = 64;
 const VIEWBOX_SIZE = 120;
-const SWEEP_DURATION_MS = 1500; // 1.5s fluid cinematic light glide
-const CYCLE_INTERVAL_MS = 3800; // 3.8s total cycle (1.5s sweep + 2.3s calm pause)
+const SWEEP_DURATION_MS = 3000; // 3.0s (2x slower: majestic, liquid smooth specular glide)
+const CYCLE_INTERVAL_MS = 10000; // 10.0s total cycle (3.0s sweep + 7.0s calm static rest)
 const TARGET_FPS = 30; // 30 updates per second: browser decodes every frame smoothly without tab-strip throttling
 const FRAME_INTERVAL_MS = 1000 / TARGET_FPS; // ~33.3ms
 
