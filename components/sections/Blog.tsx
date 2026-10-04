@@ -19,7 +19,7 @@ export default function Blog() {
             id="blog-title"
             className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-4"
           >
-            Блог и комментарии в СМИ
+            Блог
           </h2>
           <p className="text-sm text-[#5E6267] dark:text-et-muted font-light leading-relaxed max-w-sm mb-6">
             Экспертные статьи, практические разборы прецедентов и комментарии адвокатов бюро в ведущих деловых изданиях.
@@ -36,21 +36,21 @@ export default function Blog() {
             </Link>
           </div>
 
-          {/* Сетка публикаций 2х2 (всего 4 статьи) */}
+          {/* Сетка публикаций 2х2: в покое без видимых рамок/контейнеров, при наведении подсвечиваются белым и проявляют грани */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {articles.slice(0, 4).map((article) => (
               <article
                 key={article.id}
-                className="relative bg-white dark:bg-bg-surface border border-[#E2E2DC] dark:border-border-subtle rounded-[2px] p-6 sm:p-7 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] dark:hover:border-accent-bronze transition-all duration-300 group"
+                className="preview-card relative p-6 sm:p-7 flex flex-col justify-between group"
               >
-                {/* Corner Brackets (Скобки юридического документа) */}
-                <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[#9B815C]/40 dark:border-accent-bronze/40 group-hover:border-[#507192] dark:group-hover:border-accent-bronze transition-colors pointer-events-none" />
-                <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#9B815C]/40 dark:border-accent-bronze/40 group-hover:border-[#507192] dark:group-hover:border-accent-bronze transition-colors pointer-events-none" />
-                <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#9B815C]/40 dark:border-accent-bronze/40 group-hover:border-[#507192] dark:group-hover:border-accent-bronze transition-colors pointer-events-none" />
-                <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#9B815C]/40 dark:border-accent-bronze/40 group-hover:border-[#507192] dark:group-hover:border-accent-bronze transition-colors pointer-events-none" />
+                {/* Corner Brackets (Скобки юридического документа) - вырисовываются при наведении */}
+                <div className="card-bracket absolute top-2 left-2 w-3 h-3 border-t border-l pointer-events-none" />
+                <div className="card-bracket absolute top-2 right-2 w-3 h-3 border-t border-r pointer-events-none" />
+                <div className="card-bracket absolute bottom-2 left-2 w-3 h-3 border-b border-l pointer-events-none" />
+                <div className="card-bracket absolute bottom-2 right-2 w-3 h-3 border-b border-r pointer-events-none" />
 
                 <div>
-                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#ECECE8] dark:border-border-subtle">
+                  <div className="card-divider flex items-center justify-between pb-4 mb-4 border-b">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] uppercase tracking-wider font-semibold text-[#9B815C] dark:text-accent-bronze font-mono">
                         {article.category}
@@ -78,7 +78,7 @@ export default function Blog() {
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-[#ECECE8] dark:border-border-subtle">
+                <div className="card-divider pt-4 border-t">
                   <Link href={`/blog/${article.slug}`} className="block w-full">
                     <SpotlightButton className="w-full py-2.5 text-xs">
                       Читать статью

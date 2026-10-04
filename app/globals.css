@@ -599,3 +599,80 @@ h1, h2, h3, .font-heading {
   border-color: rgba(255, 255, 255, 0.10);
 }
 
+/* ==========================================================================
+   Interactive Hover-Illuminated Cards (Cases & Blog)
+   - В покое: сливаются с фоном страницы, грани и контейнеры не видны
+   - При наведении: грани вырисовываются, фон плавно подсвечивается белым
+   ========================================================================== */
+.preview-card {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  box-shadow: none;
+  transition: background-color 0.32s ease, border-color 0.32s ease, box-shadow 0.32s ease, transform 0.32s ease;
+}
+
+.preview-card:hover {
+  background-color: #ffffff;
+  border-color: #141517;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.07);
+  transform: translateY(-2px);
+}
+
+.dark .preview-card:hover {
+  background-color: #1a202c;
+  border-color: #c5a880;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.preview-card .card-bracket {
+  border-color: transparent;
+  transition: border-color 0.32s ease;
+}
+
+.preview-card:hover .card-bracket {
+  border-color: #9b815c;
+}
+
+.dark .preview-card:hover .card-bracket {
+  border-color: #c5a880;
+}
+
+.preview-card .card-result-pill {
+  background-color: rgba(239, 239, 234, 0.45);
+  border: 1px solid transparent;
+  transition: background-color 0.32s ease, border-color 0.32s ease;
+}
+
+.preview-card:hover .card-result-pill {
+  background-color: #f8f9fa;
+  border-color: #ecece8;
+}
+
+.dark .preview-card .card-result-pill {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.dark .preview-card:hover .card-result-pill {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.preview-card .card-divider {
+  border-color: rgba(236, 236, 232, 0.45);
+  transition: border-color 0.32s ease;
+}
+
+.preview-card:hover .card-divider {
+  border-color: #ecece8;
+}
+
+.dark .preview-card .card-divider {
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.dark .preview-card:hover .card-divider {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+

@@ -36,7 +36,8 @@ export default function Cases() {
             id="cases-title"
             className="font-heading font-normal text-[clamp(2.5rem,4.4vw,6.5rem)] tracking-tight text-[#141517] dark:text-et-dark leading-[1.05] mb-4"
           >
-            Выигранные дела доверителей
+            Выигранные
+            <br className="hidden sm:inline" /> дела
           </h2>
           <p className="text-sm text-[#5E6267] dark:text-et-muted font-light leading-relaxed max-w-sm mb-6">
             Партнеры и адвокаты бюро добиваются победы в арбитражных судах всех инстанций, защищая активы и репутацию доверителей.
@@ -53,16 +54,16 @@ export default function Cases() {
             </Link>
           </div>
 
-          {/* Сетка кейсов 2х2 (всего 4 кейса) */}
+          {/* Сетка кейсов 2х2: в покое без видимых рамок/контейнеров, при наведении подсвечиваются белым и проявляют грани */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {items.slice(0, 4).map((item) => (
               <div
                 key={item.id}
-                className="bg-white dark:bg-bg-surface border border-[#E2E2DC] dark:border-border-subtle rounded-[2px] p-6 sm:p-7 flex flex-col justify-between shadow-subtle hover:shadow-card hover:border-[#141517] dark:hover:border-accent-bronze transition-all duration-300 group"
+                className="preview-card p-6 sm:p-7 flex flex-col justify-between group"
               >
                 <div>
                   {/* Practice Tag and Year */}
-                  <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-[#ECECE8] dark:border-border-subtle">
+                  <div className="card-divider flex items-center justify-between gap-2 pb-4 mb-4 border-b">
                     <span className="text-[10px] uppercase font-semibold tracking-wider text-[#9B815C] dark:text-accent-bronze truncate font-mono">
                       {getPracticeTitle(item.practiceId)}
                     </span>
@@ -93,8 +94,8 @@ export default function Cases() {
                     {item.challenge}
                   </p>
 
-                  {/* Victory Result Pill */}
-                  <div className="p-3 bg-[#F8F9FA] dark:bg-bg-subtle border border-[#ECECE8] dark:border-border-subtle rounded-[2px] mb-6">
+                  {/* Victory Result Pill: в покое мягко сливается, при ховере выделяется */}
+                  <div className="card-result-pill p-3 rounded-[2px] mb-6">
                     <div className="flex items-center gap-1.5 text-[#141517] dark:text-et-dark font-semibold text-xs mb-1">
                       <Trophy size={13} className="text-[#9B815C] dark:text-accent-bronze shrink-0" />
                       <span>Итог разбирательства:</span>
@@ -105,7 +106,7 @@ export default function Cases() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#ECECE8] dark:border-border-subtle">
+                <div className="card-divider pt-4 border-t">
                   <Link href={`/cases/${item.slug}`} className="block w-full">
                     <SpotlightButton className="w-full py-2.5 text-xs">
                       Детали кейса
