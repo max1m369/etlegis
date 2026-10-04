@@ -8,8 +8,10 @@ const SVG_PATH =
 
 const CANVAS_SIZE = 64;
 const VIEWBOX_SIZE = 120;
-const SWEEP_DURATION_MS = 750; // duration of the 45-degree glare sweep
-const CYCLE_INTERVAL_MS = 2800; // total loop interval (~2.8 - 3s)
+const SWEEP_DURATION_MS = 1500; // 1.5s fluid cinematic light glide
+const CYCLE_INTERVAL_MS = 3800; // 3.8s total cycle (1.5s sweep + 2.3s calm pause)
+const TARGET_FPS = 30; // 30 updates per second: browser decodes every frame smoothly without tab-strip throttling
+const FRAME_INTERVAL_MS = 1000 / TARGET_FPS; // ~33.3ms
 
 export default function AnimatedFavicon() {
   useEffect(() => {
@@ -49,47 +51,90 @@ export default function AnimatedFavicon() {
     let timerId: ReturnType<typeof setTimeout> | null = null;
     let isDestroyed = false;
 
-    // Draw silver monogram with optional 45° specular glare
+    // Draw embossed silver monogram with mirrored 45° cinematic specular glare
     const drawFrame = (glareProgress: number | null) => {
       ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
       ctx.save();
       ctx.scale(scale, scale);
 
-      // 1. Base Silver Metallic Gradient
+      // 1. Subtle drop shadow for 3D relief depth
+      ctx.save();
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.3)';
+      ctx.shadowBlur = 2.5;
+      ctx.shadowOffsetY = 1;
+      ctx.fillStyle = '#CBD5E1';
+      ctx.fill(path);
+      ctx.restore();
+
+      // 2. Base Silver Metallic Gradient with rich anisotropic metallic tones
       const baseGrad = ctx.createLinearGradient(0, 0, VIEWBOX_SIZE, VIEWBOX_SIZE);
-      baseGrad.addColorStop(0, '#F1F5F9');   // Bright silver top-left
-      baseGrad.addColorStop(0.25, '#CBD5E1'); // Clean metallic mid-tone
-      baseGrad.addColorStop(0.65, '#94A3B8'); // Steel silver
-      baseGrad.addColorStop(1, '#64748B');   // Subtle shadow depth
+      baseGrad.addColorStop(0, '#FFFFFF');    // Crisp specular top-left edge
+      baseGrad.addColorStop(0.18, '#E2E8F0'); // Pure silver highlight
+      baseGrad.addColorStop(0.48, '#94A3B8'); // Satin steel midtone
+      baseGrad.addColorStop(0.72, '#CBD5E1'); // Metallic bounce
+      baseGrad.addColorStop(1, '#475569');    // Bottom-right shadow depth
 
       ctx.fillStyle = baseGrad;
       ctx.fill(path);
 
-      // 2. 45-degree Specular Glare (Блик)
+      // 3. Subtle micro-bevel edge highlight (рельеф)
+      ctx.save();
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.stroke(path);
+      ctx.restore();
+
+      // 4. Mirrored 45-degree Specular Glare Pass (Top-Right to Bottom-Left)
       if (glareProgress !== null) {
         ctx.save();
         ctx.clip(path);
 
-        // Center sweeps across diagonal from -40 to 200
-        const center = -40 + glareProgress * 240;
-        const width = 36;
         const cos45 = Math.SQRT1_2;
         const sin45 = Math.SQRT1_2;
 
-        const x0 = (center - width) * cos45;
-        const y0 = (center - width) * sin45;
-        const x1 = (center + width) * cos45;
-        const y1 = (center + width) * sin45;
+        // Smooth quintic smootherstep easing (zero jerk on start & stop)
+        const t = Math.max(0, Math.min(1, glareProgress));
+        const eased = t * t * t * (t * (6 * t - 15) + 10);
 
-        const glareGrad = ctx.createLinearGradient(x0, y0, x1, y1);
-        glareGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        glareGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.35)');
-        glareGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.98)'); // intense specular shine
-        glareGrad.addColorStop(0.65, 'rgba(255, 255, 255, 0.35)');
-        glareGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        // Distance range along mirrored diagonal from top-right to bottom-left
+        const sweepDist = -100 + eased * 200;
+        
+        // Center sweeps from top-right (cx~130, cy~-10) to bottom-left (cx~-10, cy~130)
+        const cx = 60 - sweepDist * cos45;
+        const cy = 60 + sweepDist * sin45;
+        const dirX = -cos45;
+        const dirY = sin45;
 
-        ctx.fillStyle = glareGrad;
+        // Layer A: Wide ambient soft glow (мягкое бархатное освещение)
+        const glowW = 46;
+        const gA = ctx.createLinearGradient(
+          cx - dirX * glowW, cy - dirY * glowW,
+          cx + dirX * glowW, cy + dirY * glowW
+        );
+        gA.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        gA.addColorStop(0.3, 'rgba(255, 255, 255, 0.12)');
+        gA.addColorStop(0.5, 'rgba(255, 255, 255, 0.38)');
+        gA.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
+        gA.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = gA;
         ctx.fillRect(0, 0, VIEWBOX_SIZE, VIEWBOX_SIZE);
+
+        // Layer B: Core focused specular gleam (чёткий кинематографический блик)
+        const coreW = 18;
+        const gB = ctx.createLinearGradient(
+          cx - dirX * coreW, cy - dirY * coreW,
+          cx + dirX * coreW, cy + dirY * coreW
+        );
+        gB.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        gB.addColorStop(0.25, 'rgba(255, 255, 255, 0.35)');
+        gB.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
+        gB.addColorStop(0.75, 'rgba(255, 255, 255, 0.35)');
+        gB.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = gB;
+        ctx.fillRect(0, 0, VIEWBOX_SIZE, VIEWBOX_SIZE);
+
         ctx.restore();
       }
 
@@ -104,14 +149,15 @@ export default function AnimatedFavicon() {
       }
     };
 
-    // Draw initial static silver icon
+    // Draw initial static silver frame
     drawFrame(null);
 
-    // Glare sweep animation step
+    // Glare sweep animation loop with 30fps throttling
     const startSweep = () => {
       if (isDestroyed || document.hidden) return;
 
       const startTime = performance.now();
+      let lastRenderTime = 0;
 
       const animateSweep = (currentTime: number) => {
         if (isDestroyed || document.hidden) return;
@@ -119,13 +165,11 @@ export default function AnimatedFavicon() {
         const elapsed = currentTime - startTime;
         const progress = Math.min(1, elapsed / SWEEP_DURATION_MS);
 
-        // Smooth ease-in-out for fluid sweep
-        const eased =
-          progress < 0.5
-            ? 2 * progress * progress
-            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-        drawFrame(eased);
+        // Throttle DOM/favicon link updates to ~30fps for buttery smooth playback without browser tab thread choking
+        if (currentTime - lastRenderTime >= FRAME_INTERVAL_MS || progress >= 1) {
+          lastRenderTime = currentTime;
+          drawFrame(progress);
+        }
 
         if (progress < 1) {
           animId = requestAnimationFrame(animateSweep);
@@ -133,7 +177,7 @@ export default function AnimatedFavicon() {
           // Finish sweep, reset to static silver frame
           drawFrame(null);
           // Pause until next loop cycle
-          const pauseTime = Math.max(1000, CYCLE_INTERVAL_MS - SWEEP_DURATION_MS);
+          const pauseTime = Math.max(1200, CYCLE_INTERVAL_MS - SWEEP_DURATION_MS);
           timerId = setTimeout(startSweep, pauseTime);
         }
       };
@@ -142,7 +186,7 @@ export default function AnimatedFavicon() {
     };
 
     // Initial delay before first glare sweep
-    timerId = setTimeout(startSweep, 1000);
+    timerId = setTimeout(startSweep, 800);
 
     // Save CPU when tab is hidden, resume when tab is active
     const handleVisibilityChange = () => {
@@ -151,7 +195,7 @@ export default function AnimatedFavicon() {
         if (timerId) clearTimeout(timerId);
       } else {
         drawFrame(null);
-        timerId = setTimeout(startSweep, 800);
+        timerId = setTimeout(startSweep, 600);
       }
     };
 
