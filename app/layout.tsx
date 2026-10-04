@@ -6,6 +6,7 @@ import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ConsultationModal } from "@/components/ui/ConsultationModal";
+import AnimatedFavicon from "@/components/ui/AnimatedFavicon";
 
 const amstelvar = localFont({
   src: [
@@ -41,7 +42,10 @@ export const metadata: Metadata = {
   title: "Адвокатское бюро Etlegis — защита интересов бизнеса в сложных процессах",
   description: "Адвокатское бюро Etlegis. Стратегический консалтинг, снижение персональных рисков руководства и защита корпоративных активов. Экономические и уголовные споры.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
   },
 };
 
@@ -56,6 +60,7 @@ export default function RootLayout({
       className={`${amstelvar.variable} ${jost.variable} ${oswald.variable}`}
     >
       <body className="bg-bg-primary text-text-main font-body antialiased selection:bg-accent selection:text-white overflow-x-hidden max-w-full">
+        <AnimatedFavicon />
         <ThemeProvider>
           <SmoothScrollProvider>
             <ModalProvider>
