@@ -44,16 +44,8 @@ export default function Cases() {
           </p>
         </div>
 
-        {/* 2. Правая колонка: Кнопка «Смотреть все» + 4 кейса (сетка 2х2) */}
-        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-6">
-          <div className="flex items-center justify-between sm:justify-end gap-4 pb-1">
-            <Link href="/cases">
-              <SpotlightButton className="px-5 py-2.5 text-xs font-mono tracking-wider uppercase">
-                Смотреть все
-              </SpotlightButton>
-            </Link>
-          </div>
-
+        {/* 2. Правая колонка: 4 кейса (сетка 2х2) + Нижний блок в стиле hero-секции */}
+        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-10">
           {/* Сетка кейсов 2х2: в покое без видимых рамок/контейнеров, при наведении подсвечиваются белым и проявляют грани */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {items.slice(0, 4).map((item) => (
@@ -115,6 +107,18 @@ export default function Cases() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Нижний блок: Линия цветом логотипа #2C3E50 как на hero-секции + Текст и Кнопка «Смотреть все» */}
+          <div className="pt-8 border-t-2 border-[#2C3E50] dark:border-white/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <p className="text-sm text-[#5E6267] dark:text-et-muted max-w-xl font-light leading-relaxed">
+              Более 150 успешно завершённых судебных разбирательств и проектов по защите активов бизнеса в сложных арбитражных процессах.
+            </p>
+            <Link href="/cases" className="shrink-0 w-full sm:w-auto">
+              <SpotlightButton className="w-full sm:w-auto px-6 py-3.5 text-xs font-mono tracking-wider uppercase">
+                Смотреть все
+              </SpotlightButton>
+            </Link>
           </div>
         </div>
       </div>

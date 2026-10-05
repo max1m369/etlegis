@@ -26,16 +26,8 @@ export default function Blog() {
           </p>
         </div>
 
-        {/* 2. Правая колонка: Кнопка «Все публикации» + 4 статьи (сетка 2х2) */}
-        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-6">
-          <div className="flex items-center justify-between sm:justify-end gap-4 pb-1">
-            <Link href="/blog">
-              <SpotlightButton className="px-5 py-2.5 text-xs font-mono tracking-wider uppercase">
-                Все публикации
-              </SpotlightButton>
-            </Link>
-          </div>
-
+        {/* 2. Правая колонка: 4 статьи (сетка 2х2) + Нижний блок в стиле hero-секции */}
+        <div className="w-full lg:w-[68%] xl:w-[70%] flex flex-col gap-10">
           {/* Сетка публикаций 2х2: в покое без видимых рамок/контейнеров, при наведении подсвечиваются белым и проявляют грани */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {articles.slice(0, 4).map((article) => (
@@ -87,6 +79,18 @@ export default function Blog() {
                 </div>
               </article>
             ))}
+          </div>
+
+          {/* Нижний блок: Линия цветом логотипа #2C3E50 как на hero-секции + Текст и Кнопка «Все публикации» */}
+          <div className="pt-8 border-t-2 border-[#2C3E50] dark:border-white/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <p className="text-sm text-[#5E6267] dark:text-et-muted max-w-xl font-light leading-relaxed">
+              Аналитические материалы, правовые позиции и комментарии адвокатов бюро к знаковым решениям судов.
+            </p>
+            <Link href="/blog" className="shrink-0 w-full sm:w-auto">
+              <SpotlightButton className="w-full sm:w-auto px-6 py-3.5 text-xs font-mono tracking-wider uppercase">
+                Все публикации
+              </SpotlightButton>
+            </Link>
           </div>
         </div>
       </div>

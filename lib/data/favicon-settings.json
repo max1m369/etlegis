@@ -1,0 +1,10 @@
+{
+  "preset": "silver",
+  "customColor": "#CBD5E1",
+  "glareAngle": 135,
+  "sweepDuration": 8,
+  "cycleDuration": 13,
+  "glareWidth": 30,
+  "glareColor": "#FFFFFF",
+  "reliefEnabled": true
+}

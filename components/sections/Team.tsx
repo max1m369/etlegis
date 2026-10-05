@@ -217,7 +217,10 @@ export default function Team() {
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const duration = animate && !reduce ? 0.82 : 0;
-    const expanded = isMobile ? width * 0.86 : Math.min(Math.max(width * 0.52, 460), width - (team.length - 1) * 45);
+    const minNarrow = width < 1200 ? 30 : 42;
+    const expanded = isMobile
+      ? width * 0.86
+      : Math.min(Math.max(width * 0.52, 450), width - (team.length - 1) * minNarrow);
     const narrow = isMobile ? expanded : (width - expanded) / (team.length - 1);
     let x = 0;
 
@@ -646,21 +649,31 @@ export default function Team() {
                 />
                 <span className="person-shade" aria-hidden="true" />
                 
-                {/* Карточка: Слева имя/должность, справа - краткая информация */}
-                <span className="person-caption" aria-hidden="true">
+                {/* Карточка: Слева имя, справа - должность и краткая информация, в правом углу - стрелка перехода */}
+                <span
+                  className="person-caption"
+                  aria-hidden="true"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCardClick(i);
+                  }}
+                >
                   <div className="person-caption-content">
                     <div className="person-caption-main">
-                      <small>{p.role}</small>
                       <strong>
                         {p.name.split(' ')[0]}
                         <br />
-                        {p.name.split(' ')[1]} <span className="caption-arrow">↗</span>
+                        {p.name.split(' ').slice(1).join(' ')}
                       </strong>
                     </div>
 
                     <div className="person-caption-desc">
-                      <span className="caption-practice">{p.practice}</span>
+                      <span className="caption-role">{p.role}</span>
                       <p className="caption-bio">{p.description}</p>
+                    </div>
+
+                    <div className="caption-corner-action" title="Открыть полный профиль">
+                      <span className="caption-arrow">↗</span>
                     </div>
                   </div>
                 </span>

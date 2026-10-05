@@ -344,11 +344,18 @@ h1, h2, h3, .font-heading {
   opacity: 0;
   pointer-events: none;
   z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+.person-card.is-active .person-caption {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .person-caption-content {
+  position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-start;
   gap: 16px;
   width: 100%;
@@ -358,56 +365,40 @@ h1, h2, h3, .font-heading {
   flex-shrink: 0;
 }
 
-.person-caption-main small {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 6px;
-  font-family: var(--font-mono), monospace;
-  color: #c5a880;
-}
-
 .person-caption-main strong {
   font-family: var(--font-heading), 'Amstelvar', serif;
-  font-size: clamp(24px, 2.1vw, 34px);
+  font-size: 28px;
   font-weight: 400;
   display: block;
   line-height: 1.05;
   color: #fff;
   white-space: nowrap;
-}
-
-.person-caption-main .caption-arrow {
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  margin-left: 6px;
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.person-card:hover .caption-arrow {
-  transform: translate(3px, -3px);
+  margin: 0;
 }
 
 .person-caption-desc {
   flex: 1;
   min-width: 0;
+  padding-top: 1px;
   padding-left: 16px;
+  padding-right: 28px;
   border-left: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 2px;
+  gap: 6px;
+  margin: 0;
 }
 
-.caption-practice {
+.caption-role {
   font-family: var(--font-mono), monospace;
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #c5a880;
-  line-height: 1.25;
+  line-height: 1.15;
+  margin: 0;
+  display: block;
+  white-space: nowrap;
 }
 
 .caption-bio {
@@ -423,27 +414,31 @@ h1, h2, h3, .font-heading {
   overflow: hidden;
 }
 
-@media (max-width: 767px) {
-  .person-caption {
-    left: 18px;
-    right: 18px;
-    bottom: 18px;
-  }
-  .person-caption-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .person-caption-desc {
-    padding-left: 0;
-    border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    padding-top: 6px;
-    max-width: 100%;
-  }
-  .caption-bio {
-    -webkit-line-clamp: 2;
-  }
+.caption-corner-action {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.85);
+  pointer-events: auto;
+}
+
+.caption-corner-action .caption-arrow {
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+}
+
+.person-card:hover .caption-corner-action .caption-arrow,
+.person-caption:hover .caption-corner-action .caption-arrow {
+  transform: translate(3px, -3px);
+  color: #c5a880;
 }
 
 .person-card:focus-visible {
@@ -529,11 +524,12 @@ h1, h2, h3, .font-heading {
     bottom: 20px;
   }
   .person-caption-main strong {
-    font-size: 26px;
+    font-size: 28px;
   }
   .person-caption-desc {
-    max-width: 260px;
+    max-width: none;
     padding-left: 14px;
+    padding-right: 24px;
   }
   .caption-bio {
     font-size: 11px;
@@ -571,17 +567,23 @@ h1, h2, h3, .font-heading {
   .person-caption-content {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
   .person-caption-main strong {
     font-size: 26px;
+    line-height: 1.1;
   }
   .person-caption-desc {
     border-left: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding-left: 0;
     padding-top: 8px;
+    padding-right: 28px;
     max-width: 100%;
+  }
+  .caption-role {
+    margin: 0;
+    white-space: normal;
   }
 }
 
@@ -614,14 +616,14 @@ h1, h2, h3, .font-heading {
 
 .preview-card:hover {
   background-color: #ffffff;
-  border-color: #141517;
+  border-color: transparent;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.07);
   transform: translateY(-2px);
 }
 
 .dark .preview-card:hover {
   background-color: #1a202c;
-  border-color: #c5a880;
+  border-color: transparent;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
