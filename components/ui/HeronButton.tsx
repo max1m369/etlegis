@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
 
 interface HeronButtonProps {
   children: React.ReactNode;
@@ -22,81 +23,180 @@ export default function HeronButton({
   size = 'md',
   icon = true,
 }: HeronButtonProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const bgRef = useRef<HTMLSpanElement>(null);
+  const topTextRef = useRef<HTMLSpanElement>(null);
+  const botTextRef = useRef<HTMLSpanElement>(null);
+  const topArrowRef = useRef<HTMLSpanElement>(null);
+  const botArrowRef = useRef<HTMLSpanElement>(null);
+
+  // Initialize GSAP resting positions on mount
+  useEffect(() => {
+    if (botTextRef.current) {
+      gsap.set(botTextRef.current, { yPercent: 100 });
+    }
+    if (botArrowRef.current) {
+      gsap.set(botArrowRef.current, { xPercent: -180 });
+    }
+  }, []);
 
   // Size specifications
   const sizeClasses = {
-    sm: 'text-[11px] py-2 px-3.5',
+    sm: 'text-[11px] py-2 px-4',
     md: 'text-xs py-2.5 px-5',
-    lg: 'text-sm py-3.5 px-6',
+    lg: 'text-sm py-3 px-6',
   };
 
-  // Base background & border colors for resting state
-  const baseClasses = {
-    brand: 'bg-[#FA3600] border-[#FA3600] text-white',
-    dark: 'bg-[#282828] border-[#282828] text-white',
-    outline: 'bg-transparent border-[#B3B3AF] dark:border-white/20 text-[#282828] dark:text-white',
-    white: 'bg-white border-white text-[#282828]',
+  // Base borders & resting text colors (Heron AI architectural design)
+  const borderClasses = {
+    brand: 'border-[#FA3600] text-[#FA3600]',
+    outline: 'border-[#B3B3AF] dark:border-white/20 text-[#282828] dark:text-white',
+    dark: 'border-[#282828] dark:border-white/30 text-[#282828] dark:text-white',
+    white: 'border-white text-white',
   };
 
-  // Hover sliding fill layer color
-  const fillColors = {
-    brand: 'bg-[#1C1D1F]',
-    dark: 'bg-[#FA3600]',
+  // Mask fill color that sweeps across via pixel-mask.svg
+  const maskFillColor = {
+    brand: 'bg-[#FA3600]',
     outline: 'bg-[#282828] dark:bg-white',
-    white: 'bg-[#FA3600]',
+    dark: 'bg-[#FA3600]',
+    white: 'bg-white',
   };
 
-  // Hover text color
+  // Hovered bottom text color
   const hoverTextColor = {
     brand: 'text-white',
-    dark: 'text-white',
     outline: 'text-white dark:text-[#282828]',
-    white: 'text-white',
+    dark: 'text-white',
+    white: 'text-[#282828]',
+  };
+
+  // GSAP 19-Step Discrete Frame Animation (Exact compiled engine from Heron AI)
+  const handleMouseEnter = () => {
+    if (bgRef.current) {
+      gsap.to(bgRef.current, {
+        maskPosition: '100% 0',
+        webkitMaskPosition: '100% 0',
+        duration: 0.38,
+        ease: 'steps(19)',
+        overwrite: 'auto',
+      });
+    }
+
+    if (topTextRef.current && botTextRef.current) {
+      gsap.to(topTextRef.current, {
+        yPercent: -100,
+        duration: 0.38,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(botTextRef.current, {
+        yPercent: 0,
+        duration: 0.38,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
+
+    if (topArrowRef.current && botArrowRef.current) {
+      gsap.to(topArrowRef.current, {
+        xPercent: 180,
+        duration: 0.38,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(botArrowRef.current, {
+        xPercent: 0,
+        duration: 0.38,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (bgRef.current) {
+      gsap.to(bgRef.current, {
+        maskPosition: '0% 0',
+        webkitMaskPosition: '0% 0',
+        duration: 0.35,
+        ease: 'steps(19)',
+        overwrite: 'auto',
+      });
+    }
+
+    if (topTextRef.current && botTextRef.current) {
+      gsap.to(topTextRef.current, {
+        yPercent: 0,
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(botTextRef.current, {
+        yPercent: 100,
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
+
+    if (topArrowRef.current && botArrowRef.current) {
+      gsap.to(topArrowRef.current, {
+        xPercent: 0,
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(botArrowRef.current, {
+        xPercent: -180,
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
   };
 
   const content = (
     <span
-      className={`group relative inline-flex items-center justify-between overflow-hidden border font-mono uppercase tracking-wider select-none transition-colors duration-300 ${baseClasses[variant]} ${sizeClasses[size]} ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative inline-flex items-center justify-between overflow-hidden border bg-transparent font-mono uppercase tracking-wider select-none ${borderClasses[variant]} ${sizeClasses[size]} ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{
         transform: 'translateZ(0)',
         willChange: 'transform',
       }}
     >
-      {/* 1. Silky Smooth GPU-Accelerated Fluid Fill Layer */}
+      {/* 1. Heron AI Pixel Dither Mask Wipe Layer (stepped via GSAP 19-step) */}
       <span
-        className={`pointer-events-none absolute inset-0 z-0 ${fillColors[variant]} transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]`}
+        ref={bgRef}
+        className={`pointer-events-none absolute inset-0 z-0 ${maskFillColor[variant]}`}
         style={{
-          transform: isHovered ? 'translate3d(0, 0, 0)' : 'translate3d(-101%, 0, 0)',
+          maskImage: "url('/assets/pixel-mask.svg')",
+          WebkitMaskImage: "url('/assets/pixel-mask.svg')",
+          maskSize: '2000% 100%',
+          WebkitMaskSize: '2000% 100%',
+          maskPosition: '0% 0',
+          WebkitMaskPosition: '0% 0',
+          maskRepeat: 'no-repeat',
+          WebkitMaskRepeat: 'no-repeat',
+          willChange: 'mask-position, -webkit-mask-position',
         }}
-      >
-        {/* Fine halftone micro-texture */}
-        <span
-          className="absolute inset-0 opacity-[0.08] mix-blend-overlay pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)',
-            backgroundSize: '3px 3px',
-          }}
-        />
-      </span>
+      />
 
-      {/* 2. Slot-Machine Kinetic Label (Fluid Roll) */}
-      <span className="relative z-10 flex flex-col overflow-hidden leading-tight">
-        {/* Resting Label */}
+      {/* 2. Slot-Machine Kinetic Label (Fluid Vertical Roll) */}
+      <span className="relative z-10 flex flex-col overflow-hidden h-[1.3em] leading-[1.3em]">
+        {/* Top Text (Exits upward) */}
         <span
-          className={`inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isHovered ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-          }`}
+          ref={topTextRef}
+          className="inline-block"
+          style={{ willChange: 'transform' }}
         >
           {children}
         </span>
-        {/* Hover Label */}
+        {/* Bottom Text (Enters from bottom) */}
         <span
-          className={`absolute inset-0 flex items-center transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] font-medium ${
-            hoverTextColor[variant]
-          } ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
+          ref={botTextRef}
+          className={`absolute inset-0 flex items-center font-medium ${hoverTextColor[variant]}`}
+          style={{ willChange: 'transform' }}
         >
           {children}
         </span>
@@ -105,19 +205,19 @@ export default function HeronButton({
       {/* 3. Sliding Arrow Icon with Architectural Hairline Separator */}
       {icon && (
         <span className="relative z-10 ml-4 flex h-full items-center justify-center border-l border-current/30 pl-3 overflow-hidden">
-          {/* Arrow Resting */}
+          {/* Top Arrow (Slides right) */}
           <span
-            className={`inline-block transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isHovered ? 'translate-x-[180%] opacity-0' : 'translate-x-0 opacity-100'
-            }`}
+            ref={topArrowRef}
+            className="inline-block"
+            style={{ willChange: 'transform' }}
           >
             →
           </span>
-          {/* Arrow Entering */}
+          {/* Bottom Arrow (Slides in from left) */}
           <span
-            className={`absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              hoverTextColor[variant]
-            } ${isHovered ? 'translate-x-0 opacity-100' : '-translate-x-[180%] opacity-0'}`}
+            ref={botArrowRef}
+            className={`absolute ${hoverTextColor[variant]}`}
+            style={{ willChange: 'transform' }}
           >
             →
           </span>

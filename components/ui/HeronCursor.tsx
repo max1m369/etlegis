@@ -9,7 +9,7 @@ export default function HeronCursor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only enable on desktop with fine mouse pointer
+    // Only enable on desktop pointer devices
     if (typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) {
       return;
     }
@@ -25,7 +25,7 @@ export default function HeronCursor() {
       mouseY = e.clientY;
       if (!isVisible) setIsVisible(true);
 
-      // Instant positioning for central dot
+      // Instantaneous zero-lag positioning for the primary reticle center
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
       }
@@ -34,7 +34,9 @@ export default function HeronCursor() {
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
-      const isInteractive = !!target.closest('a, button, [role="button"], input, textarea, select, .interactive, [data-interactive]');
+      const isInteractive = !!target.closest(
+        'a, button, [role="button"], input, textarea, select, .interactive, [data-interactive]'
+      );
       setIsHovered(isInteractive);
     };
 
@@ -42,10 +44,13 @@ export default function HeronCursor() {
       setIsVisible(false);
     };
 
-    // Smooth lerp loop for the trailing reticle ring
+    const onMouseEnter = () => {
+      setIsVisible(true);
+    };
+
+    // Agile, featherlight lerp loop (high-responsiveness: lerp factor 0.42 eliminates sluggish drag)
     const render = () => {
-      // Lerp factor
-      const lerp = 0.18;
+      const lerp = 0.42; // Fast, agile, buttery smooth without heavy drag
       ringX += (mouseX - ringX) * lerp;
       ringY += (mouseY - ringY) * lerp;
 
@@ -59,23 +64,25 @@ export default function HeronCursor() {
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     window.addEventListener('mouseover', onMouseOver, { passive: true });
     document.addEventListener('mouseleave', onMouseLeave);
+    document.addEventListener('mouseenter', onMouseEnter);
     rafId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
       document.removeEventListener('mouseleave', onMouseLeave);
+      document.removeEventListener('mouseenter', onMouseEnter);
       cancelAnimationFrame(rafId);
     };
   }, [isVisible]);
 
   return (
     <div
-      className={`pointer-events-none fixed inset-0 z-[9999] overflow-hidden transition-opacity duration-300 hidden md:block ${
+      className={`pointer-events-none fixed inset-0 z-[9999] overflow-hidden transition-opacity duration-200 hidden md:block ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* 1. Core Reticle Dot */}
+      {/* 1. Precision Center Reticle Dot (Zero-lag) */}
       <div
         ref={dotRef}
         className={`fixed top-0 left-0 h-1.5 w-1.5 rounded-full transition-colors duration-200 ${
@@ -84,16 +91,21 @@ export default function HeronCursor() {
         style={{ willChange: 'transform' }}
       />
 
-      {/* 2. Trailing Reticle Ring */}
+      {/* 2. Agile, Featherlight Follower Reticle Ring */}
       <div
         ref={ringRef}
-        className={`fixed top-0 left-0 rounded-full border transition-all duration-300 ease-out ${
+        className={`fixed top-0 left-0 rounded-full border transition-all duration-200 ease-out flex items-center justify-center ${
           isHovered
-            ? 'h-12 w-12 border-[#FA3600]/80 bg-[#FA3600]/5 scale-100'
-            : 'h-7 w-7 border-[#282828]/40 dark:border-white/40 scale-75'
+            ? 'h-9 w-9 border-[#FA3600] bg-[#FA3600]/10 scale-110 shadow-[0_0_12px_rgba(250,54,0,0.25)]'
+            : 'h-6 w-6 border-[#282828]/50 dark:border-white/50 scale-100'
         }`}
         style={{ willChange: 'transform' }}
-      />
+      >
+        {/* Optical corner ticks when hovering interactive elements */}
+        {isHovered && (
+          <span className="w-1 h-1 bg-[#FA3600] rounded-full animate-ping pointer-events-none" />
+        )}
+      </div>
     </div>
   );
 }
