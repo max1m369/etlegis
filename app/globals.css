@@ -677,4 +677,13 @@ h1, h2, h3, .font-heading {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 
