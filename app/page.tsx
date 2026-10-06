@@ -7,14 +7,13 @@ import V26ChameleonNav from '@/components/v26/V26ChameleonNav';
 import V26HeroSection from '@/components/v26/V26HeroSection';
 import V26ServicesSection from '@/components/v26/V26ServicesSection';
 import V26AboutSection from '@/components/v26/V26AboutSection';
-import V26ContactsSection from '@/components/v26/V26ContactsSection';
 import V26Footer from '@/components/v26/V26Footer';
 import VersionSwitcher from '@/components/ui/VersionSwitcher';
 
 /**
  * ETLEGIS Version 2.6 - Landing Page
  * Architectural Grid Proportions: 20% (Logo Chameleon Rail) / 40% (Main Lead) / 40% (Trust & Action)
- * Palette: Prototype 10 (Light #EAE6DF ⇄ Dark Slate #223243)
+ * Palette: Prototype 10 (Light #EAE6DF ⇄ Dark Slate #223243 / Deep Navy #090C11)
  * Chameleon Monogram: Dynamic dual-layer liquid clipping without glows or filters ("Без всяких свечений, без всего")
  * Chameleon Navigation: Pinned on the right, horizontally aligned with the logo, Jost font, hides on scroll down, shows on scroll up, switches color with section
  * Typography: Amstelvar, Jost & Space Mono/Oswald from the main project
@@ -32,7 +31,7 @@ export default function HomePage() {
         {/* Floating Chameleon Navigation on the right, aligned with logo */}
         <V26ChameleonNav />
 
-        {/* Main Content (Strictly starts at 20% across all 4 sections) */}
+        {/* Main Content (Strictly starts at 20% across all sections) */}
         <main className="w-full">
           {/* Section 1: Hero (Light #EAE6DF) */}
           <V26HeroSection />
@@ -40,15 +39,12 @@ export default function HomePage() {
           {/* Section 2: Services / Practices (Dark #223243) */}
           <V26ServicesSection />
 
-          {/* Section 3: About / Team (Light #EAE6DF) */}
+          {/* Section 3: About / Team (Light #EAE6DF - 4-card horizontal scroll) */}
           <V26AboutSection />
 
-          {/* Section 4: Contacts & Intake (Dark #223243) */}
-          <V26ContactsSection />
+          {/* Section 4: Classic Boardroom Footer (Dark #090C11 with /footer-bg.webp photo) */}
+          <V26Footer />
         </main>
-
-        {/* Architectural 20/40/40 Footer */}
-        <V26Footer />
       </div>
     </SmoothScrollProvider>
   );
