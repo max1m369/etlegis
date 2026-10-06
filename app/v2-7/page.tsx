@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import VersionSwitcher from '@/components/ui/VersionSwitcher';
@@ -8,7 +8,8 @@ import { useConsultationModal } from '@/components/providers/ModalProvider';
 import { TEAM_MEMBERS_FULL } from '@/lib/data/team-blueprint';
 import { CASES_CATALOG_DATA } from '@/components/sections/CasesCatalog';
 import { articles as mockArticles } from '@/lib/data/mock-data';
-import { ChevronDown, ChevronRight, Phone, Mail, Send, ArrowUpRight } from 'lucide-react';
+import { ChevronDown, ArrowUpRight, Sparkles, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import '@/styles/transitions3d.css';
 
 interface PracticeItem {
   no: string;
@@ -84,43 +85,64 @@ const PRACTICES_DATA: PracticeItem[] = [
   },
 ];
 
+type TransitionEffect =
+  | 'cube-right'
+  | 'cube-left'
+  | 'cube-up'
+  | 'cube-down'
+  | 'carousel-right'
+  | 'carousel-left'
+  | 'flip'
+  | 'slide-horizontal';
+
 export default function V27Page() {
   const { openModal } = useConsultationModal();
 
-  // Left rail accordion spoiler states
+  // Accordion spoilers in left rail
   const [isPracticesOpen, setIsPracticesOpen] = useState(true);
   const [isTeamOpen, setIsTeamOpen] = useState(false);
   const [isCasesOpen, setIsCasesOpen] = useState(false);
 
-  // Active view on the right: 'overview' (classic split stream), 'cases-catalog', or 'blog-catalog'
-  const [rightView, setRightView] = useState<'overview' | 'cases-catalog' | 'blog-catalog'>('overview');
+  // Active view in right column:
+  // 'overview' | 'practice-p01' | ... | 'bureau' | 'cases-catalog' | 'blog-catalog' | 'contact'
+  const [currentView, setCurrentView] = useState<string>('overview');
+  const [prevView, setPrevView] = useState<string>('overview');
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Animation configuration widget
+  const [activeEffect, setActiveEffect] = useState<TransitionEffect>('cube-right');
+  const [isWidgetOpen, setIsWidgetOpen] = useState(false);
+
+  // Filter for cases catalog
   const [activeCaseCategory, setActiveCaseCategory] = useState<'all' | 'liquidation' | 'arbitration' | 'bankruptcy'>('all');
-  const [activePracticeId, setActivePracticeId] = useState<string>('p01');
 
   // Contact form state
   const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', task: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // Handle intersection observer to highlight current practice link when in overview mode
-  useEffect(() => {
-    if (rightView !== 'overview') return;
-    const links = PRACTICES_DATA.map(p => document.getElementById(p.id)).filter(Boolean) as HTMLElement[];
-    if (!links.length) return;
+  // Container refs for scrollable pages inside right rail
+  const currentPageRef = useRef<HTMLDivElement>(null);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActivePracticeId(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '-20% 0px -60% 0px' }
-    );
+  // Trigger 3D Page Transition
+  const navigateTo = (newView: string) => {
+    if (newView === currentView || isAnimating) return;
+    setPrevView(currentView);
+    setCurrentView(newView);
+    setIsAnimating(true);
 
-    links.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [rightView]);
+    // Scroll new page to top
+    setTimeout(() => {
+      if (currentPageRef.current) {
+        currentPageRef.current.scrollTop = 0;
+      }
+    }, 50);
+
+    // Duration matches CSS animation duration
+    const duration = activeEffect.startsWith('carousel') ? 850 : 700;
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, duration);
+  };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,11 +153,497 @@ export default function V27Page() {
     ? CASES_CATALOG_DATA
     : CASES_CATALOG_DATA.filter(c => c.category === activeCaseCategory);
 
+  // Animation class mapping based on user selection
+  const getOutClass = () => {
+    switch (activeEffect) {
+      case 'cube-right': return 'pt-page-rotateCubeRightOut pt-page-ontop';
+      case 'cube-left': return 'pt-page-rotateCubeLeftOut pt-page-ontop';
+      case 'cube-up': return 'pt-page-rotateCubeTopOut pt-page-ontop';
+      case 'cube-down': return 'pt-page-rotateCubeBottomOut pt-page-ontop';
+      case 'carousel-right': return 'pt-page-rotateCarouselRightOut pt-page-ontop';
+      case 'carousel-left': return 'pt-page-rotateCarouselLeftOut pt-page-ontop';
+      case 'flip': return 'pt-page-flipOutRight pt-page-ontop';
+      case 'slide-horizontal': return 'pt-page-moveToLeft pt-page-ontop';
+      default: return 'pt-page-rotateCubeRightOut pt-page-ontop';
+    }
+  };
+
+  const getInClass = () => {
+    switch (activeEffect) {
+      case 'cube-right': return 'pt-page-rotateCubeRightIn';
+      case 'cube-left': return 'pt-page-rotateCubeLeftIn';
+      case 'cube-up': return 'pt-page-rotateCubeTopIn';
+      case 'cube-down': return 'pt-page-rotateCubeBottomIn';
+      case 'carousel-right': return 'pt-page-rotateCarouselRightIn';
+      case 'carousel-left': return 'pt-page-rotateCarouselLeftIn';
+      case 'flip': return 'pt-page-flipInLeft';
+      case 'slide-horizontal': return 'pt-page-moveFromRight';
+      default: return 'pt-page-rotateCubeRightIn';
+    }
+  };
+
+  // Render content of a given view
+  const renderViewContent = (view: string) => {
+    // 1. Specific Practice View
+    if (view.startsWith('practice-')) {
+      const pracId = view.replace('practice-', '');
+      const prac = PRACTICES_DATA.find(p => p.id === pracId) || PRACTICES_DATA[0];
+      return (
+        <div className="p-8 sm:p-16 lg:p-24 min-h-full flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
+              <button
+                type="button"
+                onClick={() => navigateTo('overview')}
+                className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold flex items-center gap-1 cursor-pointer"
+              >
+                ← Назад к общему обзору
+              </button>
+              <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
+                Направление №{prac.no} из 06
+              </span>
+            </div>
+
+            <div className="flex items-baseline justify-between gap-6 mb-6">
+              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl lg:text-6xl text-[#1C242E] leading-[1.05] tracking-[-0.02em]">
+                {prac.fullTitle}
+              </h2>
+              <div className="font-v27-display text-4xl sm:text-5xl text-[#2C3E50] text-right shrink-0">
+                {prac.count.split(' ')[0]}
+                <small className="block font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] font-medium mt-1">
+                  дел с 2019
+                </small>
+              </div>
+            </div>
+
+            <div className="space-y-6 max-w-[62ch] my-10">
+              <p className="text-lg sm:text-xl leading-[1.6] text-[#1C242E] font-medium">
+                {prac.lead}
+              </p>
+              <p className="text-base sm:text-lg leading-[1.65] text-[#485464]">
+                {prac.details}
+              </p>
+              <div className="p-6 bg-[#ECE8E0] border-l-4 border-[#2C3E50] text-base italic text-[#485464] leading-[1.6]">
+                <strong className="block not-italic font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#2C3E50] font-bold mb-2">
+                  Процессуальный регламент ведения:
+                </strong>
+                {prac.howWeWork}
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-[#D5CFBF] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => openModal(`Консультация: ${prac.fullTitle}`)}
+              className="py-3.5 px-6 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
+            >
+              Обсудить судебную защиту →
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo('cases-catalog')}
+              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-semibold cursor-pointer"
+            >
+              Смотреть выигранные дела по практике →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // 2. Cases Catalog View
+    if (view === 'cases-catalog') {
+      return (
+        <div className="p-8 sm:p-14 lg:p-20">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
+            <button
+              type="button"
+              onClick={() => navigateTo('overview')}
+              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold cursor-pointer"
+            >
+              ← Назад к обзору практик
+            </button>
+            <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
+              Судебная база etlegis
+            </span>
+          </div>
+
+          <div className="mb-10">
+            <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-2">
+              // СУДЕБНАЯ ПРАКТИКА И ПРЕЦЕДЕНТЫ
+            </div>
+            <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
+              Более 100 успешных дел — подтверждённый результат защиты
+            </h2>
+            <p className="text-base sm:text-lg text-[#485464] max-w-[52ch] leading-relaxed">
+              Все выигранные арбитражные процессы, защита от субсидиарной ответственности и прекращение уголовных рисков.
+            </p>
+
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-[#D5CFBF]">
+              {[
+                { id: 'all', label: 'Все дела' },
+                { id: 'arbitration', label: 'Арбитраж' },
+                { id: 'bankruptcy', label: 'Банкротство и КДЛ' },
+                { id: 'liquidation', label: 'Корпоративные споры' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveCaseCategory(tab.id as any)}
+                  className={`py-2 px-4 font-v27-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer ${
+                    activeCaseCategory === tab.id
+                      ? 'bg-[#2C3E50] text-white shadow-sm'
+                      : 'bg-[#ECE8E0] text-[#485464] hover:bg-[#D5CFBF]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cases Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredCases.map((c) => (
+              <div
+                key={c.id}
+                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] transition-all group"
+              >
+                <div>
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
+                    <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold">
+                      {c.categoryLabel}
+                    </span>
+                    {c.claimAmount && (
+                      <span className="font-v27-mono text-xs font-bold text-[#1C242E]">
+                        {c.claimAmount}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
+                    {c.title}
+                  </h3>
+                  <p className="text-sm text-[#485464] leading-relaxed mb-4">
+                    {c.summary}
+                  </p>
+                </div>
+                <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
+                  <span>Решение вступило в силу ✓</span>
+                  <span className="text-[#2C3E50] font-bold">Победа</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 3. Blog & Media Catalog View
+    if (view === 'blog-catalog') {
+      return (
+        <div className="p-8 sm:p-14 lg:p-20">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
+            <button
+              type="button"
+              onClick={() => navigateTo('overview')}
+              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold cursor-pointer"
+            >
+              ← Назад к обзору практик
+            </button>
+            <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
+              Пресс-центр и экспертная аналитика
+            </span>
+          </div>
+
+          <div className="mb-10">
+            <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-2">
+              // ПРЕСС-ЦЕНТР И АНАЛИТИКА
+            </div>
+            <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
+              Экспертные материалы, публикации и медиа-комментарии
+            </h2>
+            <p className="text-base sm:text-lg text-[#485464] max-w-[50ch] leading-relaxed">
+              Практические разборы прецедентов, изменения законодательства и аналитика от ведущих адвокатов бюро.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {mockArticles.map((art) => (
+              <article
+                key={art.id}
+                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] transition-all group"
+              >
+                <div>
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
+                    <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">
+                      {art.category || 'Аналитика'}
+                    </span>
+                    <span className="font-v27-mono text-[10px] text-[#798696]">
+                      {art.date}
+                    </span>
+                  </div>
+                  <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
+                    {art.title}
+                  </h3>
+                  <p className="text-sm text-[#485464] leading-relaxed mb-4">
+                    {art.previewText || 'Подробный анализ правоприменительной практики и рекомендации по снижению регуляторных рисков.'}
+                  </p>
+                </div>
+                <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
+                  <span>Экспертиза бюро</span>
+                  <span className="text-[#2C3E50] font-bold flex items-center gap-1">
+                    Читать →
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 4. Default: Overview Stream (Main split page)
+    return (
+      <div className="flex flex-col">
+        {/* Intro Section */}
+        <section id="intro" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
+            <span className="w-8 h-px bg-[#1C242E]" />
+            <span>Адвокатское бюро · Москва · <em className="not-italic text-[#2C3E50] font-bold">с 2019 года</em></span>
+          </div>
+          <h2 className="font-v27-display font-normal text-3xl sm:text-5xl lg:text-[62px] leading-[0.98] tracking-[-0.03em] text-[#1C242E] mb-6 max-w-[18ch]">
+            Каталог практик — слева. Здесь — как мы с ними работаем.
+          </h2>
+          <p className="text-lg leading-[1.55] text-[#485464] max-w-[48ch]">
+            Каждая практика — отдельный подход и отдельная команда. Кликните по названию в панели слева, чтобы открыть её с 3D-переходом. Или листайте горизонтально.
+          </p>
+        </section>
+
+        {/* Practices Summary Section */}
+        <section className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-4">
+            // ШЕСТЬ КЛЮЧЕВЫХ НАПРАВЛЕНИЙ ЗАЩИТЫ
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {PRACTICES_DATA.map((p) => (
+              <div
+                key={p.id}
+                onClick={() => navigateTo(`practice-${p.id}`)}
+                className="p-6 bg-[#EFECE4] border border-[#D5CFBF] hover:border-[#2C3E50] transition-all cursor-pointer group flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-baseline mb-2">
+                    <span className="font-v27-mono text-xs font-semibold text-[#798696]">
+                      №{p.no}
+                    </span>
+                    <span className="font-v27-mono text-[11px] text-[#2C3E50] font-bold">
+                      {p.count}
+                    </span>
+                  </div>
+                  <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-2">
+                    {p.fullTitle}
+                  </h3>
+                  <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed">
+                    {p.lead}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50]">
+                  <span>Открыть практику</span>
+                  <span>→</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Flagship Case Section */}
+        <section id="case" className="p-8 sm:p-14 lg:p-20 bg-[#EFECE4] border-b border-[#D5CFBF]">
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
+            <span className="w-8 h-px bg-[#1C242E]" />
+            <span>Флагманский кейс · <em className="not-italic text-[#2C3E50] font-bold">Case File № 24-A-0117</em></span>
+          </div>
+          
+          <div className="font-v27-display font-normal text-6xl sm:text-8xl lg:text-[110px] leading-[0.85] tracking-[-0.045em] text-[#1C242E] mb-5">
+            1,2
+            <small className="block mt-4 font-v27-mono text-xs tracking-[0.14em] uppercase text-[#798696] font-medium">
+              млрд ₽ · требование банка · снято
+            </small>
+          </div>
+
+          <div className="inline-flex flex-col py-2 px-3.5 mb-6 border-2 border-[#2C3E50] text-[#2C3E50] font-v27-mono text-xs tracking-[0.18em] uppercase font-bold rotate-[-2deg]">
+            Case Closed
+            <small className="text-[9px] tracking-[0.16em] mt-0.5">Ruling · in favor</small>
+          </div>
+
+          <h3 className="font-v27-display font-medium text-2xl sm:text-3xl leading-[1.2] tracking-[-0.015em] text-[#1C242E] mb-4 max-w-[28ch]">
+            Победа в многолетней тяжбе против крупного банка.
+          </h3>
+          <p className="text-[17px] text-[#485464] max-w-[56ch] mb-4 leading-relaxed">
+            Банк требовал с доверителя — производственной компании — 1,2 миллиарда рублей. Защита строилась на доказательстве того, что банк злоупотребляет процессуальными правами.
+          </p>
+          <p className="text-[17px] text-[#485464] max-w-[56ch] mb-6 leading-relaxed">
+            Суд первой инстанции и апелляция поддержали позицию защиты. Клиент сохранил активы и операционную деятельность.
+          </p>
+
+          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-6 mt-6 border-t border-[#D5CFBF] max-w-[700px]">
+            <div>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Практика</dt>
+              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Арбитраж</dd>
+            </div>
+            <div>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Годы</dt>
+              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">2024 — 2025</dd>
+            </div>
+            <div>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Инстанции</dt>
+              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Первая, апелляция</dd>
+            </div>
+          </dl>
+        </section>
+
+        {/* Bureau / Model & Team Section */}
+        <section id="bureau" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
+            <span className="w-8 h-px bg-[#1C242E]" />
+            <span>О бюро · <em className="not-italic text-[#2C3E50] font-bold">Как мы устроены</em></span>
+          </div>
+          <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-[1.05] tracking-[-0.03em] text-[#1C242E] mb-6">
+            Партнёрская модель.
+          </h2>
+          <p className="text-lg leading-[1.55] text-[#485464] max-w-[46ch] mb-8">
+            Ваше дело ведёт партнёр — от первой встречи до последней инстанции. Один голос, один человек, отвечающий за результат.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-8 items-baseline py-8 my-8 border-y border-[#D5CFBF]">
+            <div className="font-v27-display font-normal text-6xl sm:text-8xl text-[#1C242E] whitespace-nowrap">
+              240<sup className="font-v27-mono text-[0.24em] text-[#2C3E50] font-bold align-super">+</sup>
+            </div>
+            <div className="font-v27-display text-xl sm:text-2xl leading-[1.35] text-[#485464] max-w-[36ch]">
+              За 7 лет — <strong className="text-[#1C242E] font-medium">240 завершённых дел</strong> с подтверждённым результатом. Мы держим одновременно <strong className="text-[#1C242E] font-medium">шесть ключевых направлений</strong> и не выходим за их границы.
+            </div>
+          </div>
+
+          <p className="text-[17px] leading-relaxed text-[#485464] max-w-[54ch]">
+            Первая консультация бесплатна. Мы проводим её не для того, чтобы «продать», а для того, чтобы честно оценить перспективы. Если по нашему опыту ситуация вам невыгодна для судебного пути, мы скажем об этом на первой встрече.
+          </p>
+        </section>
+
+        {/* Contact Form Section */}
+        <section id="contact" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
+            <span className="w-8 h-px bg-[#1C242E]" />
+            <span>Связь · <em className="not-italic text-[#2C3E50] font-bold">Первая консультация — 0 ₽</em></span>
+          </div>
+          <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-[1.05] tracking-[-0.03em] text-[#1C242E] mb-4">
+            Обсудим задачу.
+          </h2>
+          <p className="text-lg leading-[1.55] text-[#485464] max-w-[46ch] mb-10">
+            Опишите ситуацию любым удобным способом. Мы подтвердим получение и назначим встречу в течение 24 часов.
+          </p>
+
+          <div className="bg-[#EFECE4] p-6 sm:p-8 border border-[#D5CFBF] max-w-xl">
+            {!formSubmitted ? (
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
+                  <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Имя</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Как к вам обращаться"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
+                  <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Компания</label>
+                  <input
+                    type="text"
+                    placeholder="Название организации"
+                    value={formData.company}
+                    onChange={e => setFormData({ ...formData, company: e.target.value })}
+                    className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
+                  <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Телефон</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+7 (___) ___-__-__"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
+                  <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Задача</label>
+                  <textarea
+                    required
+                    rows={2}
+                    placeholder="Кратко о ситуации или споре"
+                    value={formData.task}
+                    onChange={e => setFormData({ ...formData, task: e.target.value })}
+                    className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full resize-none"
+                  />
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">
+                    Отклик в течение 15 минут
+                  </span>
+                  <button
+                    type="submit"
+                    className="py-3 px-6 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-xs uppercase tracking-wider font-bold transition-all cursor-pointer"
+                  >
+                    Отправить заявку →
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="py-8 text-center space-y-3">
+                <div className="w-10 h-10 mx-auto bg-[#2C3E50] text-white flex items-center justify-center font-bold text-lg">
+                  ✓
+                </div>
+                <h4 className="font-v27-display text-xl font-bold text-[#1C242E]">
+                  Заявка принята под NDA
+                </h4>
+                <p className="text-sm text-[#485464]">
+                  Дежурный партнёр бюро свяжется с вами в течение 15 минут.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-[#1C242E] text-[#F6F4EF] p-8 sm:p-12 lg:p-16 grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.svg"
+              alt="ETLEGIS"
+              className="h-8 w-auto object-contain invert brightness-200"
+            />
+          </div>
+          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-white/60 sm:text-right leading-relaxed">
+            © 2019 — 2026 · Адвокатское бюро · Москва<br />
+            <span>Политика конфиденциальности · Адвокатская тайна</span>
+          </div>
+        </footer>
+      </div>
+    );
+  };
+
   return (
     <>
       <VersionSwitcher currentVersion="2.7" />
 
-      {/* Inject Fraunces and Source Serif 4 fonts matching concept-06-split.html */}
+      {/* Global Fonts & Colors Matching the Blue Slate Brand Palette */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:opsz,ital,wght@8..60,0,400;8..60,0,500;8..60,0,600;8..60,1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
@@ -147,7 +655,8 @@ export default function V27Page() {
           --v27-ink-2: #485464;
           --v27-muted: #798696;
           --v27-rule: #D5CFBF;
-          --v27-accent: #C5A059;
+          --v27-accent: #2C3E50;
+          --v27-accent-hover: #3D5A73;
           --font-display: 'Fraunces', Georgia, serif;
           --font-body: 'Source Serif 4', Georgia, serif;
           --font-mono: 'JetBrains Mono', monospace;
@@ -158,19 +667,23 @@ export default function V27Page() {
         .font-v27-mono { font-family: var(--font-mono); }
       `}</style>
 
-      <div className="w-full min-h-screen bg-[#F6F4EF] text-[#1C242E] font-v27-body antialiased">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(360px,500px)_1fr] min-h-screen">
+      {/* Fixed Full-Viewport Split Layout: Page Does NOT Scroll Down (Zero Window Scroll) */}
+      <div className="w-screen h-screen overflow-hidden bg-[#F6F4EF] text-[#1C242E] font-v27-body antialiased">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(360px,500px)_1fr] h-full w-full">
           
           {/* ========================================================
-              LEFT RAIL — Fixed/Sticky Navigation with Accordion Spoilers
+              LEFT RAIL — Fixed/Pinned Navigation Menu (Zero Border Lines below)
              ======================================================== */}
-          <aside className="bg-[#ECE8E0] border-r border-[#D5CFBF] lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto flex flex-col p-6 sm:p-8 z-30 select-none">
+          <aside className="bg-[#ECE8E0] border-r border-[#D5CFBF] h-full overflow-y-auto flex flex-col p-6 sm:p-8 z-30 select-none">
             
             {/* Full Brand Wordmark / Logo */}
             <div className="pb-6 border-b border-[#D5CFBF] mb-6 flex justify-between items-center">
               <Link
                 href="/v2-7"
-                onClick={() => setRightView('overview')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('overview');
+                }}
                 className="inline-flex items-center text-[#1C242E] hover:opacity-80 transition-opacity"
                 aria-label="Адвокатское бюро ETLEGIS"
               >
@@ -181,7 +694,7 @@ export default function V27Page() {
                 />
               </Link>
               <span className="font-v27-mono text-[10px] tracking-[0.16em] uppercase text-[#798696] font-medium">
-                Est. 2008
+                Est. 2019
               </span>
             </div>
 
@@ -190,13 +703,13 @@ export default function V27Page() {
               Мы команда профессионалов, которые знают, как защитить ваш бизнес.
             </h1>
 
-            {/* Subtitle as requested: «Работаем на стороне тех, кто отвечает за компанию...» */}
+            {/* Subtitle */}
             <p className="text-sm leading-[1.55] text-[#485464] mb-7 max-w-[40ch]">
               Работаем на стороне тех, кто отвечает за компанию. 240 завершённых дел, шесть направлений, партнёр ведёт лично.
             </p>
 
             {/* Navigation Menus with Spoilers */}
-            <nav className="flex flex-col flex-1 divide-y divide-[#D5CFBF] border-y border-[#D5CFBF] mb-8">
+            <nav className="flex flex-col flex-1 divide-y divide-[#D5CFBF] border-y border-[#D5CFBF] mb-6">
               
               {/* 1. ПРАКТИКИ БЮРО (Спойлер скрыть / раскрыть) */}
               <div className="py-3">
@@ -209,13 +722,13 @@ export default function V27Page() {
                     <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
                       Практики бюро
                     </span>
-                    <span className="font-v27-mono text-[10px] text-[#C5A059] font-bold">
+                    <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       ({PRACTICES_DATA.length})
                     </span>
                   </div>
                   <ChevronDown
                     className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isPracticesOpen ? 'rotate-180 text-[#C5A059]' : ''
+                      isPracticesOpen ? 'rotate-180 text-[#2C3E50]' : ''
                     }`}
                   />
                 </button>
@@ -223,39 +736,30 @@ export default function V27Page() {
                 {isPracticesOpen && (
                   <ul className="mt-3 flex flex-col divide-y divide-[#D5CFBF]/60 pt-1">
                     {PRACTICES_DATA.map((prac) => {
-                      const isCurrent = rightView === 'overview' && activePracticeId === prac.id;
+                      const isCurrent = currentView === `practice-${prac.id}`;
                       return (
                         <li key={prac.id}>
-                          <a
-                            href={`#${prac.id}`}
-                            onClick={(e) => {
-                              if (rightView !== 'overview') {
-                                e.preventDefault();
-                                setRightView('overview');
-                                setTimeout(() => {
-                                  const el = document.getElementById(prac.id);
-                                  el?.scrollIntoView({ behavior: 'smooth' });
-                                }, 80);
-                              }
-                            }}
-                            className={`grid grid-cols-[30px_1fr_auto] gap-3 items-baseline py-2.5 transition-all duration-150 cursor-pointer ${
-                              isCurrent ? 'pl-2 border-l-2 border-[#C5A059]' : 'hover:pl-1'
+                          <button
+                            type="button"
+                            onClick={() => navigateTo(`practice-${prac.id}`)}
+                            className={`w-full text-left grid grid-cols-[30px_1fr_auto] gap-3 items-baseline py-2.5 transition-all duration-150 cursor-pointer ${
+                              isCurrent ? 'pl-2 border-l-2 border-[#2C3E50] bg-white/40' : 'hover:pl-1'
                             }`}
                           >
                             <span className={`font-v27-mono text-[11px] tracking-[0.14em] font-medium ${
-                              isCurrent ? 'text-[#C5A059]' : 'text-[#798696]'
+                              isCurrent ? 'text-[#2C3E50]' : 'text-[#798696]'
                             }`}>
                               {prac.no}
                             </span>
                             <span className={`font-v27-display text-[16px] leading-[1.2] tracking-[-0.01em] transition-colors ${
-                              isCurrent ? 'text-[#C5A059] font-semibold' : 'text-[#485464] hover:text-[#1C242E]'
+                              isCurrent ? 'text-[#2C3E50] font-bold' : 'text-[#485464] hover:text-[#1C242E]'
                             }`}>
                               {prac.title}
                             </span>
                             <span className="font-v27-mono text-[10px] tracking-[0.12em] uppercase text-[#798696] font-medium whitespace-nowrap">
                               {prac.count}
                             </span>
-                          </a>
+                          </button>
                         </li>
                       );
                     })}
@@ -274,13 +778,13 @@ export default function V27Page() {
                     <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
                       Команда бюро
                     </span>
-                    <span className="font-v27-mono text-[10px] text-[#C5A059] font-bold">
+                    <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       ({TEAM_MEMBERS_FULL.length})
                     </span>
                   </div>
                   <ChevronDown
                     className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isTeamOpen ? 'rotate-180 text-[#C5A059]' : ''
+                      isTeamOpen ? 'rotate-180 text-[#2C3E50]' : ''
                     }`}
                   />
                 </button>
@@ -289,39 +793,30 @@ export default function V27Page() {
                   <ul className="mt-3 flex flex-col divide-y divide-[#D5CFBF]/60 pt-1">
                     {TEAM_MEMBERS_FULL.map((member, idx) => (
                       <li key={member.id}>
-                        <a
-                          href="#bureau"
-                          onClick={(e) => {
-                            if (rightView !== 'overview') {
-                              e.preventDefault();
-                              setRightView('overview');
-                              setTimeout(() => {
-                                const el = document.getElementById('bureau');
-                                el?.scrollIntoView({ behavior: 'smooth' });
-                              }, 80);
-                            }
-                          }}
-                          className="grid grid-cols-[24px_1fr] gap-3 items-baseline py-2 hover:pl-1 transition-all duration-150 cursor-pointer"
+                        <button
+                          type="button"
+                          onClick={() => navigateTo('overview')}
+                          className="w-full text-left grid grid-cols-[24px_1fr] gap-3 items-baseline py-2 hover:pl-1 transition-all duration-150 cursor-pointer"
                         >
                           <span className="font-v27-mono text-[10px] text-[#798696]">
                             0{idx + 1}
                           </span>
                           <div>
-                            <div className="font-v27-display text-[15px] font-medium text-[#1C242E] hover:text-[#C5A059] transition-colors">
+                            <div className="font-v27-display text-[15px] font-medium text-[#1C242E] hover:text-[#2C3E50] transition-colors">
                               {member.name}
                             </div>
                             <div className="text-[11px] text-[#798696] font-v27-body truncate max-w-[280px]">
                               {member.role}
                             </div>
                           </div>
-                        </a>
+                        </button>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
 
-              {/* 3. УСПЕШНЫЕ КЕЙСЫ (Спойлер с 3 подпунктами: Арбитраж, Банкротство, Ликвидация + страница справа) */}
+              {/* 3. УСПЕШНЫЕ КЕЙСЫ (Спойлер с 3 подпунктами) */}
               <div className="py-3">
                 <button
                   type="button"
@@ -332,48 +827,44 @@ export default function V27Page() {
                     <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
                       Успешные кейсы
                     </span>
-                    <span className="font-v27-mono text-[10px] text-[#C5A059] font-bold">
+                    <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       (100+)
                     </span>
                   </div>
                   <ChevronDown
                     className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isCasesOpen ? 'rotate-180 text-[#C5A059]' : ''
+                      isCasesOpen ? 'rotate-180 text-[#2C3E50]' : ''
                     }`}
                   />
                 </button>
 
                 {isCasesOpen && (
                   <div className="mt-3 flex flex-col space-y-2 pt-1 pl-1">
-                    {/* Кнопка "Смотреть все кейсы" */}
                     <button
                       type="button"
                       onClick={() => {
-                        setRightView('cases-catalog');
                         setActiveCaseCategory('all');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        navigateTo('cases-catalog');
                       }}
-                      className={`text-left font-v27-display text-[15px] py-1.5 px-2 rounded-sm transition-colors flex items-center justify-between ${
-                        rightView === 'cases-catalog' && activeCaseCategory === 'all'
-                          ? 'bg-[#C5A059]/15 text-[#1C242E] font-bold'
+                      className={`text-left font-v27-display text-[15px] py-1.5 px-2 rounded-sm transition-colors flex items-center justify-between cursor-pointer ${
+                        currentView === 'cases-catalog' && activeCaseCategory === 'all'
+                          ? 'bg-[#2C3E50]/10 text-[#2C3E50] font-bold'
                           : 'text-[#485464] hover:text-[#1C242E]'
                       }`}
                     >
                       <span>Все прецеденты бюро</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-[#C5A059]" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-[#2C3E50]" />
                     </button>
 
-                    {/* 3 подпункта */}
                     <button
                       type="button"
                       onClick={() => {
-                        setRightView('cases-catalog');
                         setActiveCaseCategory('arbitration');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between ${
-                        rightView === 'cases-catalog' && activeCaseCategory === 'arbitration'
-                          ? 'text-[#C5A059] font-bold'
+                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                        currentView === 'cases-catalog' && activeCaseCategory === 'arbitration'
+                          ? 'text-[#2C3E50] font-bold'
                           : 'text-[#798696] hover:text-[#1C242E]'
                       }`}
                     >
@@ -384,13 +875,12 @@ export default function V27Page() {
                     <button
                       type="button"
                       onClick={() => {
-                        setRightView('cases-catalog');
                         setActiveCaseCategory('bankruptcy');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between ${
-                        rightView === 'cases-catalog' && activeCaseCategory === 'bankruptcy'
-                          ? 'text-[#C5A059] font-bold'
+                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                        currentView === 'cases-catalog' && activeCaseCategory === 'bankruptcy'
+                          ? 'text-[#2C3E50] font-bold'
                           : 'text-[#798696] hover:text-[#1C242E]'
                       }`}
                     >
@@ -401,13 +891,12 @@ export default function V27Page() {
                     <button
                       type="button"
                       onClick={() => {
-                        setRightView('cases-catalog');
                         setActiveCaseCategory('liquidation');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between ${
-                        rightView === 'cases-catalog' && activeCaseCategory === 'liquidation'
-                          ? 'text-[#C5A059] font-bold'
+                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                        currentView === 'cases-catalog' && activeCaseCategory === 'liquidation'
+                          ? 'text-[#2C3E50] font-bold'
                           : 'text-[#798696] hover:text-[#1C242E]'
                       }`}
                     >
@@ -418,53 +907,34 @@ export default function V27Page() {
                 )}
               </div>
 
-              {/* 4. БЛОГ И МЕДИА (Прямая ссылка на страницу справа без разворота) */}
+              {/* 4. БЛОГ И МЕДИА (Прямой переход справа без разворота) */}
               <div className="py-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setRightView('blog-catalog');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
+                  onClick={() => navigateTo('blog-catalog')}
                   className={`w-full flex items-center justify-between py-1 text-left group cursor-pointer focus:outline-none ${
-                    rightView === 'blog-catalog' ? 'text-[#C5A059]' : ''
+                    currentView === 'blog-catalog' ? 'text-[#2C3E50]' : ''
                   }`}
                 >
                   <span className={`font-v27-mono text-[11px] tracking-[0.16em] uppercase font-semibold transition-colors ${
-                    rightView === 'blog-catalog' ? 'text-[#C5A059]' : 'text-[#798696] group-hover:text-[#1C242E]'
+                    currentView === 'blog-catalog' ? 'text-[#2C3E50]' : 'text-[#798696] group-hover:text-[#1C242E]'
                   }`}>
                     Блог и медиа
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-[#798696] group-hover:text-[#C5A059] transition-colors" />
+                  <ArrowUpRight className="w-4 h-4 text-[#798696] group-hover:text-[#2C3E50] transition-colors" />
                 </button>
-              </div>
-
-              {/* 5. КОНТАКТЫ (Скролл к футеру) */}
-              <div className="py-3">
-                <a
-                  href="#contact"
-                  onClick={() => {
-                    if (rightView !== 'overview') setRightView('overview');
-                  }}
-                  className="w-full flex items-center justify-between py-1 text-left group cursor-pointer"
-                >
-                  <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
-                    Контакты
-                  </span>
-                  <span className="font-v27-mono text-[10px] text-[#798696]">↓</span>
-                </a>
               </div>
 
             </nav>
 
-            {/* Bottom Channels & Quick Action Button */}
-            <div className="mt-auto pt-4 border-t border-[#D5CFBF] flex flex-col gap-2">
+            {/* Bottom Channels (Clean: NO crossed-out lines, NO "Контакты" text) */}
+            <div className="mt-auto pt-2 flex flex-col gap-2">
               <div className="font-v27-mono text-[10px] tracking-[0.16em] uppercase text-[#798696] font-medium mb-1">
                 Прямая связь
               </div>
               <a
                 href="tel:+74952150815"
-                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#C5A059] transition-colors"
+                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#2C3E50] transition-colors"
               >
                 <span className="font-v27-mono text-[9px] tracking-[0.14em] uppercase text-[#798696] self-center">
                   Тел.
@@ -473,7 +943,7 @@ export default function V27Page() {
               </a>
               <a
                 href="mailto:info@etlegis.ru"
-                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#C5A059] transition-colors"
+                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#2C3E50] transition-colors"
               >
                 <span className="font-v27-mono text-[9px] tracking-[0.14em] uppercase text-[#798696] self-center">
                   Почта
@@ -484,7 +954,7 @@ export default function V27Page() {
                 href="https://t.me/etlegis"
                 target="_blank"
                 rel="noreferrer"
-                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#C5A059] transition-colors"
+                className="grid grid-cols-[64px_1fr] gap-2 py-1 text-xs text-[#1C242E] hover:text-[#2C3E50] transition-colors"
               >
                 <span className="font-v27-mono text-[9px] tracking-[0.14em] uppercase text-[#798696] self-center">
                   TG
@@ -495,7 +965,7 @@ export default function V27Page() {
               <button
                 type="button"
                 onClick={() => openModal('Обсудить задачу — Концепция 2.7')}
-                className="mt-4 inline-flex items-center justify-center gap-2 py-3 px-4 font-v27-mono text-xs font-semibold tracking-[0.14em] uppercase text-white bg-[#1C242E] hover:bg-[#C5A059] hover:text-[#1C242E] transition-all duration-200 cursor-pointer shadow-sm"
+                className="mt-3 inline-flex items-center justify-center gap-2 py-3 px-4 font-v27-mono text-xs font-semibold tracking-[0.14em] uppercase text-white bg-[#2C3E50] hover:bg-[#3D5A73] transition-all duration-200 cursor-pointer shadow-sm"
               >
                 Обсудить задачу →
               </button>
@@ -505,470 +975,113 @@ export default function V27Page() {
 
 
           {/* ========================================================
-              RIGHT COLUMN — Dynamic Views: Overview / Cases / Blog
+              RIGHT COLUMN — 3D Perspective Stage (Codrops / Tympanus)
              ======================================================== */}
-          <main className="min-w-0 bg-[#F6F4EF]">
+          <main className="relative w-full h-full min-w-0 bg-[#F6F4EF] overflow-hidden">
             
-            {/* VIEW A: OVERVIEW (Exact concept-06-split stream) */}
-            {rightView === 'overview' && (
-              <div className="flex flex-col">
-                
-                {/* Intro Section */}
-                <section id="intro" className="p-8 sm:p-16 lg:p-24 border-b border-[#D5CFBF]">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
-                    <span className="w-8 h-px bg-[#1C242E]" />
-                    <span>Адвокатское бюро · Москва · <em className="not-italic text-[#C5A059] font-medium">с 2008 года</em></span>
-                  </div>
-                  <h2 className="font-v27-display font-normal text-3xl sm:text-5xl lg:text-[64px] leading-[0.98] tracking-[-0.03em] text-[#1C242E] mb-6 max-w-[18ch]">
-                    Каталог практик — слева. Здесь — как мы с ними работаем.
-                  </h2>
-                  <p className="text-lg leading-[1.55] text-[#485464] max-w-[48ch]">
-                    Каждая практика — отдельный подход и отдельная команда. Кликните по названию в панели слева, чтобы перейти к разделу. Или пролистайте всё подряд.
-                  </p>
-                </section>
-
-                {/* 6 Practice Detailed Sections */}
-                {PRACTICES_DATA.map((prac) => (
-                  <section
-                    key={prac.id}
-                    id={prac.id}
-                    className="p-8 sm:p-16 lg:p-24 border-b border-[#D5CFBF] scroll-mt-6"
-                  >
-                    <div className="py-2">
-                      <div className="grid grid-cols-[60px_1fr_auto] gap-5 items-baseline mb-6">
-                        <span className="font-v27-mono text-xs tracking-[0.14em] uppercase text-[#798696] font-medium">
-                          Practice №{prac.no}
-                        </span>
-                        <h3 className="font-v27-display font-medium text-2xl sm:text-[32px] leading-[1.1] tracking-[-0.015em] text-[#1C242E] m-0">
-                          {prac.fullTitle}
-                        </h3>
-                        <div className="font-v27-display text-2xl sm:text-3xl text-[#1C242E] text-right">
-                          {prac.count.split(' ')[0]}
-                          <small className="block font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] font-medium mt-1">
-                            дел с 2019
-                          </small>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-[60px_1fr] gap-4 sm:gap-5">
-                        <div className="hidden sm:block" />
-                        <div className="space-y-4 max-w-[56ch]">
-                          <p className="text-base sm:text-[17px] leading-[1.6] text-[#485464]">
-                            {prac.lead}
-                          </p>
-                          <p className="text-base sm:text-[17px] leading-[1.6] text-[#485464]">
-                            {prac.details}
-                          </p>
-                          <div className="mt-4 pt-3 border-t border-[#D5CFBF] text-sm italic text-[#798696] leading-[1.5]">
-                            <strong className="inline not-italic font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#1C242E] mr-2">
-                              Как работаем:
-                            </strong>
-                            {prac.howWeWork}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                ))}
-
-                {/* Flagship Case Section */}
-                <section id="case" className="p-8 sm:p-16 lg:p-24 bg-[#EFECE4] border-b border-[#D5CFBF]">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
-                    <span className="w-8 h-px bg-[#1C242E]" />
-                    <span>Флагманский кейс · <em className="not-italic text-[#C5A059] font-medium">Case File № 24-A-0117</em></span>
-                  </div>
-                  
-                  <div className="font-v27-display font-normal text-6xl sm:text-8xl lg:text-[120px] leading-[0.85] tracking-[-0.045em] text-[#1C242E] mb-5">
-                    1,2
-                    <small className="block mt-4 font-v27-mono text-xs tracking-[0.14em] uppercase text-[#798696] font-medium">
-                      млрд ₽ · требование банка · снято
-                    </small>
-                  </div>
-
-                  <div className="inline-flex flex-col py-2 px-3.5 mb-6 border-2 border-[#C5A059] text-[#C5A059] font-v27-mono text-xs tracking-[0.18em] uppercase font-medium rotate-[-2deg]">
-                    Case Closed
-                    <small className="text-[9px] tracking-[0.16em] mt-0.5">Ruling · in favor</small>
-                  </div>
-
-                  <h3 className="font-v27-display font-medium text-2xl sm:text-3xl leading-[1.2] tracking-[-0.015em] text-[#1C242E] mb-4 max-w-[28ch]">
-                    Победа в многолетней тяжбе против крупного банка.
-                  </h3>
-                  <p className="text-[17px] text-[#485464] max-w-[56ch] mb-4 leading-relaxed">
-                    Банк требовал с доверителя — производственной компании — 1,2 миллиарда рублей. Защита строилась на доказательстве того, что банк злоупотребляет процессуальными правами.
-                  </p>
-                  <p className="text-[17px] text-[#485464] max-w-[56ch] mb-6 leading-relaxed">
-                    Суд первой инстанции и апелляция поддержали позицию защиты. Клиент сохранил активы и операционную деятельность.
-                  </p>
-
-                  <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-6 mt-6 border-t border-[#D5CFBF] max-w-[700px]">
-                    <div>
-                      <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Практика</dt>
-                      <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Арбитраж</dd>
-                    </div>
-                    <div>
-                      <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Годы</dt>
-                      <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">2024 — 2025</dd>
-                    </div>
-                    <div>
-                      <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Инстанции</dt>
-                      <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Первая, апелляция</dd>
-                    </div>
-                  </dl>
-                </section>
-
-                {/* Bureau / Model & Team Section */}
-                <section id="bureau" className="p-8 sm:p-16 lg:p-24 border-b border-[#D5CFBF]">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
-                    <span className="w-8 h-px bg-[#1C242E]" />
-                    <span>О бюро · <em className="not-italic text-[#C5A059] font-medium">Как мы устроены</em></span>
-                  </div>
-                  <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-[1.05] tracking-[-0.03em] text-[#1C242E] mb-6">
-                    Партнёрская модель.
-                  </h2>
-                  <p className="text-lg leading-[1.55] text-[#485464] max-w-[46ch] mb-8">
-                    Ваше дело ведёт партнёр — от первой встречи до последней инстанции. Один голос, один человек, отвечающий за результат.
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-8 items-baseline py-8 my-8 border-y border-[#D5CFBF]">
-                    <div className="font-v27-display font-normal text-6xl sm:text-8xl text-[#1C242E] whitespace-nowrap">
-                      240<sup className="font-v27-mono text-[0.24em] text-[#C5A059] font-medium align-super">+</sup>
-                    </div>
-                    <div className="font-v27-display text-xl sm:text-2xl leading-[1.35] text-[#485464] max-w-[36ch]">
-                      За 16 лет практики — <strong className="text-[#1C242E] font-medium">240 завершённых дел</strong> с подтверждённым результатом. Мы держим одновременно <strong className="text-[#1C242E] font-medium">шесть ключевых направлений</strong> и не выходим за их границы.
-                    </div>
-                  </div>
-
-                  <p className="text-[17px] leading-relaxed text-[#485464] max-w-[54ch]">
-                    Первая консультация бесплатна. Мы проводим её не для того, чтобы «продать», а для того, чтобы честно оценить перспективы. Если по нашему опыту ситуация вам невыгодна для судебного пути, мы скажем об этом на первой встрече.
-                  </p>
-                </section>
-
-                {/* Publications Teaser Section */}
-                <section id="insights" className="p-8 sm:p-16 lg:p-24 border-b border-[#D5CFBF]">
-                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-                    <div>
-                      <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-3">
-                        <span className="w-8 h-px bg-[#1C242E]" />
-                        <span>Публикации · <em className="not-italic text-[#C5A059] font-medium">Что мы пишем</em></span>
-                      </div>
-                      <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-[1.05] tracking-[-0.03em] text-[#1C242E]">
-                        Разборы законодательства и практики.
-                      </h2>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRightView('blog-catalog');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      className="font-v27-mono text-xs uppercase tracking-wider text-[#C5A059] font-bold hover:underline"
-                    >
-                      Все статьи и медиа →
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[#D5CFBF]">
-                    {mockArticles.slice(0, 4).map((art, idx) => (
-                      <div
-                        key={art.id}
-                        onClick={() => {
-                          setRightView('blog-catalog');
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className={`p-6 cursor-pointer border-b border-[#D5CFBF] group ${
-                          idx % 2 === 0 ? 'sm:border-r sm:pr-8 sm:pl-0' : 'sm:pl-8 sm:pr-0'
-                        }`}
-                      >
-                        <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] font-medium mb-2.5 block">
-                          {art.date}
-                        </span>
-                        <h3 className="font-v27-display font-medium text-lg leading-[1.25] text-[#1C242E] group-hover:text-[#C5A059] transition-colors">
-                          {art.title}
-                        </h3>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                {/* Contact Section */}
-                <section id="contact" className="p-8 sm:p-16 lg:p-24 border-b border-[#D5CFBF]">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
-                    <span className="w-8 h-px bg-[#1C242E]" />
-                    <span>Связь · <em className="not-italic text-[#C5A059] font-medium">Первая консультация — 0 ₽</em></span>
-                  </div>
-                  <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-[1.05] tracking-[-0.03em] text-[#1C242E] mb-4">
-                    Обсудим задачу.
-                  </h2>
-                  <p className="text-lg leading-[1.55] text-[#485464] max-w-[46ch] mb-10">
-                    Опишите ситуацию любым удобным способом. Мы подтвердим получение и назначим встречу в течение 24 часов.
-                  </p>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                    <div>
-                      <p className="italic text-[15px] leading-[1.55] text-[#798696] max-w-[34ch] mb-6">
-                        Все обращения защищены адвокатской тайной согласно ст. 8 Федерального закона «Об адвокатуре». Первый разговор не обязывает вас к сотрудничеству.
-                      </p>
-                      <div className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-3 font-medium">
-                        Каналы
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <a href="tel:+74952150815" className="grid grid-cols-[80px_1fr] text-[#1C242E] hover:text-[#C5A059]">
-                          <span className="font-v27-mono text-[9px] uppercase tracking-wider text-[#798696]">Тел.</span>
-                          <span>+7 (495) 215-08-15</span>
-                        </a>
-                        <a href="mailto:info@etlegis.ru" className="grid grid-cols-[80px_1fr] text-[#1C242E] hover:text-[#C5A059]">
-                          <span className="font-v27-mono text-[9px] uppercase tracking-wider text-[#798696]">Почта</span>
-                          <span>info@etlegis.ru</span>
-                        </a>
-                        <a href="https://t.me/etlegis" target="_blank" rel="noreferrer" className="grid grid-cols-[80px_1fr] text-[#1C242E] hover:text-[#C5A059]">
-                          <span className="font-v27-mono text-[9px] uppercase tracking-wider text-[#798696]">Telegram</span>
-                          <span>@etlegis</span>
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Contact Form */}
-                    <div className="bg-[#EFECE4] p-6 sm:p-8 border border-[#D5CFBF]">
-                      {!formSubmitted ? (
-                        <form onSubmit={handleFormSubmit} className="space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
-                            <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Имя</label>
-                            <input
-                              type="text"
-                              required
-                              placeholder="Как к вам обращаться"
-                              value={formData.name}
-                              onChange={e => setFormData({ ...formData, name: e.target.value })}
-                              className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
-                            <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Компания</label>
-                            <input
-                              type="text"
-                              placeholder="Название организации"
-                              value={formData.company}
-                              onChange={e => setFormData({ ...formData, company: e.target.value })}
-                              className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
-                            <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Телефон</label>
-                            <input
-                              type="tel"
-                              required
-                              placeholder="+7 (___) ___-__-__"
-                              value={formData.phone}
-                              onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                              className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-[90px_1fr] gap-2 items-baseline py-2 border-b border-[#D5CFBF]">
-                            <label className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">Задача</label>
-                            <textarea
-                              required
-                              rows={2}
-                              placeholder="Кратко о ситуации или споре"
-                              value={formData.task}
-                              onChange={e => setFormData({ ...formData, task: e.target.value })}
-                              className="bg-transparent border-none outline-none text-[#1C242E] text-base placeholder-[#798696]/60 w-full resize-none"
-                            />
-                          </div>
-
-                          <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">
-                              Отклик в течение 15 минут
-                            </span>
-                            <button
-                              type="submit"
-                              className="py-3 px-6 bg-[#1C242E] hover:bg-[#C5A059] text-white hover:text-[#1C242E] font-v27-mono text-xs uppercase tracking-wider font-bold transition-all cursor-pointer"
-                            >
-                              Отправить заявку →
-                            </button>
-                          </div>
-                        </form>
-                      ) : (
-                        <div className="py-8 text-center space-y-3">
-                          <div className="w-10 h-10 mx-auto bg-[#1C242E] text-[#C5A059] flex items-center justify-center font-bold text-lg">
-                            ✓
-                          </div>
-                          <h4 className="font-v27-display text-xl font-bold text-[#1C242E]">
-                            Заявка принята под NDA
-                          </h4>
-                          <p className="text-sm text-[#485464]">
-                            Дежурный партнёр бюро свяжется с вами в течение 15 минут.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Footer Strip */}
-                <footer className="bg-[#1C242E] text-[#F6F4EF] p-8 sm:p-12 lg:p-16 grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src="/logo.svg"
-                      alt="ETLEGIS"
-                      className="h-9 w-auto object-contain invert brightness-200"
-                    />
-                  </div>
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-white/60 sm:text-right leading-relaxed">
-                    © 2008 — 2026 · Адвокатское бюро · Москва<br />
-                    <span>Политика конфиденциальности · Адвокатская тайна</span>
-                  </div>
-                </footer>
-
-              </div>
-            )}
-
-            {/* VIEW B: CASES CATALOG (Opens on the right when user clicks cases) */}
-            {rightView === 'cases-catalog' && (
-              <div className="p-8 sm:p-16 lg:p-20">
-                {/* Back to overview button */}
-                <div className="mb-8">
-                  <button
-                    type="button"
-                    onClick={() => setRightView('overview')}
-                    className="inline-flex items-center gap-2 font-v27-mono text-xs tracking-[0.16em] uppercase text-[#798696] hover:text-[#1C242E] transition-colors cursor-pointer"
-                  >
-                    ← Назад к обзору практик
-                  </button>
+            {/* 3D Perspective Container */}
+            <div className="pt-perspective">
+              
+              {/* Previous page (animating OUT) */}
+              {isAnimating && (
+                <div className={`pt-page ${getOutClass()}`}>
+                  {renderViewContent(prevView)}
                 </div>
+              )}
 
-                <div className="mb-10">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#C5A059] font-bold mb-2">
-                    // СУДЕБНАЯ ПРАКТИКА И ПРЕЦЕДЕНТЫ
-                  </div>
-                  <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
-                    Более 100 успешных дел — подтверждённый результат защиты
-                  </h2>
-                  <p className="text-base sm:text-lg text-[#485464] max-w-[50ch] leading-relaxed">
-                    Все выигранные арбитражные процессы, защита от субсидиарной ответственности и прекращение уголовных рисков.
-                  </p>
+              {/* Current page (animating IN or static current) */}
+              <div
+                ref={currentPageRef}
+                className={`pt-page ${isAnimating ? getInClass() : 'pt-page-current'}`}
+              >
+                {renderViewContent(currentView)}
+              </div>
 
-                  {/* Filter Pills */}
-                  <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-[#D5CFBF]">
-                    {[
-                      { id: 'all', label: 'Все дела' },
-                      { id: 'arbitration', label: 'Арбитраж' },
-                      { id: 'bankruptcy', label: 'Банкротство и КДЛ' },
-                      { id: 'liquidation', label: 'Корпоративные споры' },
-                    ].map((tab) => (
+            </div>
+
+            {/* ========================================================
+                3D TRANSITION CONFIGURATION WIDGET (HUD)
+               ======================================================== */}
+            <div className="absolute top-4 right-4 z-50">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsWidgetOpen(!isWidgetOpen)}
+                  className="flex items-center gap-2 px-3 py-2 bg-[#2C3E50] hover:bg-[#3D5A73] text-white rounded-md font-v27-mono text-xs font-semibold shadow-xl transition-all cursor-pointer border border-white/20"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#8BE69C]" />
+                  <span>3D Эффект перехода:</span>
+                  <span className="text-[#8BE69C] uppercase font-bold">
+                    {activeEffect === 'cube-right' && 'Куб вправо (3D)'}
+                    {activeEffect === 'cube-left' && 'Куб влево (3D)'}
+                    {activeEffect === 'cube-up' && 'Куб вверх (3D)'}
+                    {activeEffect === 'cube-down' && 'Куб вниз (3D)'}
+                    {activeEffect === 'carousel-right' && 'Карусель вправо'}
+                    {activeEffect === 'carousel-left' && 'Карусель влево'}
+                    {activeEffect === 'flip' && '3D Flip'}
+                    {activeEffect === 'slide-horizontal' && 'Скольжение'}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isWidgetOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isWidgetOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-[#1C242E]/95 backdrop-blur-md border border-white/15 rounded-md shadow-2xl p-3 text-white font-v27-mono text-xs z-50">
+                    <div className="font-bold text-[10px] uppercase tracking-wider text-[#9CA3AF] mb-2 pb-1 border-b border-white/10 flex justify-between items-center">
+                      <span>Выберите 3D-анимацию</span>
+                      <span className="text-[#8BE69C]">Codrops</span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      {[
+                        { id: 'cube-right', label: 'Куб вправо (3D-куб ⭐)' },
+                        { id: 'cube-left', label: 'Куб влево (3D-куб)' },
+                        { id: 'cube-up', label: 'Куб вверх (3D-куб)' },
+                        { id: 'cube-down', label: 'Куб вниз (3D-куб)' },
+                        { id: 'carousel-right', label: 'Карусель 3D вправо' },
+                        { id: 'carousel-left', label: 'Карусель 3D влево' },
+                        { id: 'flip', label: '3D Flip (Вращение)' },
+                        { id: 'slide-horizontal', label: 'Горизонтальный сдвиг' },
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveEffect(item.id as TransitionEffect);
+                            setIsWidgetOpen(false);
+                            // Test transition to current or next view
+                            const next = currentView === 'overview' ? 'cases-catalog' : 'overview';
+                            navigateTo(next);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors flex items-center justify-between cursor-pointer ${
+                            activeEffect === item.id
+                              ? 'bg-[#2C3E50] text-[#8BE69C] font-bold border border-[#8BE69C]/40'
+                              : 'text-gray-300 hover:bg-white/10'
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          {activeEffect === item.id && <span className="text-xs">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-gray-400">
+                      <span>Проверить переход:</span>
                       <button
-                        key={tab.id}
                         type="button"
-                        onClick={() => setActiveCaseCategory(tab.id as any)}
-                        className={`py-2 px-4 font-v27-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer ${
-                          activeCaseCategory === tab.id
-                            ? 'bg-[#1C242E] text-white shadow-sm'
-                            : 'bg-[#ECE8E0] text-[#485464] hover:bg-[#D5CFBF]'
-                        }`}
+                        onClick={() => {
+                          const next = currentView === 'overview' ? 'cases-catalog' : 'overview';
+                          navigateTo(next);
+                        }}
+                        className="text-[#8BE69C] hover:underline flex items-center gap-1 cursor-pointer font-bold"
                       >
-                        {tab.label}
+                        <RefreshCw className="w-2.5 h-2.5" />
+                        Запустить сейчас
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Cases Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredCases.map((c) => (
-                    <div
-                      key={c.id}
-                      className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#C5A059] transition-all group"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
-                          <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#C5A059] font-bold">
-                            {c.categoryLabel}
-                          </span>
-                          {c.claimAmount && (
-                            <span className="font-v27-mono text-xs font-bold text-[#1C242E]">
-                              {c.claimAmount}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#C5A059] transition-colors mb-3 leading-snug">
-                          {c.title}
-                        </h3>
-                        <p className="text-sm text-[#485464] leading-relaxed mb-4">
-                          {c.summary}
-                        </p>
-                      </div>
-                      <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
-                        <span>Решение вступило в силу ✓</span>
-                        <span className="text-[#C5A059] font-bold">Победа</span>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* VIEW C: BLOG & MEDIA CATALOG (Opens on the right when user clicks blog) */}
-            {rightView === 'blog-catalog' && (
-              <div className="p-8 sm:p-16 lg:p-20">
-                {/* Back to overview button */}
-                <div className="mb-8">
-                  <button
-                    type="button"
-                    onClick={() => setRightView('overview')}
-                    className="inline-flex items-center gap-2 font-v27-mono text-xs tracking-[0.16em] uppercase text-[#798696] hover:text-[#1C242E] transition-colors cursor-pointer"
-                  >
-                    ← Назад к обзору практик
-                  </button>
-                </div>
-
-                <div className="mb-10">
-                  <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#C5A059] font-bold mb-2">
-                    // ПРЕСС-ЦЕНТР И АНАЛИТИКА
                   </div>
-                  <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
-                    Экспертные материалы, публикации и медиа-комментарии
-                  </h2>
-                  <p className="text-base sm:text-lg text-[#485464] max-w-[50ch] leading-relaxed">
-                    Практические разборы прецедентов, изменения законодательства и аналитика от ведущих адвокатов бюро.
-                  </p>
-                </div>
-
-                {/* Articles & Media List */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {mockArticles.map((art) => (
-                    <article
-                      key={art.id}
-                      className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#C5A059] transition-all group"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
-                          <span className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696]">
-                            {art.category || 'Аналитика'}
-                          </span>
-                          <span className="font-v27-mono text-[10px] text-[#798696]">
-                            {art.date}
-                          </span>
-                        </div>
-                        <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#C5A059] transition-colors mb-3 leading-snug">
-                          {art.title}
-                        </h3>
-                        <p className="text-sm text-[#485464] leading-relaxed mb-4">
-                          {art.previewText || 'Подробный анализ правоприменительной практики и рекомендации по снижению регуляторных рисков.'}
-                        </p>
-                      </div>
-                      <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
-                        <span>Экспертиза бюро</span>
-                        <span className="text-[#C5A059] font-bold flex items-center gap-1">
-                          Читать →
-                        </span>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                )}
               </div>
-            )}
+            </div>
 
           </main>
 
