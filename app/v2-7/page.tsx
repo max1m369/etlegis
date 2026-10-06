@@ -125,18 +125,7 @@ export default function V27Page() {
 
   // Container refs for scrollable pages
   const currentPageRef = useRef<HTMLDivElement>(null);
-  const horizontalScrollRef = useRef<HTMLDivElement>(null);
-
-  // Wheel horizontal scrolling handler for practices strip
-  const handleWheelHorizontal = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (horizontalScrollRef.current) {
-      // If user scrolls vertical wheel, translate to horizontal scroll
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        horizontalScrollRef.current.scrollLeft += e.deltaY * 1.2;
-      }
-    }
-  };
+  const practicesScrollRef = useRef<HTMLDivElement>(null);
 
   // Trigger 3D Page Transition
   const navigateTo = (newView: string) => {
@@ -197,9 +186,9 @@ export default function V27Page() {
     // -------------------------------------------------------------
     if (view === 'practices-all') {
       return (
-        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16 flex flex-col justify-between">
+        <div className="pt-page-scrollable h-full p-8 sm:p-12 lg:p-14 flex flex-col justify-between overflow-x-hidden">
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#D5CFBF]">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-[#D5CFBF]">
               <div>
                 <div className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
                   <span className="w-6 h-px bg-[#2C3E50]" />
@@ -220,7 +209,7 @@ export default function V27Page() {
                   }`}
                 >
                   <Rows className="w-3.5 h-3.5" />
-                  <span>Горизонтальный ряд</span>
+                  <span>Горизонтальная лента</span>
                 </button>
                 <button
                   type="button"
@@ -230,84 +219,97 @@ export default function V27Page() {
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>Сетка 2×3</span>
+                  <span>Сетка</span>
                 </button>
               </div>
             </div>
 
-            <p className="text-base sm:text-lg text-[#485464] max-w-[62ch] leading-relaxed mb-8">
-              Каждая практика — отдельный подход и закреплённый партнёр. Выберите нужное направление для детального разбора регламента или листайте карточки.
+            <p className="text-base sm:text-lg text-[#485464] max-w-[62ch] leading-relaxed mb-6">
+              Каждая практика — отдельный подход и закреплённый партнёр. Листайте карточки горизонтально вправо: колесом мыши, тачпадом или стрелками.
             </p>
 
             {/* Practices Presentation */}
             {practicesLayout === 'horizontal' ? (
-              <div className="relative">
+              <div className="relative -mr-8 sm:-mr-12 lg:-mr-14">
                 <div
-                  ref={horizontalScrollRef}
-                  onWheel={handleWheelHorizontal}
-                  className="horizontal-scroll-container gap-7 pb-8 pt-3 pr-20"
+                  ref={practicesScrollRef}
+                  onWheel={(e) => {
+                    if (practicesScrollRef.current) {
+                      // Allow natural horizontal scroll with standard mouse wheel
+                      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                        e.currentTarget.scrollLeft += e.deltaY * 1.2;
+                      }
+                    }
+                  }}
+                  className="horizontal-scroll-container gap-6 pb-6 pt-2 pr-14 select-none"
+                  style={{
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                    display: 'flex',
+                    scrollSnapType: 'x mandatory',
+                  }}
                 >
                   {PRACTICES_DATA.map((p) => (
                     <div
                       key={p.id}
                       onClick={() => navigateTo(`practice-${p.id}`)}
-                      className="horizontal-scroll-item w-[380px] sm:w-[480px] lg:w-[540px] min-h-[460px] bg-[#EFECE4] border-2 border-[#D5CFBF] p-8 sm:p-10 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-2xl transition-all cursor-pointer group"
+                      className="horizontal-scroll-item w-[420px] sm:w-[480px] lg:w-[500px] min-h-[460px] sm:min-h-[500px] bg-[#EFECE4] border border-[#D5CFBF] p-8 sm:p-10 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-2xl transition-all cursor-pointer group shrink-0"
+                      style={{ scrollSnapAlign: 'start' }}
                     >
                       <div>
                         <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-[#D5CFBF]">
-                          <span className="font-v27-mono text-sm font-bold text-[#798696] tracking-wider">
-                            PRACTICE №{p.no}
+                          <span className="font-v27-mono text-xs font-bold tracking-[0.14em] text-[#798696] uppercase">
+                            Practice №{p.no}
                           </span>
-                          <span className="font-v27-mono text-sm font-bold text-[#2C3E50] bg-[#ECE8E0] px-3 py-1 border border-[#D5CFBF]">
+                          <span className="font-v27-mono text-sm font-bold text-[#2C3E50]">
                             {p.count}
                           </span>
                         </div>
-                        <h3 className="font-v27-display text-3xl sm:text-4xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-4 leading-tight">
+
+                        <h3 className="font-v27-display text-3xl sm:text-[34px] font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-5 leading-[1.12] tracking-[-0.015em]">
                           {p.fullTitle}
                         </h3>
-                        <p className="text-base sm:text-lg text-[#485464] leading-relaxed mb-6">
+
+                        <p className="text-[16px] leading-[1.65] text-[#485464] mb-6">
                           {p.lead}
                         </p>
                       </div>
 
-                      <div className="pt-5 border-t border-[#D5CFBF] flex items-center justify-between text-sm font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
-                        <span>Изучить регламент ведения дела</span>
-                        <span className="text-lg transition-transform group-hover:translate-x-1">→</span>
+                      <div className="pt-5 border-t border-[#D5CFBF] flex items-center justify-between font-v27-mono text-xs uppercase tracking-wider font-bold text-[#5A738E] group-hover:text-[#2C3E50] transition-colors">
+                        <span>Подробный процессуальный регламент</span>
+                        <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Horizontal Navigation Indicators */}
-                <div className="flex items-center justify-between text-xs font-v27-mono text-[#798696] mt-4 pt-2 border-t border-[#D5CFBF]">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#2C3E50] animate-pulse" />
-                    <span>Карточки уходят за вьюпорт · Листайте горизонтально колесом мыши или стрелками:</span>
-                  </div>
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between text-xs font-v27-mono text-[#798696] mt-3 pr-14">
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-[#2C3E50]" />
+                    Карточки уходят за край экрана · Крутите колесо мыши или свайпайте для скролла вправо →
+                  </span>
+                  <div className="hidden sm:flex items-center gap-2 text-[#2C3E50] font-bold">
                     <button
                       type="button"
                       onClick={() => {
-                        if (horizontalScrollRef.current) {
-                          horizontalScrollRef.current.scrollBy({ left: -450, behavior: 'smooth' });
+                        if (practicesScrollRef.current) {
+                          practicesScrollRef.current.scrollBy({ left: -460, behavior: 'smooth' });
                         }
                       }}
-                      className="px-3 py-1.5 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white border border-[#D5CFBF] font-bold cursor-pointer transition-colors"
-                      title="Прокрутить назад"
+                      className="px-3 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
                     >
-                      ← Назад
+                      ←
                     </button>
                     <button
                       type="button"
                       onClick={() => {
-                        if (horizontalScrollRef.current) {
-                          horizontalScrollRef.current.scrollBy({ left: 450, behavior: 'smooth' });
+                        if (practicesScrollRef.current) {
+                          practicesScrollRef.current.scrollBy({ left: 460, behavior: 'smooth' });
                         }
                       }}
-                      className="px-3 py-1.5 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white border border-[#D5CFBF] font-bold cursor-pointer transition-colors"
-                      title="Прокрутить вперед"
+                      className="px-3 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
                     >
-                      Вперёд →
+                      →
                     </button>
                   </div>
                 </div>
@@ -318,7 +320,7 @@ export default function V27Page() {
                   <div
                     key={p.id}
                     onClick={() => navigateTo(`practice-${p.id}`)}
-                    className="bg-[#EFECE4] border border-[#D5CFBF] p-6 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all cursor-pointer group"
+                    className="bg-[#EFECE4] border border-[#D5CFBF] p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all cursor-pointer group min-h-[380px]"
                   >
                     <div>
                       <div className="flex items-baseline justify-between mb-3 pb-2 border-b border-[#D5CFBF]">
@@ -329,10 +331,10 @@ export default function V27Page() {
                           {p.count}
                         </span>
                       </div>
-                      <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-2">
+                      <h3 className="font-v27-display text-2xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
                         {p.fullTitle}
                       </h3>
-                      <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed mb-4">
+                      <p className="text-sm text-[#485464] leading-relaxed mb-4">
                         {p.lead}
                       </p>
                     </div>
@@ -347,7 +349,7 @@ export default function V27Page() {
             )}
           </div>
 
-          <div className="pt-8 mt-8 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-4">
+          <div className="pt-6 mt-6 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-4">
             <button
               type="button"
               onClick={() => openModal('Консультация по практикам бюро')}

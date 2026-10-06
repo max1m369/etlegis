@@ -44,30 +44,33 @@
 	overflow-x: hidden !important;
 }
 
-/* Horizontal scroll strip for practices: cards extend beyond the viewport and scroll horizontally */
+/* Horizontal scroll strip for practices when user views practices horizontally */
 .horizontal-scroll-container {
 	display: flex;
 	overflow-x: auto;
 	overflow-y: hidden;
 	scroll-snap-type: x mandatory;
 	-webkit-overflow-scrolling: touch;
-	overscroll-behavior-x: contain;
 	scrollbar-width: thin;
-	scrollbar-color: #2C3E50 #ECE8E0;
+	scrollbar-color: #2C3E50 #D5CFBF;
 }
 
 .horizontal-scroll-container::-webkit-scrollbar {
-	height: 6px;
+	height: 8px;
 }
 
 .horizontal-scroll-container::-webkit-scrollbar-track {
 	background: #ECE8E0;
-	border-radius: 3px;
+	border-radius: 4px;
 }
 
 .horizontal-scroll-container::-webkit-scrollbar-thumb {
 	background: #2C3E50;
-	border-radius: 3px;
+	border-radius: 4px;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-thumb:hover {
+	background: #3D5A73;
 }
 
 .horizontal-scroll-item {
