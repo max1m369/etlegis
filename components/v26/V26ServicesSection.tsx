@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 
 interface PracticeCardItem {
-  code: string;
+  id: string;
+  direction: string;
   title: string;
   desc: string;
   metric: string;
@@ -15,7 +16,8 @@ interface PracticeCardItem {
 
 const PRACTICES_COL1: PracticeCardItem[] = [
   {
-    code: 'P-199 · НАЛОГИ',
+    id: 'tax',
+    direction: 'НАЛОГИ',
     title: 'Защита при выездных проверках ФНС',
     desc: 'Сопровождение допросов, выемок, снятие претензий по дроблению бизнеса и ст. 54.1 НК РФ. Отмена доначислений на досудебной стадии.',
     metric: '• 1,2 млрд ₽ защищено по одному акту',
@@ -23,7 +25,8 @@ const PRACTICES_COL1: PracticeCardItem[] = [
     slug: 'tax-disputes',
   },
   {
-    code: 'P-159 · УГОЛОВНОЕ',
+    id: 'criminal',
+    direction: 'УГОЛОВНОЕ',
     title: 'Экономические и должностные статьи',
     desc: 'Защита первых лиц при обысках и следственных действиях по ст. 159 ч. 4, 160, 201 УК РФ. Предотвращение мер пресечения.',
     metric: '• 340 млн ₽ · Прекращение дела на стадии следствия',
@@ -31,7 +34,8 @@ const PRACTICES_COL1: PracticeCardItem[] = [
     slug: 'criminal-defense',
   },
   {
-    code: 'P-KDL · СУБСИДИАРКА',
+    id: 'subsidiary',
+    direction: 'СУБСИДИАРКА',
     title: 'Защита бенефициаров и КДЛ',
     desc: 'Освобождение учредителей и директоров от субсидиарной ответственности при банкротстве. Оспаривание презумпций вины.',
     metric: '• 840 млн ₽ · Полный отказ в иске конкурсному',
@@ -42,7 +46,8 @@ const PRACTICES_COL1: PracticeCardItem[] = [
 
 const PRACTICES_COL2: PracticeCardItem[] = [
   {
-    code: 'P-CORP · КОРП. СПОРЫ',
+    id: 'corporate',
+    direction: 'КОРП. СПОРЫ',
     title: 'Конфликты акционеров и M&A защита',
     desc: 'Блокировка недружественных поглощений, защита ключевых долей и производственных активов. Сохранение контроля над бизнесом.',
     metric: '• 100% сохранение операционного контроля',
@@ -50,7 +55,8 @@ const PRACTICES_COL2: PracticeCardItem[] = [
     slug: 'corporate-disputes',
   },
   {
-    code: 'P-ARB · АРБИТРАЖ',
+    id: 'arbitration',
+    direction: 'АРБИТРАЖ',
     title: 'Судебные процессы высшей категории',
     desc: 'Взыскание убытков в строительном подряде, споры по 44-ФЗ/223-ФЗ в кассации и ВС РФ. Разрешение нестандартных коллизий.',
     metric: '• 94,7% выигранных дел в пользу доверителя',
@@ -58,7 +64,8 @@ const PRACTICES_COL2: PracticeCardItem[] = [
     slug: 'corporate-disputes',
   },
   {
-    code: 'P-BANKR · БАНКРОТСТВО',
+    id: 'bankruptcy',
+    direction: 'БАНКРОТСТВО',
     title: 'Управление процедурой несостоятельности',
     desc: 'Оспаривание сделок с предпочтением, защита залоговых кредиторов, возврат активов и санация предприятий.',
     metric: '• 210 млн ₽ · Возврат незаконно выведенного имущества',
@@ -109,18 +116,14 @@ export default function V26ServicesSection() {
           <div className="grid grid-cols-1 lg:grid-cols-2 p-6 lg:p-12 gap-8 lg:gap-10">
             {ALL_PRACTICES.map((srv) => (
               <div
-                key={srv.code}
+                key={srv.id}
                 className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group h-full"
               >
-                {/* Top Header Block with crisp divider line & fixed min-height for uniform alignment */}
-                <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10 min-h-[115px] flex flex-col justify-between">
-                  <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
+                {/* Top Header Block: Clean Title Only, no extra subtitle */}
+                <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10 min-h-[90px] flex flex-col justify-center">
+                  <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors">
                     {srv.title}
                   </h3>
-                  <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
-                    <span>Направление:</span>
-                    <strong className="text-[#19212C] font-semibold">{srv.code.split('·')[1]?.trim() || srv.code}</strong>
-                  </div>
                 </div>
 
                 {/* Middle Content */}
@@ -146,10 +149,10 @@ export default function V26ServicesSection() {
                   </div>
                 </div>
 
-                {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on left, Ref aligned to RIGHT */}
+                {/* Bottom Line & Bottom-Left Direction Box: Direction on left, Ref aligned to RIGHT */}
                 <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
                   <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC] shrink-0">
-                    {srv.code}
+                    {srv.direction}
                   </div>
                   <div className="flex-1 px-4 py-2.5 text-[#64748B] text-[10px] flex items-center justify-end text-right">
                     {srv.courtRef}
