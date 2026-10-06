@@ -10,12 +10,18 @@ interface Monument3DProps {
   className?: string;
   showBust?: boolean;
   showFragments?: boolean;
+  centered?: boolean;
+  viewOffsetX?: number;
+  zoom?: number;
 }
 
 export default function Monument3D({
   className = '',
   showBust = true,
   showFragments = true,
+  centered = false,
+  viewOffsetX,
+  zoom,
 }: Monument3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
@@ -226,7 +232,7 @@ export default function Monument3D({
 
         setIsLoaded(true);
 
-        // Viewport resize handling with viewOffset to place monument on the right
+        // Viewport resize handling with viewOffset to place monument
         let currentW = 0;
         let currentH = 0;
         let needsRender = true;
@@ -249,12 +255,17 @@ export default function Monument3D({
           const isDesktop = w > 768;
           camera.clearViewOffset();
 
-          if (isDesktop) {
-            camera.zoom = 0.90;
+          const targetZoom = zoom !== undefined ? zoom : (isDesktop ? 0.90 : 0.85);
+          camera.zoom = targetZoom;
+
+          if (centered) {
+            camera.setViewOffset(w, h, 0, 0, w, h);
+          } else if (viewOffsetX !== undefined) {
+            camera.setViewOffset(w, h, -w * viewOffsetX, 0, w, h);
+          } else if (isDesktop) {
             // Shift view offset so the 3D monument sits on the right side of the screen
             camera.setViewOffset(w, h, -w * 0.20, 0, w, h);
           } else {
-            camera.zoom = 0.85;
             camera.setViewOffset(w, h, 0, 0, w, h);
           }
           camera.updateProjectionMatrix();

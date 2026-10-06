@@ -1,8 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useConsultationModal } from '@/components/providers/ModalProvider';
 import SeregaGentleText from '@/components/ui/SeregaGentleText';
+
+const Monument3D = dynamic(() => import('@/components/ui/Monument3D'), {
+  ssr: false,
+});
 
 interface QuizQuestion {
   id: string;
@@ -138,28 +143,27 @@ export default function V26HeroSection() {
         {/* Col 1 (20%): Reserved rail for Chameleon Logo */}
         <div className="hidden lg:block w-full border-r border-[#19212C]/10 pointer-events-none" />
 
-        {/* Content Area: Cols 2 & 3 (Starts strictly at 20%) */}
-        <div className="col-span-1 lg:col-span-2 flex flex-col justify-between">
+        {/* Content Area: Cols 2 & 3 (Starts strictly at 20%) with 3D Monument behind */}
+        <div className="col-span-1 lg:col-span-2 relative flex flex-col justify-center min-h-[calc(100vh-6rem)] overflow-hidden">
           
-          {/* Top Bar spanning across Cols 2 & 3 (80% width) */}
-          <div className="mx-4 lg:mx-8 mt-4 lg:mt-6 mb-6 lg:mb-8 bg-[#8E969F] h-10 rounded-sm flex items-center px-4 font-mono text-[11px] font-bold text-white tracking-wider uppercase shadow-inner">
-            АДВОКАТСКОЕ БЮРО ETLEGIS · ЗАЩИТА БИЗНЕСА И БЕНЕФИЦИАРОВ В СУДАХ ВЫСШЕЙ ЮРИСДИКЦИИ
+          {/* Centered 3D Monument in the background across Cols 2 & 3 */}
+          <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+            <Monument3D
+              centered={true}
+              showBust={true}
+              showFragments={false}
+              zoom={0.95}
+              className="w-full h-full opacity-90"
+            />
           </div>
 
           {/* Main 2-Column Content Row (40% + 40%) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 px-4 lg:px-8 pb-10 items-stretch">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 px-4 lg:px-8 py-8 lg:py-12 items-center">
             
             {/* Col 2 (40%): Authentic Classic Headline, Lead & Direct Action */}
             <div className="flex flex-col justify-center">
-              {/* 3 Architectural Bars */}
-              <div className="flex flex-col gap-2 mb-6">
-                <div className="bg-[#8E969F] h-5 rounded-sm w-full" />
-                <div className="bg-[#8E969F] h-5 rounded-sm w-full" />
-                <div className="bg-[#8E969F] h-5 rounded-sm w-[72%]" />
-              </div>
-
               {/* Classic Exact Headline */}
-              <h1 className="font-heading font-normal text-3xl sm:text-4xl lg:text-[42px] tracking-tight text-[#141517] leading-[1.12] mb-5">
+              <h1 className="font-heading font-normal text-3xl sm:text-4xl lg:text-[44px] tracking-tight text-[#141517] leading-[1.12] mb-5">
                 <span className="block font-semibold">
                   <SeregaGentleText delay={40} stagger={16}>
                     Мы — команда экспертов,
@@ -208,7 +212,7 @@ export default function V26HeroSection() {
 
             {/* Col 3 (40%): Diagnostics Quiz Directly on the Main Screen */}
             <div className="flex flex-col justify-center">
-              <div className="bg-white border border-[#19212C]/15 rounded-sm p-6 sm:p-7 flex flex-col justify-between shadow-sm h-full">
+              <div className="bg-white/95 backdrop-blur-sm border border-[#19212C]/15 rounded-sm p-6 sm:p-7 flex flex-col justify-between shadow-lg h-full">
                 
                 {/* Quiz Header */}
                 <div className="border-b border-[#19212C]/10 pb-4 mb-4">
@@ -347,20 +351,6 @@ export default function V26HeroSection() {
               </div>
             </div>
 
-          </div>
-
-          {/* Bottom Rail Summary spanning across Cols 2 & 3 (80%) */}
-          <div className="mx-4 lg:mx-8 mb-6 p-4 bg-[#E2DDD5] border border-[#19212C]/10 rounded-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 font-mono text-xs text-[#475569]">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-[#19212C]">ETLEGIS STATS //</span>
-              <span>16 лет практики · 1,2+ млрд ₽ защищено · 94% побед</span>
-            </div>
-            <a
-              href="#sec-numbers"
-              className="text-[#19212C] font-bold hover:text-[#C5A059] transition-colors"
-            >
-              Смотреть фактоиды бюро ↓
-            </a>
           </div>
 
         </div>
