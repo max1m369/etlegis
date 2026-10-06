@@ -9,6 +9,7 @@ import V26ServicesSection from '@/components/v26/V26ServicesSection';
 import V26AboutSection from '@/components/v26/V26AboutSection';
 import V26ContactsSection from '@/components/v26/V26ContactsSection';
 import V26Footer from '@/components/v26/V26Footer';
+import VersionSwitcher from '@/components/ui/VersionSwitcher';
 
 /**
  * ETLEGIS Version 2.6 - Landing Page
@@ -21,6 +22,9 @@ export default function HomePage() {
   return (
     <SmoothScrollProvider>
       <div className="relative w-full min-h-screen bg-[#EAE6DF] font-body selection:bg-[#C5A059] selection:text-black">
+        {/* Version Switcher HUD */}
+        <VersionSwitcher currentVersion="2.6" />
+
         {/* Dual-layer Chameleon Monogram in Column 1 (20% rail) */}
         <ChameleonLogo />
 

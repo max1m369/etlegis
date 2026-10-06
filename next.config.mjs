@@ -18,6 +18,14 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
+  async rewrites() {
+    return [
+      { source: '/v2.5', destination: '/v2-5' },
+      { source: '/v2.0', destination: '/v2' },
+      { source: '/v2-6', destination: '/' },
+      { source: '/v2.6', destination: '/' },
+    ];
+  },
 };
 
 export default nextConfig;
