@@ -23,10 +23,10 @@ import VersionSwitcher from '@/components/ui/VersionSwitcher';
  * Full Classic Sections in 20/40/40 Grid:
  * 1. Hero + Diagnostics Quiz (Light #EAE6DF)
  * 2. Factoids & Numbers (Dark #1F2C3B)
- * 3. Services / Practices (Dark #223243)
- * 4. Team / Bureau Roster (Light #EAE6DF - 4-card horizontal scroll with wheel & drag)
- * 5. Successful Cases / Precedents (Dark #192430)
- * 6. Blog & Publications (Light #EAE6DF)
+ * 3. Services / Practices (Light #EAE6DF - Reference 2 cards with bottom tag box)
+ * 4. Team / Bureau Roster (Dark #1F2C3B - 4-card horizontal scroll with wheel & drag)
+ * 5. Successful Cases / Precedents (Light #EAE6DF - Reference 2 cards)
+ * 6. Blog & Publications (Dark #192430 - Reference 2 cards)
  * 7. Classic Boardroom Footer (Dark #090C11 with /footer-bg.webp photo & lead form)
  */
 export default function HomePage() {
@@ -50,16 +50,16 @@ export default function HomePage() {
           {/* Section 2: Numbers & Factoids (Dark #1F2C3B) */}
           <V26NumbersSection />
 
-          {/* Section 3: Services / Practices (Dark #223243) */}
+          {/* Section 3: Services / Practices (Light #EAE6DF) */}
           <V26ServicesSection />
 
-          {/* Section 4: About / Team 4-Card Horizontal Carousel (Light #EAE6DF) */}
+          {/* Section 4: About / Team 4-Card Horizontal Carousel (Dark #1F2C3B) */}
           <V26AboutSection />
 
-          {/* Section 5: Successful Cases (Dark #192430) */}
+          {/* Section 5: Successful Cases (Light #EAE6DF) */}
           <V26CasesSection />
 
-          {/* Section 6: Blog & Publications (Light #EAE6DF) */}
+          {/* Section 6: Blog & Publications (Dark #192430) */}
           <V26BlogSection />
 
           {/* Section 7: Classic Boardroom Table Footer (Dark #090C11) */}

@@ -107,38 +107,38 @@ export default function V26AboutSection() {
   return (
     <section
       id="sec-about"
-      data-bg="light"
-      className="relative w-full bg-[#EAE6DF] text-[#19212C] border-b border-[#19212C]/15"
+      data-bg="dark"
+      className="relative w-full bg-[#1F2C3B] text-[#F3F5F8] border-b border-white/10"
     >
       {/* 20% - 40% - 40% Architectural Grid */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-[20%_40%_40%]">
         
         {/* Col 1 (20%): Reserved rail for Chameleon Logo */}
-        <div className="hidden lg:block w-full bg-[#EAE6DF] border-r border-[#19212C]/10 relative z-20 pointer-events-none" />
+        <div className="hidden lg:block w-full bg-[#1F2C3B] border-r border-white/10 relative z-20 pointer-events-none" />
 
         {/* Content Area across Cols 2 & 3 (Starts strictly at 20%) */}
         <div className="col-span-1 lg:col-span-2 flex flex-col min-w-0">
           
           {/* Section Header with Telemetry & Navigation Arrows */}
-          <div className="p-6 lg:p-12 pb-6 lg:pb-8 border-b border-[#19212C]/10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="p-6 lg:p-12 pb-6 lg:pb-8 border-b border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <div className="font-mono text-xs text-[#C5A059] uppercase tracking-widest mb-2 font-bold flex items-center gap-2">
                 <span>// 04 КОМАНДА АДВОКАТОВ</span>
                 <span className="w-8 h-px bg-[#C5A059]" />
-                <span className="text-[#5A6472]">ГОРИЗОНТАЛЬНЫЙ РЕЕСТР ПАРТНЁРОВ</span>
+                <span className="text-[#94A3B8]">ГОРИЗОНТАЛЬНЫЙ РЕЕСТР ПАРТНЁРОВ</span>
               </div>
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#19212C] mb-2 leading-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-2 leading-tight">
                 О Компании и Бюро
               </h2>
-              <p className="text-xs sm:text-sm text-[#5A6472] max-w-2xl leading-relaxed font-light">
+              <p className="text-xs sm:text-sm text-[#94A3B8] max-w-2xl leading-relaxed font-light">
                 8 профильных адвокатов высшей квалификации. Защита бенефициаров, генеральных директоров и активов бизнеса.
               </p>
             </div>
 
             {/* Carousel Controls */}
             <div className="flex items-center gap-4 shrink-0">
-              <div className="font-mono text-xs text-[#5A6472] flex items-center gap-1.5 select-none">
-                <span className="font-bold text-[#19212C]">
+              <div className="font-mono text-xs text-[#94A3B8] flex items-center gap-1.5 select-none">
+                <span className="font-bold text-white">
                   {String(activeCardIndex + 1).padStart(2, '0')}–{String(Math.min(totalMembers, activeCardIndex + 4)).padStart(2, '0')}
                 </span>
                 <span>/</span>
@@ -151,10 +151,10 @@ export default function V26AboutSection() {
                   onClick={() => scrollByDirection('left')}
                   disabled={!canScrollLeft}
                   aria-label="Прокрутить команду влево"
-                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
+                  className={`w-10 h-10 border border-white/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
                     canScrollLeft
-                      ? 'bg-white hover:bg-[#19212C] text-[#19212C] hover:text-white shadow-sm'
-                      : 'opacity-40 cursor-not-allowed bg-transparent text-[#19212C]'
+                      ? 'bg-white/10 hover:bg-white text-white hover:text-[#19212C] shadow-sm'
+                      : 'opacity-40 cursor-not-allowed bg-transparent text-white/50'
                   }`}
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -164,10 +164,10 @@ export default function V26AboutSection() {
                   onClick={() => scrollByDirection('right')}
                   disabled={!canScrollRight}
                   aria-label="Прокрутить команду вправо"
-                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
+                  className={`w-10 h-10 border border-white/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
                     canScrollRight
-                      ? 'bg-white hover:bg-[#19212C] text-[#19212C] hover:text-white shadow-sm'
-                      : 'opacity-40 cursor-not-allowed bg-transparent text-[#19212C]'
+                      ? 'bg-white/10 hover:bg-white text-white hover:text-[#19212C] shadow-sm'
+                      : 'opacity-40 cursor-not-allowed bg-transparent text-white/50'
                   }`}
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -194,10 +194,10 @@ export default function V26AboutSection() {
               {TEAM_MEMBERS_FULL.map((member: TeamMemberFull, idx: number) => (
                 <div
                   key={member.id}
-                  className="shrink-0 w-[85%] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] snap-start flex flex-col bg-white border border-[#19212C]/15 rounded-sm shadow-sm group hover:border-[#C5A059] transition-all duration-300"
+                  className="shrink-0 w-[85%] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] snap-start flex flex-col bg-[#243447] border border-white/15 rounded-sm shadow-sm group hover:border-[#C5A059] transition-all duration-300"
                 >
                   {/* Photo Header */}
-                  <div className="relative w-full aspect-[4/4.6] bg-[#141A23] border-b border-[#19212C]/10 overflow-hidden pointer-events-none">
+                  <div className="relative w-full aspect-[4/4.6] bg-[#141A23] border-b border-white/10 overflow-hidden pointer-events-none">
                     <Image
                       src={member.photo}
                       alt={member.name}
@@ -208,7 +208,7 @@ export default function V26AboutSection() {
                     />
                     
                     {/* Subtle gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
 
                     {/* Stamp ID / Index */}
                     <div className="absolute top-2.5 left-2.5 font-mono text-[10px] text-white/90 bg-black/60 px-2 py-0.5 border border-white/20 backdrop-blur-sm rounded-xs">
@@ -225,22 +225,22 @@ export default function V26AboutSection() {
                   <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3">
                     <div>
                       {/* Name & Role */}
-                      <div className="border-b border-[#19212C]/10 pb-2.5 mb-2.5">
-                        <h3 className="font-heading text-lg font-bold text-[#0F172A] leading-tight group-hover:text-[#C5A059] transition-colors">
+                      <div className="border-b border-white/10 pb-2.5 mb-2.5">
+                        <h3 className="font-heading text-lg font-bold text-white leading-tight group-hover:text-[#C5A059] transition-colors">
                           {member.name}
                         </h3>
                         <div className="font-mono text-[11px] text-[#C5A059] uppercase font-bold mt-1 line-clamp-1">
                           {member.role}
                         </div>
                         {member.regNum && (
-                          <div className="font-mono text-[10px] text-[#64748B] mt-0.5 line-clamp-1">
+                          <div className="font-mono text-[10px] text-[#94A3B8] mt-0.5 line-clamp-1">
                             {member.regNum}
                           </div>
                         )}
                       </div>
 
                       {/* Specialization snippet */}
-                      <p className="text-[11px] sm:text-xs text-[#475569] leading-relaxed line-clamp-3 font-light mb-3">
+                      <p className="text-[11px] sm:text-xs text-[#CBD5E1] leading-relaxed line-clamp-3 font-light mb-3">
                         {member.specialization}
                       </p>
 
@@ -249,7 +249,7 @@ export default function V26AboutSection() {
                         {member.practices.slice(0, 2).map((p) => (
                           <span
                             key={p.slug}
-                            className="font-mono text-[9px] bg-[#F1F5F9] text-[#334155] border border-[#E2E8F0] px-1.5 py-0.5 rounded-xs line-clamp-1"
+                            className="font-mono text-[9px] bg-white/5 text-[#CBD5E1] border border-white/10 px-1.5 py-0.5 rounded-xs line-clamp-1"
                           >
                             {p.title}
                           </span>
@@ -258,7 +258,7 @@ export default function V26AboutSection() {
                     </div>
 
                     {/* Action Button: Modal Dossier Opening */}
-                    <div className="pt-2 border-t border-[#19212C]/10 flex flex-col gap-2">
+                    <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
                       <button
                         type="button"
                         onClick={(e) => {
@@ -266,7 +266,7 @@ export default function V26AboutSection() {
                           e.stopPropagation();
                           openModal(`Досье адвоката: ${member.name} (${member.role})`);
                         }}
-                        className="w-full bg-[#0F172A] hover:bg-[#C5A059] text-white hover:text-[#0F172A] py-2 px-3 rounded-sm font-mono text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full bg-white/10 hover:bg-[#C5A059] text-white hover:text-[#19212C] border border-white/20 hover:border-transparent py-2 px-3 rounded-sm font-mono text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 text-center flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <span>Открыть досье</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -279,11 +279,11 @@ export default function V26AboutSection() {
           </div>
 
           {/* Full Team Footer Bar with Link to All Lawyers */}
-          <div className="px-6 lg:px-12 py-4 border-t border-[#19212C]/10 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono text-xs text-[#5A6472]">
+          <div className="px-6 lg:px-12 py-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono text-xs text-[#94A3B8]">
             <span>В реестре коллегии бюро 8 действующих адвокатов высшей категории</span>
             <Link
               href="/team"
-              className="text-[#19212C] font-bold hover:text-[#C5A059] transition-colors flex items-center gap-1"
+              className="text-white font-bold hover:text-[#C5A059] transition-colors flex items-center gap-1"
             >
               <span>Смотреть всех адвокатов бюро</span>
               <span>→</span>
