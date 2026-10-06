@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
@@ -14,37 +14,93 @@ export default function V26AboutSection() {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
+  // Drag-to-scroll state
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeftStart = useRef(0);
+  const hasMoved = useRef(false);
+
   const totalMembers = TEAM_MEMBERS_FULL.length;
 
-  const updateScrollState = () => {
+  const updateScrollState = useCallback(() => {
     if (!trackRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = trackRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    setCanScrollLeft(scrollLeft > 15);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
 
-    // Calculate approximate index based on card width
     const singleCardWidth = clientWidth >= 1024 ? clientWidth / 4 : (clientWidth >= 640 ? clientWidth / 2 : clientWidth * 0.85);
     const index = Math.round(scrollLeft / singleCardWidth);
     setActiveCardIndex(Math.min(totalMembers - 1, Math.max(0, index)));
-  };
+  }, [totalMembers]);
 
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    el.addEventListener('scroll', updateScrollState, { passive: true });
-    updateScrollState();
-    return () => el.removeEventListener('scroll', updateScrollState);
-  }, []);
 
-  const scroll = (direction: 'left' | 'right') => {
+    // Horizontal wheel-scroll listener: intercept vertical wheel when hovering container and convert to horizontal
+    const handleWheel = (e: WheelEvent) => {
+      // If user is predominantly scrolling vertically, translate to horizontal scroll inside the track
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        const atStart = el.scrollLeft <= 0 && e.deltaY < 0;
+        const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth && e.deltaY > 0;
+        
+        // If not at hard edges, scroll horizontally and prevent window scroll
+        if (!atStart && !atEnd) {
+          e.preventDefault();
+          e.stopPropagation();
+          el.scrollLeft += e.deltaY * 1.2;
+          updateScrollState();
+        }
+      }
+    };
+
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('resize', updateScrollState);
+    updateScrollState();
+
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      el.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [updateScrollState]);
+
+  // Pointer drag interactions
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!trackRef.current) return;
+    isDragging.current = true;
+    hasMoved.current = false;
+    startX.current = e.pageX - trackRef.current.offsetLeft;
+    scrollLeftStart.current = trackRef.current.scrollLeft;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !trackRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - trackRef.current.offsetLeft;
+    const walk = (x - startX.current) * 1.5;
+    if (Math.abs(walk) > 5) {
+      hasMoved.current = true;
+    }
+    trackRef.current.scrollLeft = scrollLeftStart.current - walk;
+    updateScrollState();
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const scrollByDirection = (direction: 'left' | 'right') => {
     if (!trackRef.current) return;
     const { clientWidth } = trackRef.current;
-    // On desktop, scroll by 2 cards (50% of content area) or 1 card on smaller screens
-    const scrollAmount = clientWidth >= 1024 ? clientWidth * 0.5 : clientWidth * 0.8;
+    // Step by 2 cards on desktop (width * 0.5) or 1 card on smaller devices
+    const offset = clientWidth >= 1024 ? clientWidth * 0.5 : clientWidth * 0.8;
     trackRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      left: direction === 'left' ? -offset : offset,
       behavior: 'smooth',
     });
+    setTimeout(updateScrollState, 350);
   };
 
   return (
@@ -57,7 +113,7 @@ export default function V26AboutSection() {
       <div className="w-full grid grid-cols-1 lg:grid-cols-[20%_40%_40%]">
         
         {/* Col 1 (20%): Reserved rail for Chameleon Logo */}
-        <div className="hidden lg:block w-full border-r border-[#19212C]/10 pointer-events-none" />
+        <div className="hidden lg:block w-full bg-[#EAE6DF] border-r border-[#19212C]/10 relative z-20 pointer-events-none" />
 
         {/* Content Area across Cols 2 & 3 (Starts strictly at 20%) */}
         <div className="col-span-1 lg:col-span-2 flex flex-col min-w-0">
@@ -80,7 +136,7 @@ export default function V26AboutSection() {
 
             {/* Carousel Controls */}
             <div className="flex items-center gap-4 shrink-0">
-              <div className="font-mono text-xs text-[#5A6472] flex items-center gap-1.5">
+              <div className="font-mono text-xs text-[#5A6472] flex items-center gap-1.5 select-none">
                 <span className="font-bold text-[#19212C]">
                   {String(activeCardIndex + 1).padStart(2, '0')}–{String(Math.min(totalMembers, activeCardIndex + 4)).padStart(2, '0')}
                 </span>
@@ -91,10 +147,10 @@ export default function V26AboutSection() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => scroll('left')}
+                  onClick={() => scrollByDirection('left')}
                   disabled={!canScrollLeft}
-                  aria-label="Прокрутить влево"
-                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-colors rounded-sm cursor-pointer ${
+                  aria-label="Прокрутить команду влево"
+                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
                     canScrollLeft
                       ? 'bg-white hover:bg-[#19212C] text-[#19212C] hover:text-white shadow-sm'
                       : 'opacity-40 cursor-not-allowed bg-transparent text-[#19212C]'
@@ -104,10 +160,10 @@ export default function V26AboutSection() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => scroll('right')}
+                  onClick={() => scrollByDirection('right')}
                   disabled={!canScrollRight}
-                  aria-label="Прокрутить вправо"
-                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-colors rounded-sm cursor-pointer ${
+                  aria-label="Прокрутить команду вправо"
+                  className={`w-10 h-10 border border-[#19212C]/20 flex items-center justify-center transition-all duration-200 rounded-sm cursor-pointer select-none ${
                     canScrollRight
                       ? 'bg-white hover:bg-[#19212C] text-[#19212C] hover:text-white shadow-sm'
                       : 'opacity-40 cursor-not-allowed bg-transparent text-[#19212C]'
@@ -119,12 +175,18 @@ export default function V26AboutSection() {
             </div>
           </div>
 
-          {/* Horizontal Scroll Track: 2 cards in Col 2 (40%) + 2 cards in Col 3 (40%) = 4 cards visible at 100% desktop */}
-          <div
-            ref={trackRef}
-            className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-6 lg:p-12 gap-5 sm:gap-6"
-            style={{ WebkitOverflowScrolling: 'touch' }}
-          >
+          {/* Horizontal Scroll Track: 2 cards in Col 2 (40%) + 2 cards in Col 3 (40%) = 4 cards visible on desktop */}
+          <div className="w-full overflow-hidden">
+            <div
+              ref={trackRef}
+              data-lenis-prevent
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-6 lg:p-12 gap-5 sm:gap-6 select-none"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
             {TEAM_MEMBERS_FULL.map((member: TeamMemberFull, idx: number) => (
               <div
                 key={member.id}
@@ -136,8 +198,9 @@ export default function V26AboutSection() {
                     src={member.photo}
                     alt={member.name}
                     fill
+                    draggable={false}
                     sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 20vw"
-                    className="object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                    className="object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out pointer-events-none"
                   />
                   
                   {/* Subtle gradient overlay */}
@@ -194,7 +257,11 @@ export default function V26AboutSection() {
                   <div className="pt-2 border-t border-[#19212C]/10 flex flex-col gap-2">
                     <button
                       type="button"
-                      onClick={() => openModal(`Досье адвоката: ${member.name} (${member.role})`)}
+                      onClick={(e) => {
+                        if (hasMoved.current) return;
+                        e.stopPropagation();
+                        openModal(`Досье адвоката: ${member.name} (${member.role})`);
+                      }}
                       className="w-full bg-[#0F172A] hover:bg-[#C5A059] text-white hover:text-[#0F172A] py-2 px-3 rounded-sm font-mono text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <span>Открыть досье</span>
@@ -204,6 +271,7 @@ export default function V26AboutSection() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
 
           {/* Full Team Footer Bar with Link to All Lawyers */}

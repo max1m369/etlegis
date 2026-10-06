@@ -6,7 +6,7 @@ import Link from 'next/link';
 /**
  * V26ChameleonNav - Floating chameleon navigation for ETLEGIS Version 2.6.
  * - Positioned on the right, horizontally aligned with the Chameleon Logo.
- * - Font: Jost (font-body), plain words ("Главная", "Услуги", "О компании", "Контакты").
+ * - Font: Jost (font-body), plain words ("Главная", "Услуги", "О компании", "Кейсы", "Блог", "Контакты").
  * - Chameleon behavior: switches color to match the logo (Dark #1C2633 on light sections, White #FFFFFF on dark sections).
  * - Headroom behavior: pinned in view, hides smoothly on scroll down, reappears smoothly on scroll up.
  */
@@ -74,9 +74,12 @@ export default function V26ChameleonNav() {
 
   const navLinks = [
     { label: 'Главная', href: '#sec-hero' },
+    { label: 'Цифры', href: '#sec-numbers' },
     { label: 'Услуги', href: '#sec-services' },
     { label: 'О компании', href: '#sec-about' },
-    { label: 'Контакты', href: '#sec-contacts' },
+    { label: 'Кейсы', href: '#sec-cases' },
+    { label: 'Блог', href: '#sec-blog' },
+    { label: 'Контакты', href: '#sec-footer' },
   ];
 
   return (
@@ -88,19 +91,19 @@ export default function V26ChameleonNav() {
       } ${
         isScrolled
           ? isDarkSection
-            ? 'bg-[#223243]/90 backdrop-blur-md px-6 py-2.5 rounded-full border border-white/15 shadow-xl text-white'
+            ? 'bg-[#192430]/90 backdrop-blur-md px-6 py-2.5 rounded-full border border-white/15 shadow-xl text-white'
             : 'bg-[#EAE6DF]/90 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#19212C]/12 shadow-xl text-[#1C2633]'
           : isDarkSection
           ? 'text-white'
           : 'text-[#1C2633]'
       }`}
     >
-      <div className="flex items-center gap-6 sm:gap-8 lg:gap-10">
+      <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
         {navLinks.map((link) => (
           <Link
             key={link.label}
             href={link.href}
-            className="text-sm sm:text-base lg:text-lg font-medium tracking-normal transition-colors duration-200 hover:text-[#C5A059]"
+            className="text-xs sm:text-sm lg:text-base font-medium tracking-normal transition-colors duration-200 hover:text-[#C5A059]"
           >
             {link.label}
           </Link>
@@ -109,7 +112,7 @@ export default function V26ChameleonNav() {
         {/* Direct Phone in Jost */}
         <a
           href="tel:+74952150815"
-          className="hidden md:inline-block text-xs lg:text-sm font-semibold tracking-wider transition-colors duration-200 hover:text-[#C5A059] border-l pl-6 sm:pl-8 border-current/20"
+          className="hidden xl:inline-block text-xs lg:text-sm font-semibold tracking-wider transition-colors duration-200 hover:text-[#C5A059] border-l pl-4 sm:pl-6 border-current/20"
         >
           +7 (495) 215-08-15
         </a>
