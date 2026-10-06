@@ -125,6 +125,18 @@ export default function V27Page() {
 
   // Container refs for scrollable pages
   const currentPageRef = useRef<HTMLDivElement>(null);
+  const horizontalScrollRef = useRef<HTMLDivElement>(null);
+
+  // Wheel horizontal scrolling handler for practices strip
+  const handleWheelHorizontal = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (horizontalScrollRef.current) {
+      // If user scrolls vertical wheel, translate to horizontal scroll
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        horizontalScrollRef.current.scrollLeft += e.deltaY * 1.2;
+      }
+    }
+  };
 
   // Trigger 3D Page Transition
   const navigateTo = (newView: string) => {
@@ -230,39 +242,74 @@ export default function V27Page() {
             {/* Practices Presentation */}
             {practicesLayout === 'horizontal' ? (
               <div className="relative">
-                <div className="horizontal-scroll-container gap-6 pb-6 pt-2">
+                <div
+                  ref={horizontalScrollRef}
+                  onWheel={handleWheelHorizontal}
+                  className="horizontal-scroll-container gap-7 pb-8 pt-3 pr-20"
+                >
                   {PRACTICES_DATA.map((p) => (
                     <div
                       key={p.id}
                       onClick={() => navigateTo(`practice-${p.id}`)}
-                      className="horizontal-scroll-item w-[360px] sm:w-[420px] bg-[#EFECE4] border border-[#D5CFBF] p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-lg transition-all cursor-pointer group"
+                      className="horizontal-scroll-item w-[380px] sm:w-[480px] lg:w-[540px] min-h-[460px] bg-[#EFECE4] border-2 border-[#D5CFBF] p-8 sm:p-10 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-2xl transition-all cursor-pointer group"
                     >
                       <div>
-                        <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[#D5CFBF]">
-                          <span className="font-v27-mono text-xs font-bold text-[#798696]">
-                            Practice №{p.no}
+                        <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-[#D5CFBF]">
+                          <span className="font-v27-mono text-sm font-bold text-[#798696] tracking-wider">
+                            PRACTICE №{p.no}
                           </span>
-                          <span className="font-v27-mono text-xs font-bold text-[#2C3E50]">
+                          <span className="font-v27-mono text-sm font-bold text-[#2C3E50] bg-[#ECE8E0] px-3 py-1 border border-[#D5CFBF]">
                             {p.count}
                           </span>
                         </div>
-                        <h3 className="font-v27-display text-2xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
+                        <h3 className="font-v27-display text-3xl sm:text-4xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-4 leading-tight">
                           {p.fullTitle}
                         </h3>
-                        <p className="text-sm text-[#485464] line-clamp-4 leading-relaxed mb-4">
+                        <p className="text-base sm:text-lg text-[#485464] leading-relaxed mb-6">
                           {p.lead}
                         </p>
                       </div>
 
-                      <div className="pt-4 border-t border-[#D5CFBF] flex items-center justify-between text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
-                        <span>Подробный регламент</span>
-                        <span>→</span>
+                      <div className="pt-5 border-t border-[#D5CFBF] flex items-center justify-between text-sm font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
+                        <span>Изучить регламент ведения дела</span>
+                        <span className="text-lg transition-transform group-hover:translate-x-1">→</span>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="text-[11px] font-v27-mono text-[#798696] mt-2 flex items-center gap-2">
-                  <span>← Прокручивайте карточки практик горизонтально колесом мыши или свайпом →</span>
+
+                {/* Horizontal Navigation Indicators */}
+                <div className="flex items-center justify-between text-xs font-v27-mono text-[#798696] mt-4 pt-2 border-t border-[#D5CFBF]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#2C3E50] animate-pulse" />
+                    <span>Карточки уходят за вьюпорт · Листайте горизонтально колесом мыши или стрелками:</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (horizontalScrollRef.current) {
+                          horizontalScrollRef.current.scrollBy({ left: -450, behavior: 'smooth' });
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white border border-[#D5CFBF] font-bold cursor-pointer transition-colors"
+                      title="Прокрутить назад"
+                    >
+                      ← Назад
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (horizontalScrollRef.current) {
+                          horizontalScrollRef.current.scrollBy({ left: 450, behavior: 'smooth' });
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white border border-[#D5CFBF] font-bold cursor-pointer transition-colors"
+                      title="Прокрутить вперед"
+                    >
+                      Вперёд →
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
