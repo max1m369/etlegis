@@ -83,73 +83,26 @@ export default function V26Footer() {
       data-bg="dark"
       className="relative w-full bg-[#090C11] text-white border-t border-white/10 overflow-hidden"
     >
-      {/* 1. Executive Boardroom Ambient Background Image with authentic directional lighting */}
-      <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-        <img
-          src="/footer-bg.webp"
-          alt=""
-          className="hidden md:block absolute top-0 h-full w-auto max-w-none object-cover pointer-events-none select-none"
-          style={{
-            right: '-8%',
-            aspectRatio: '16/9',
-            WebkitMaskImage:
-              'linear-gradient(to right, transparent 0%, transparent 8%, rgba(0,0,0,0.4) 18%, black 32%, black 100%)',
-            maskImage:
-              'linear-gradient(to right, transparent 0%, transparent 8%, rgba(0,0,0,0.4) 18%, black 32%, black 100%)',
-          }}
-        />
-        <img
-          src="/footer-bg.webp"
-          alt=""
-          className="md:hidden absolute inset-0 w-full h-full object-cover object-[65%_bottom] pointer-events-none select-none opacity-40"
-        />
-      </div>
-
-      {/* Mobile Dark Protective Layer */}
-      <div className="absolute inset-0 pointer-events-none z-0 bg-[#090C11]/90 md:hidden" />
-
-      {/* Desktop Directional Illumination Overlay:
-          - Pure dark on the left (0-36%) protecting text, form, and contacts
-          - Silky smooth natural transition across the marked boundary (36-58%)
-          - Natural daylight boardroom view on the right
-      */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0 hidden md:block"
-        style={{
-          background:
-            'linear-gradient(to right, #090C11 0%, #090C11 36%, rgba(9, 12, 17, 0.8) 46%, transparent 58%)',
-        }}
-      />
-
-      {/* Top & bottom atmospheric edge vignettes */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            'linear-gradient(to bottom, rgba(9, 12, 17, 0.5) 0%, transparent 12%, transparent 88%, rgba(7, 9, 13, 0.8) 100%)',
-        }}
-      />
-
-      {/* 2. Content Structure adhering to 20% - 40% - 40% Architectural Rail */}
-      <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-[20%_40%_40%]">
+      {/* 20% - 80% Architectural Grid */}
+      <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-[20%_80%]">
         
         {/* Col 1 (20%): Reserved rail for Chameleon Logo */}
         <div className="hidden lg:block w-full border-r border-white/10 pointer-events-none" />
 
-        {/* Content Area across Cols 2 & 3 (Starts strictly at 20%) */}
-        <div className="col-span-1 lg:col-span-2 flex flex-col">
+        {/* Content Area (80%): Form (Box 1) + Contacts (Box 2) + Boardroom Photo (Box 3) */}
+        <div className="w-full flex flex-col min-w-0">
           
-          {/* Main Tier: Form + Contacts Grid */}
-          <div className="p-6 lg:p-12 pb-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
+          {/* Main 3-Zone Architecture */}
+          <div className="grid grid-cols-1 lg:grid-cols-[38%_32%_30%] divide-y lg:divide-y-0">
             
-            {/* Left Box (Col 2: 40%): Primary Intake Form (from Classic Footer) */}
-            <div className="flex flex-col justify-between">
+            {/* 1. First Green Square: Primary Intake Form */}
+            <div className="p-6 lg:p-8 xl:p-10 flex flex-col justify-between">
               <div>
                 <div className="font-mono text-xs text-[#C5A059] uppercase tracking-widest mb-2 font-bold flex items-center gap-2">
                   <span>// КОНСУЛЬТАЦИЯ ПАРТНЁРА</span>
                   <span className="w-6 h-px bg-[#C5A059]" />
                 </div>
-                <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-3 leading-tight">
+                <h2 className="font-heading text-2xl sm:text-3xl font-semibold text-white mb-2 leading-tight">
                   Первичная консультация — бесплатно
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed mb-6">
@@ -235,7 +188,7 @@ export default function V26Footer() {
                     </span>
                   )}
 
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="submit"
                       disabled={isSubmitted || !agreePrivacy || !agreePersonalData}
@@ -258,12 +211,12 @@ export default function V26Footer() {
               </div>
             </div>
 
-            {/* Right Box (Col 3: 40%): Direct Contacts & Boardroom Table Showcase */}
-            <div className="flex flex-col justify-between bg-[#0E1218]/60 backdrop-blur-md border border-white/10 p-6 sm:p-8 rounded-sm">
+            {/* 2. Second Green Square: Direct Contacts & Headquarters */}
+            <div className="p-6 lg:p-8 xl:p-10 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/10 bg-[#090C11]">
               <div className="space-y-6">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-[#C5A059] font-medium mb-1">
-                    ШТАБ-КВАРТИРА & ПЕРЕГОВОРНЫЙ КОМПЛЕКС
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-[#C5A059] font-medium mb-1.5">
+                    // ШТАБ-КВАРТИРА & ПЕРЕГОВОРНЫЙ КОМПЛЕКС
                   </div>
                   <a
                     href="tel:+74951059115"
@@ -271,12 +224,12 @@ export default function V26Footer() {
                   >
                     +7 (495) 105-91-15
                   </a>
-                  <div className="text-xs text-neutral-400 mt-1">
+                  <div className="text-xs text-neutral-400 mt-1 font-light leading-relaxed">
                     Пн–Пт 09:00–19:00 (приём в переговорном комплексе по предварительной записи)
                   </div>
                 </div>
 
-                <div className="text-xs sm:text-sm text-neutral-300 space-y-1.5 font-light">
+                <div className="text-xs sm:text-sm text-neutral-300 space-y-1 font-light">
                   <div className="font-medium text-white">{companyContacts.address}</div>
                   <div className="text-xs text-neutral-400">
                     Метро: {companyContacts.metro} · Башня «Федерация Восток», 46 этаж
@@ -291,7 +244,7 @@ export default function V26Footer() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex flex-wrap gap-x-6 gap-y-2 text-xs font-mono text-neutral-400">
+                <div className="pt-4 border-t border-white/10 flex flex-wrap gap-x-5 gap-y-2 text-xs font-mono text-neutral-400">
                   <Link href="/practices" className="hover:text-white transition-colors">
                     Практики бюро
                   </Link>
@@ -307,17 +260,35 @@ export default function V26Footer() {
                 </div>
               </div>
 
-              {/* Boardroom table confirmation caption */}
+              {/* Status footer inside contacts box */}
               <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between font-mono text-[10px] text-[#64748B]">
                 <span>EXECUTIVE BOARDROOM // 46F</span>
                 <span className="text-[#C5A059]">CONFIDENTIAL</span>
               </div>
             </div>
 
+            {/* 3. Third Zone: Boardroom Table Photography */}
+            <div className="relative w-full h-full min-h-[380px] lg:min-h-full overflow-hidden border-t lg:border-t-0 lg:border-l border-white/10 group bg-[#141A23]">
+              <img
+                src="/footer-bg.webp"
+                alt="Переговорный комплекс АБ «Этлегис»"
+                className="absolute inset-0 w-full h-full object-cover object-[center_right] group-hover:scale-105 transition-transform duration-700 select-none"
+              />
+              {/* Subtle edge shading */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#090C11]/90 via-transparent to-[#090C11]/30 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#090C11]/30 via-transparent to-transparent pointer-events-none" />
+
+              {/* Boardroom Caption Badge */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-white/90 bg-black/65 px-3 py-2 border border-white/15 backdrop-blur-md rounded-xs">
+                <span>ПЕРЕГОВОРНЫЙ КОМПЛЕКС // 46F</span>
+                <span className="text-[#C5A059]">МОСКВА-СИТИ</span>
+              </div>
+            </div>
+
           </div>
 
           {/* Bottom Hairline Requisites Bar */}
-          <div className="border-t border-white/10 py-6 px-6 lg:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px] font-mono text-[#64748B]">
+          <div className="border-t border-white/10 py-5 px-6 lg:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[11px] font-mono text-[#64748B]">
             <div>
               © 2019–2026 {companyContacts.legalName}. Все права защищены.
             </div>
