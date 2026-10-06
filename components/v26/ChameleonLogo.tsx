@@ -84,7 +84,7 @@ export default function ChameleonLogo() {
       role="button"
       tabIndex={0}
       title="ETLEGIS — Перейти к началу"
-      className="fixed top-20 lg:top-24 z-50 w-12 h-12 lg:w-16 lg:h-16 cursor-pointer select-none left-4 lg:left-[10%] -translate-x-0 lg:-translate-x-1/2 transition-transform duration-200 hover:scale-105 active:scale-95"
+      className="fixed top-8 lg:top-12 z-50 w-12 h-12 lg:w-16 lg:h-16 cursor-pointer select-none left-4 lg:left-[10%] -translate-x-0 lg:-translate-x-1/2 transition-transform duration-200 hover:scale-105 active:scale-95"
     >
       {/* 1. Base Layer: Dark Monogram (#1C2633 for Light Sections) */}
       <div className="absolute inset-0 w-full h-full pointer-events-none">

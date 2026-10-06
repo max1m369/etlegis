@@ -3,7 +3,7 @@
 import React from 'react';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
 import ChameleonLogo from '@/components/v26/ChameleonLogo';
-import V26Header from '@/components/v26/V26Header';
+import V26ChameleonNav from '@/components/v26/V26ChameleonNav';
 import V26HeroSection from '@/components/v26/V26HeroSection';
 import V26ServicesSection from '@/components/v26/V26ServicesSection';
 import V26AboutSection from '@/components/v26/V26AboutSection';
@@ -16,6 +16,7 @@ import VersionSwitcher from '@/components/ui/VersionSwitcher';
  * Architectural Grid Proportions: 20% (Logo Chameleon Rail) / 40% (Main Lead) / 40% (Trust & Action)
  * Palette: Prototype 10 (Light #EAE6DF ⇄ Dark Slate #223243)
  * Chameleon Monogram: Dynamic dual-layer liquid clipping without glows or filters ("Без всяких свечений, без всего")
+ * Chameleon Navigation: Pinned on the right, horizontally aligned with the logo, Jost font, hides on scroll down, shows on scroll up, switches color with section
  * Typography: Amstelvar, Jost & Space Mono/Oswald from the main project
  */
 export default function HomePage() {
@@ -28,8 +29,8 @@ export default function HomePage() {
         {/* Dual-layer Chameleon Monogram in Column 1 (20% rail) */}
         <ChameleonLogo />
 
-        {/* Minimalist Top Header */}
-        <V26Header />
+        {/* Floating Chameleon Navigation on the right, aligned with logo */}
+        <V26ChameleonNav />
 
         {/* Main Content (Strictly starts at 20% across all 4 sections) */}
         <main className="w-full">

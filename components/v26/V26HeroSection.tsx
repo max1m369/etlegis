@@ -10,7 +10,7 @@ export default function V26HeroSection() {
     <section
       id="sec-hero"
       data-bg="light"
-      className="relative w-full min-h-screen bg-[#EAE6DF] text-[#19212C] pt-16 lg:pt-20 border-b border-[#19212C]/15"
+      className="relative w-full min-h-screen bg-[#EAE6DF] text-[#19212C] pt-24 lg:pt-32 border-b border-[#19212C]/15"
     >
       {/* 20% - 40% - 40% Architectural Grid */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-[20%_40%_40%] min-h-[calc(100vh-5rem)]">
