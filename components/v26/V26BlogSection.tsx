@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { articles } from '@/lib/data/mock-data';
+import { ArrowUpRight } from 'lucide-react';
 
 export default function V26BlogSection() {
   return (
@@ -18,20 +19,20 @@ export default function V26BlogSection() {
         <div className="hidden lg:block w-full border-r border-[#19212C]/10 pointer-events-none" />
 
         {/* Content Area across Cols 2 & 3 (Starts strictly at 20%) */}
-        <div className="col-span-1 lg:col-span-2 flex flex-col">
+        <div className="col-span-1 lg:col-span-2 flex flex-col min-w-0">
           
           {/* Section Header */}
           <div className="p-6 lg:p-12 pb-6 lg:pb-8 border-b border-[#19212C]/10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="font-mono text-xs text-[#C5A059] uppercase tracking-widest mb-2 font-bold flex items-center gap-2">
-                <span>// 05 ПРЕСС-ЦЕНТР И ЭКСПЕРТИЗА</span>
+                <span>// 06 ПРЕСС-ЦЕНТР И ЭКСПЕРТИЗА</span>
                 <span className="w-8 h-px bg-[#C5A059]" />
                 <span className="text-[#5A6472]">АНАЛИТИКА БЮРО</span>
               </div>
-              <h2 className="font-heading text-3xl sm:text-4xl font-semibold text-[#19212C] mb-2">
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#19212C] tracking-tight leading-tight mb-2">
                 Блог и публикации
               </h2>
-              <p className="text-xs sm:text-sm text-[#5A6472] max-w-xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#5A6472] max-w-xl leading-relaxed font-light">
                 Экспертные статьи, практические разборы прецедентов и комментарии адвокатов бюро в ведущих деловых изданиях.
               </p>
             </div>
@@ -43,82 +44,102 @@ export default function V26BlogSection() {
             </Link>
           </div>
 
-          {/* 4 Articles Grid (2x2 matching Cols 2 & 3: 40% + 40%) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#19212C]/10 p-6 lg:p-12 gap-8 lg:gap-12">
+          {/* 4 Square-like Editorial Articles (2x2 Grid) based on Reference 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#19212C]/10 p-6 lg:p-12 gap-8 lg:gap-10">
             
             {/* Col 2 (40%): Articles 1 & 2 */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-8">
               {articles.slice(0, 2).map((article) => (
                 <article
                   key={article.id}
-                  className="bg-white border border-[#19212C]/12 rounded-sm p-6 flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group"
+                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[340px]"
                 >
-                  <div>
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#19212C]/10">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#C5A059] font-mono">
-                        {article.category}
-                      </span>
-                      <span className="text-xs font-mono text-[#64748B]">
-                        {article.date}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-heading font-semibold text-[#0F172A] mb-2 leading-snug group-hover:text-[#C5A059] transition-colors">
+                  {/* Top Header Block with crisp divider line */}
+                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
                       {article.title}
                     </h3>
-
-                    <p className="text-xs text-[#475569] leading-relaxed line-clamp-3 mb-4 font-light">
-                      {article.previewText}
-                    </p>
+                    <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
+                      <span>Автор:</span>
+                      <strong className="text-[#19212C] font-semibold">Алексей Бирюков</strong>
+                    </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#19212C]/10">
-                    <Link
-                      href={`/blog/${article.slug}`}
-                      className="inline-flex items-center gap-1 font-mono text-xs text-[#0F172A] font-bold hover:text-[#C5A059] transition-colors"
-                    >
-                      <span>Читать материал</span>
-                      <span>→</span>
-                    </Link>
+                  {/* Middle Content */}
+                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
+                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
+                      {article.previewText}
+                    </p>
+
+                    {/* Right-aligned 'Смотреть' link */}
+                    <div className="flex justify-end pt-1">
+                      <Link
+                        href={`/blog/${article.slug}`}
+                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
+                      >
+                        <span>Смотреть</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
+                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
+                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
+                      {article.category}
+                    </div>
+                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
+                      {article.date}
+                    </div>
                   </div>
                 </article>
               ))}
             </div>
 
             {/* Col 3 (40%): Articles 3 & 4 */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-8 md:pl-8">
               {articles.slice(2, 4).map((article) => (
                 <article
                   key={article.id}
-                  className="bg-white border border-[#19212C]/12 rounded-sm p-6 flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group"
+                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[340px]"
                 >
-                  <div>
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#19212C]/10">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#C5A059] font-mono">
-                        {article.category}
-                      </span>
-                      <span className="text-xs font-mono text-[#64748B]">
-                        {article.date}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-heading font-semibold text-[#0F172A] mb-2 leading-snug group-hover:text-[#C5A059] transition-colors">
+                  {/* Top Header Block with crisp divider line */}
+                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
+                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
                       {article.title}
                     </h3>
-
-                    <p className="text-xs text-[#475569] leading-relaxed line-clamp-3 mb-4 font-light">
-                      {article.previewText}
-                    </p>
+                    <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
+                      <span>Автор:</span>
+                      <strong className="text-[#19212C] font-semibold">Алексей Бирюков</strong>
+                    </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#19212C]/10">
-                    <Link
-                      href={`/blog/${article.slug}`}
-                      className="inline-flex items-center gap-1 font-mono text-xs text-[#0F172A] font-bold hover:text-[#C5A059] transition-colors"
-                    >
-                      <span>Читать материал</span>
-                      <span>→</span>
-                    </Link>
+                  {/* Middle Content */}
+                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
+                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
+                      {article.previewText}
+                    </p>
+
+                    {/* Right-aligned 'Смотреть' link */}
+                    <div className="flex justify-end pt-1">
+                      <Link
+                        href={`/blog/${article.slug}`}
+                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
+                      >
+                        <span>Смотреть</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
+                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
+                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
+                      {article.category}
+                    </div>
+                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
+                      {article.date}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -127,14 +148,14 @@ export default function V26BlogSection() {
           </div>
 
           {/* Bottom Action Footer with line */}
-          <div className="p-6 lg:p-12 pt-0">
+          <div className="p-6 lg:p-12 pt-0 pb-12">
             <div className="pt-6 border-t-2 border-[#19212C]/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <p className="text-xs sm:text-sm text-[#5A6472] max-w-xl font-light">
                 Аналитические материалы, правовые позиции и комментарии адвокатов бюро к знаковым решениям судов.
               </p>
               <Link
                 href="/blog"
-                className="bg-[#19212C] hover:bg-[#C5A059] text-white hover:text-[#19212C] px-6 py-3 text-xs font-mono font-bold uppercase tracking-wider rounded-sm transition-all"
+                className="bg-[#19212C] hover:bg-[#C5A059] text-white hover:text-[#19212C] px-8 py-3.5 text-xs font-mono font-bold uppercase tracking-wider rounded-sm transition-all"
               >
                 Все публикации бюро →
               </Link>

@@ -75,7 +75,7 @@ export default function V26ChameleonNav() {
   const navLinks = [
     { label: 'Главная', href: '#sec-hero' },
     { label: 'Цифры', href: '#sec-numbers' },
-    { label: 'Услуги', href: '#sec-services' },
+    { label: 'Практики', href: '#sec-services' },
     { label: 'О компании', href: '#sec-about' },
     { label: 'Кейсы', href: '#sec-cases' },
     { label: 'Блог', href: '#sec-blog' },
