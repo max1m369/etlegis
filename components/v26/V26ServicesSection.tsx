@@ -67,6 +67,13 @@ const PRACTICES_COL2: PracticeCardItem[] = [
   },
 ];
 
+// Interleave cards so that row 1: (Col1[0], Col2[0]), row 2: (Col1[1], Col2[1]), row 3: (Col1[2], Col2[2])
+const ALL_PRACTICES: PracticeCardItem[] = [
+  PRACTICES_COL1[0], PRACTICES_COL2[0],
+  PRACTICES_COL1[1], PRACTICES_COL2[1],
+  PRACTICES_COL1[2], PRACTICES_COL2[2],
+];
+
 export default function V26ServicesSection() {
   return (
     <section
@@ -98,117 +105,58 @@ export default function V26ServicesSection() {
             </p>
           </div>
 
-          {/* 2. Symmetric Grid of Editorial Cards (Reference 2 Layout) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#19212C]/10 p-6 lg:p-12 gap-8 lg:gap-12">
-            
-            {/* Col 2 (40%): Left 3 Practice Cards */}
-            <div className="flex flex-col gap-8">
-              {PRACTICES_COL1.map((srv) => (
-                <div
-                  key={srv.code}
-                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group min-h-[320px]"
-                >
-                  {/* Top Header Block with crisp divider line */}
-                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
-                      {srv.title}
-                    </h3>
-                    <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
-                      <span>Направление:</span>
-                      <strong className="text-[#19212C] font-semibold">{srv.code.split('·')[1]?.trim() || srv.code}</strong>
-                    </div>
-                  </div>
-
-                  {/* Middle Content */}
-                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
-                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
-                      {srv.desc}
-                    </p>
-
-                    {/* Metric / key result badge */}
-                    <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3 rounded-xs flex items-center justify-between font-mono text-xs text-[#19212C]">
-                      <span className="font-semibold">{srv.metric}</span>
-                    </div>
-
-                    {/* Right-aligned 'Смотреть' link */}
-                    <div className="flex justify-end pt-1">
-                      <Link
-                        href={`/practices/${srv.slug || ''}`}
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
-                      >
-                        <span>Смотреть</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
-                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
-                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
-                      {srv.code}
-                    </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
-                      {srv.courtRef}
-                    </div>
+          {/* 2. Unified Grid of Perfectly Aligned Equal-Height Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 p-6 lg:p-12 gap-8 lg:gap-10">
+            {ALL_PRACTICES.map((srv) => (
+              <div
+                key={srv.code}
+                className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group h-full"
+              >
+                {/* Top Header Block with crisp divider line & fixed min-height for uniform alignment */}
+                <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10 min-h-[115px] flex flex-col justify-between">
+                  <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
+                    {srv.title}
+                  </h3>
+                  <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
+                    <span>Направление:</span>
+                    <strong className="text-[#19212C] font-semibold">{srv.code.split('·')[1]?.trim() || srv.code}</strong>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Col 3 (40%): Right 3 Practice Cards */}
-            <div className="flex flex-col gap-8 lg:pl-4">
-              {PRACTICES_COL2.map((srv) => (
-                <div
-                  key={srv.code}
-                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group min-h-[320px]"
-                >
-                  {/* Top Header Block with crisp divider line */}
-                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors mb-2">
-                      {srv.title}
-                    </h3>
-                    <div className="font-mono text-xs text-[#64748B] flex items-center gap-1.5">
-                      <span>Направление:</span>
-                      <strong className="text-[#19212C] font-semibold">{srv.code.split('·')[1]?.trim() || srv.code}</strong>
-                    </div>
+                {/* Middle Content */}
+                <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
+                  <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
+                    {srv.desc}
+                  </p>
+
+                  {/* Metric / key result badge */}
+                  <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3 rounded-xs flex items-center justify-between font-mono text-xs text-[#19212C]">
+                    <span className="font-semibold">{srv.metric}</span>
                   </div>
 
-                  {/* Middle Content */}
-                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
-                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
-                      {srv.desc}
-                    </p>
-
-                    {/* Metric / key result badge */}
-                    <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3 rounded-xs flex items-center justify-between font-mono text-xs text-[#19212C]">
-                      <span className="font-semibold">{srv.metric}</span>
-                    </div>
-
-                    {/* Right-aligned 'Смотреть' link */}
-                    <div className="flex justify-end pt-1">
-                      <Link
-                        href={`/practices/${srv.slug || ''}`}
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
-                      >
-                        <span>Смотреть</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
-                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
-                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
-                      {srv.code}
-                    </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
-                      {srv.courtRef}
-                    </div>
+                  {/* Right-aligned 'Смотреть' link */}
+                  <div className="flex justify-end pt-1">
+                    <Link
+                      href={`/practices/${srv.slug || ''}`}
+                      className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
+                    >
+                      <span>Смотреть</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
-              ))}
-            </div>
 
+                {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on left, Ref aligned to RIGHT */}
+                <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
+                  <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC] shrink-0">
+                    {srv.code}
+                  </div>
+                  <div className="flex-1 px-4 py-2.5 text-[#64748B] text-[10px] flex items-center justify-end text-right">
+                    {srv.courtRef}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* 3. Bottom Action Bar: «Смотреть все 11 практик» shifted lower and perfectly centered/even */}

@@ -60,135 +60,67 @@ export default function V26CasesSection() {
             </Link>
           </div>
 
-          {/* 4 Square-like Editorial Cards (2x2 Grid) based on Reference 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#19212C]/10 p-6 lg:p-12 gap-8 lg:gap-10">
-            
-            {/* Col 2 (40%): Cards 1 & 2 */}
-            <div className="flex flex-col gap-8">
-              {items.slice(0, 2).map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[360px]"
-                >
-                  {/* Top Header Block with crisp divider line: Clean titles & amounts only */}
-                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    {item.claimAmount && (
-                      <div className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
-                        {item.claimAmount}
-                      </div>
-                    )}
-
-                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors">
-                      {item.title}
-                    </h3>
-                  </div>
-
-                  {/* Middle Content: Challenge & Result */}
-                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
-                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
-                      {item.challenge}
-                    </p>
-
-                    <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3.5 rounded-xs flex items-start gap-2.5">
-                      <Trophy size={15} className="text-[#C5A059] shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-[11px] font-mono text-[#0F172A] font-semibold mb-0.5">
-                          Итог разбирательства:
-                        </div>
-                        <p className="text-xs text-[#5A6472] leading-relaxed">
-                          {item.resultSummary}
-                        </p>
-                      </div>
+          {/* 4 Square-like Editorial Cards (2x2 Grid) Perfectly Aligned into Equal-Height Rows */}
+          <div className="grid grid-cols-1 md:grid-cols-2 p-6 lg:p-12 gap-8 lg:gap-10">
+            {items.slice(0, 4).map((item) => (
+              <div
+                key={item.id}
+                className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group h-full"
+              >
+                {/* Top Header Block with crisp divider line & fixed min-height for clean horizontal alignment */}
+                <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10 min-h-[145px] flex flex-col justify-between">
+                  {item.claimAmount && (
+                    <div className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
+                      {item.claimAmount}
                     </div>
+                  )}
 
-                    {/* Read More button right-aligned before bottom tag box */}
-                    <div className="flex justify-end pt-1">
-                      <Link
-                        href={`/cases/${item.slug}`}
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
-                      >
-                        <span>Смотреть</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
+                  <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors">
+                    {item.title}
+                  </h3>
+                </div>
+
+                {/* Middle Content: Challenge & Result */}
+                <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
+                  <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
+                    {item.challenge}
+                  </p>
+
+                  <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3.5 rounded-xs flex items-start gap-2.5">
+                    <Trophy size={15} className="text-[#C5A059] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-[11px] font-mono text-[#0F172A] font-semibold mb-0.5">
+                        Итог разбирательства:
+                      </div>
+                      <p className="text-xs text-[#5A6472] leading-relaxed">
+                        {item.resultSummary}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on the left, Date on the right */}
-                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
-                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
-                      {getPracticeTitle(item.practiceId)}
-                    </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[11px] flex items-center font-mono">
-                      {item.date}
-                    </div>
+                  {/* Read More button right-aligned before bottom tag box */}
+                  <div className="flex justify-end pt-1">
+                    <Link
+                      href={`/cases/${item.slug}`}
+                      className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
+                    >
+                      <span>Смотреть</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Col 3 (40%): Cards 3 & 4 */}
-            <div className="flex flex-col gap-8 md:pl-8">
-              {items.slice(2, 4).map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[360px]"
-                >
-                  {/* Top Header Block with crisp divider line: Clean titles & amounts only */}
-                  <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    {item.claimAmount && (
-                      <div className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
-                        {item.claimAmount}
-                      </div>
-                    )}
-
-                    <h3 className="font-heading text-xl sm:text-2xl font-semibold text-[#0F172A] leading-snug group-hover:text-[#C5A059] transition-colors">
-                      {item.title}
-                    </h3>
+                {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on the left, Date aligned to the RIGHT */}
+                <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
+                  <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC] shrink-0">
+                    {getPracticeTitle(item.practiceId)}
                   </div>
-
-                  {/* Middle Content: Challenge & Result */}
-                  <div className="p-6 sm:p-7 py-5 flex-1 flex flex-col justify-between gap-4">
-                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed line-clamp-3 font-light">
-                      {item.challenge}
-                    </p>
-
-                    <div className="bg-[#F8F7F4] border border-[#19212C]/10 p-3.5 rounded-xs flex items-start gap-2.5">
-                      <Trophy size={15} className="text-[#C5A059] shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-[11px] font-mono text-[#0F172A] font-semibold mb-0.5">
-                          Итог разбирательства:
-                        </div>
-                        <p className="text-xs text-[#5A6472] leading-relaxed">
-                          {item.resultSummary}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Read More button right-aligned before bottom tag box */}
-                    <div className="flex justify-end pt-1">
-                      <Link
-                        href={`/cases/${item.slug}`}
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0F172A] hover:text-[#C5A059] transition-colors"
-                      >
-                        <span>Смотреть</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on the left, Date on the right */}
-                  <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
-                    <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
-                      {getPracticeTitle(item.practiceId)}
-                    </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[11px] flex items-center font-mono">
-                      {item.date}
-                    </div>
+                  <div className="flex-1 px-4 py-2.5 text-[#64748B] text-[11px] flex items-center justify-end text-right font-mono">
+                    {item.date}
                   </div>
                 </div>
-              ))}
-            </div>
-
+              </div>
+            ))}
           </div>
 
           {/* Bottom Action Footer with line */}
