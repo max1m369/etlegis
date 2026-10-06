@@ -12,6 +12,7 @@ interface Monument3DProps {
   showFragments?: boolean;
   centered?: boolean;
   viewOffsetX?: number;
+  viewOffsetY?: number;
   zoom?: number;
 }
 
@@ -21,6 +22,7 @@ export default function Monument3D({
   showFragments = true,
   centered = false,
   viewOffsetX,
+  viewOffsetY,
   zoom,
 }: Monument3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -258,15 +260,13 @@ export default function Monument3D({
           const targetZoom = zoom !== undefined ? zoom : (isDesktop ? 0.90 : 0.85);
           camera.zoom = targetZoom;
 
-          if (centered) {
-            camera.setViewOffset(w, h, 0, 0, w, h);
-          } else if (viewOffsetX !== undefined) {
-            camera.setViewOffset(w, h, -w * viewOffsetX, 0, w, h);
-          } else if (isDesktop) {
-            // Shift view offset so the 3D monument sits on the right side of the screen
-            camera.setViewOffset(w, h, -w * 0.20, 0, w, h);
+          const offsetX = viewOffsetX !== undefined ? -w * viewOffsetX : (centered ? 0 : (isDesktop ? -w * 0.20 : 0));
+          const offsetY = viewOffsetY !== undefined ? -h * viewOffsetY : 0;
+
+          if (offsetX !== 0 || offsetY !== 0) {
+            camera.setViewOffset(w, h, offsetX, offsetY, w, h);
           } else {
-            camera.setViewOffset(w, h, 0, 0, w, h);
+            camera.clearViewOffset();
           }
           camera.updateProjectionMatrix();
 
@@ -439,7 +439,7 @@ export default function Monument3D({
         environmentTexture.dispose();
       }
     };
-  }, [showBust, showFragments]);
+  }, [showBust, showFragments, centered, viewOffsetX, viewOffsetY, zoom]);
 
   return (
     <div
