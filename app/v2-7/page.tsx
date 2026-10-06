@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import VersionSwitcher from '@/components/ui/VersionSwitcher';
@@ -8,7 +8,7 @@ import { useConsultationModal } from '@/components/providers/ModalProvider';
 import { TEAM_MEMBERS_FULL } from '@/lib/data/team-blueprint';
 import { CASES_CATALOG_DATA } from '@/components/sections/CasesCatalog';
 import { articles as mockArticles } from '@/lib/data/mock-data';
-import { ChevronDown, ArrowUpRight, Sparkles, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { ChevronDown, ArrowUpRight, SlidersHorizontal, RefreshCw, LayoutGrid, Rows } from 'lucide-react';
 import '@/styles/transitions3d.css';
 
 interface PracticeItem {
@@ -29,9 +29,9 @@ const PRACTICES_DATA: PracticeItem[] = [
     title: 'Банкротство',
     count: '68 дел',
     fullTitle: 'Банкротство и несостоятельность',
-    lead: 'Инициирование и защита в делах о банкротстве физических и юридических лиц. Мы работаем с обеими сторонами процедуры — и на стороне должника, сохраняя контроль над процедурой, и на стороне кредитора, добиваясь включения в реестр и получения выплат.',
-    details: 'Ведём весь цикл: подача заявления, назначение арбитражного управляющего, инвентаризация, работа с торгами и конкурсной массой, собрания кредиторов.',
-    howWeWork: 'Партнёр ведёт дело от первой встречи до итогового распределения конкурсной массы. Еженедельные процессуальные брифы, круглосуточный доступ к материалам дела.',
+    lead: 'Инициирование и защита в делах о банкротстве физических и юридических лиц. Мы работаем с обеими сторонами процедуры — и на стороне должника, сохраняя контроль над процедурой, и на стороне кредитора, добиваясь включения в реестр и выплат.',
+    details: 'Ведём весь цикл: подача заявления, выбор арбитражного управляющего, инвентаризация имущества, оспаривание необоснованных требований кредиторов, участие в собраниях кредиторов и проведение торгов.',
+    howWeWork: 'Партнёр ведёт дело от первой встречи до итогового распределения конкурсной массы. Еженедельные процессуальные брифы, полный доступ к материалам и прозрачная фиксация каждого шага.',
   },
   {
     no: '02',
@@ -39,9 +39,9 @@ const PRACTICES_DATA: PracticeItem[] = [
     title: 'Субсидиарная КДЛ',
     count: '42 дела',
     fullTitle: 'Субсидиарная ответственность КДЛ',
-    lead: 'Привлечение или защита контролирующих должника лиц — одна из самых чувствительных тем для первых лиц компании. Работаем в двух режимах: защита руководителя от привлечения к субсидиарной ответственности и оспаривание сделок должника в рамках дела о банкротстве.',
-    details: 'Доказываем экономическую обоснованность управленческих решений, отсутствие причинно-следственной связи между действиями директора и банкротством предприятия.',
-    howWeWork: 'Собираем доказательную базу до подачи заявления о привлечении. Работаем через экспертную оценку финансового положения на дату каждой конкретной сделки.',
+    lead: 'Привлечение или защита контролирующих должника лиц — одна из самых чувствительных тем для первых лиц компании. Работаем в двух режимах: защита руководителя от привлечения к субсидиарной ответственности и оспаривание подозрительных сделок.',
+    details: 'Анализ финансово-хозяйственной деятельности предприятия на дату сделок, подготовка доказательств добросовестности и разумности управленческих решений, доказывание отсутствия причинно-следственной связи с банкротством.',
+    howWeWork: 'Собираем доказательную базу до подачи оппонентами заявления о привлечении. Работаем через экономическую оценку финансового положения на дату каждой конкретной сделки.',
   },
   {
     no: '03',
@@ -49,19 +49,19 @@ const PRACTICES_DATA: PracticeItem[] = [
     title: 'Налоги · ВНП',
     count: '36 дел',
     fullTitle: 'Налоговый комплаенс и ВНП',
-    lead: 'Подготовка к камеральным и выездным проверкам, снижение доначислений, сопровождение ВНП до вынесения решения. Иногда начинаем работать до того, как проверка назначена: разбираем структуру, находим слабые места и закрываем их.',
-    details: 'Защита от искусственного дробления бизнеса, необоснованной налоговой выгоды по ст. 54.1 НК РФ и претензий по сделкам с проблемными контрагентами.',
-    howWeWork: 'Полное сопровождение проверки: подготовка к допросам сотрудников, правовые ответы на требования, разработка мотивированных возражений на акт налоговой проверки.',
+    lead: 'Подготовка к камеральным и выездным проверкам, снижение доначислений, сопровождение ВНП до вынесения решения. Иногда начинаем работать до того, как проверка назначена: находим слабые места в структуре бизнеса и закрываем их.',
+    details: 'Защита при претензиях по дроблению бизнеса, необоснованной налоговой выгоде (ст. 54.1 НК РФ), спорах по НДС и налогу на прибыль. Досудебное урегулирование в вышестоящих налоговых органах.',
+    howWeWork: 'Полное сопровождение проверки: подготовка сотрудников к допросам, мотивированные ответы на требования, разработка возражений на акт проверки и участие в их рассмотрении.',
   },
   {
     no: '04',
     id: 'p04',
     title: 'Уголовные дела',
     count: '24 дела',
-    fullTitle: 'Уголовно-правовая защита бизнеса',
-    lead: 'Работа со сложным составом на стороне защиты. Ст. 159, 160, 171, 199 УК РФ и смежные составы экономических преступлений. Отстройка позиции против доминирующего обвинения, разбор доказательственной базы.',
-    details: 'Адвокатское присутствие на обысках, выемках и допросах руководителей. Обжалование незаконных действий следственных органов и меры пресечения.',
-    howWeWork: 'Первые 48 часов — ключевые. Партнёр включается в дело незамедлительно, лично выезжает на следственные действия и формирует защитную позицию.',
+    fullTitle: 'Уголовные дела в бизнесе',
+    lead: 'Работа со сложным составом на стороне защиты: ст. 159, 160, 171, 199 УК РФ и смежные составы. Отстройка прочной правовой позиции против доминирующего обвинения, разбор доказательственной базы следствия.',
+    details: 'Участие в следственных действиях (обыски, выемки, допросы), обжалование незаконных действий следователей, отмена мер пресечения в виде заключения под стражу, защита на этапе судебного следствия.',
+    howWeWork: 'Первые 48 часов — ключевые для всего исхода дела. Партнёр включается в дело незамедлительно в круглосуточном режиме, работает со следственными органами лично и без посредников.',
   },
   {
     no: '05',
@@ -98,29 +98,32 @@ type TransitionEffect =
 export default function V27Page() {
   const { openModal } = useConsultationModal();
 
-  // Accordion spoilers in left rail
+  // Navigation Spoilers in Left Rail
   const [isPracticesOpen, setIsPracticesOpen] = useState(true);
   const [isTeamOpen, setIsTeamOpen] = useState(false);
   const [isCasesOpen, setIsCasesOpen] = useState(false);
 
-  // Active view in right column:
-  // 'overview' | 'practice-p01' | ... | 'bureau' | 'cases-catalog' | 'blog-catalog' | 'contact'
-  const [currentView, setCurrentView] = useState<string>('overview');
-  const [prevView, setPrevView] = useState<string>('overview');
+  // Active view in Right Column:
+  // 'overview' | 'practices-all' | 'practice-p01'.. | 'team-all' | 'cases-catalog' | 'blog-catalog'
+  const [currentView, setCurrentView] = useState<string>('practices-all');
+  const [prevView, setPrevView] = useState<string>('practices-all');
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Animation configuration widget
+  // Layout mode for practices: horizontal slider vs grid
+  const [practicesLayout, setPracticesLayout] = useState<'horizontal' | 'grid'>('horizontal');
+
+  // Filter for cases catalog
+  const [activeCaseCategory, setActiveCaseCategory] = useState<'arbitration' | 'bankruptcy' | 'liquidation'>('arbitration');
+
+  // Animation configuration
   const [activeEffect, setActiveEffect] = useState<TransitionEffect>('cube-right');
   const [isWidgetOpen, setIsWidgetOpen] = useState(false);
 
-  // Filter for cases catalog
-  const [activeCaseCategory, setActiveCaseCategory] = useState<'all' | 'liquidation' | 'arbitration' | 'bankruptcy'>('all');
-
   // Contact form state
-  const [formData, setFormData] = useState({ name: '', company: '', phone: '', email: '', task: '' });
+  const [formData, setFormData] = useState({ name: '', company: '', phone: '', task: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // Container refs for scrollable pages inside right rail
+  // Container refs for scrollable pages
   const currentPageRef = useRef<HTMLDivElement>(null);
 
   // Trigger 3D Page Transition
@@ -130,17 +133,12 @@ export default function V27Page() {
     setCurrentView(newView);
     setIsAnimating(true);
 
-    // Scroll new page to top
+    const duration = activeEffect.startsWith('carousel') ? 800 : 650;
     setTimeout(() => {
+      setIsAnimating(false);
       if (currentPageRef.current) {
         currentPageRef.current.scrollTop = 0;
       }
-    }, 50);
-
-    // Duration matches CSS animation duration
-    const duration = activeEffect.startsWith('carousel') ? 850 : 700;
-    setTimeout(() => {
-      setIsAnimating(false);
     }, duration);
   };
 
@@ -149,11 +147,9 @@ export default function V27Page() {
     setFormSubmitted(true);
   };
 
-  const filteredCases = activeCaseCategory === 'all'
-    ? CASES_CATALOG_DATA
-    : CASES_CATALOG_DATA.filter(c => c.category === activeCaseCategory);
+  const filteredCases = CASES_CATALOG_DATA.filter(c => c.category === activeCaseCategory);
 
-  // Animation class mapping based on user selection
+  // Animation class mapping based on exact Codrops classes
   const getOutClass = () => {
     switch (activeEffect) {
       case 'cube-right': return 'pt-page-rotateCubeRightOut pt-page-ontop';
@@ -176,7 +172,7 @@ export default function V27Page() {
       case 'cube-down': return 'pt-page-rotateCubeBottomIn';
       case 'carousel-right': return 'pt-page-rotateCarouselRightIn';
       case 'carousel-left': return 'pt-page-rotateCarouselLeftIn';
-      case 'flip': return 'pt-page-flipInLeft';
+      case 'flip': return 'pt-page-flipInLeft pt-page-delay500';
       case 'slide-horizontal': return 'pt-page-moveFromRight';
       default: return 'pt-page-rotateCubeRightIn';
     }
@@ -184,20 +180,162 @@ export default function V27Page() {
 
   // Render content of a given view
   const renderViewContent = (view: string) => {
-    // 1. Specific Practice View
+    // -------------------------------------------------------------
+    // 1. ALL PRACTICES VIEW (Нажимаю на «Практики бюро» — открывается справа)
+    // -------------------------------------------------------------
+    if (view === 'practices-all') {
+      return (
+        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16 flex flex-col justify-between">
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#D5CFBF]">
+              <div>
+                <div className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
+                  <span className="w-6 h-px bg-[#2C3E50]" />
+                  <span>Шесть ключевых направлений · Адвокатское бюро ETLEGIS</span>
+                </div>
+                <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E] mt-2">
+                  Практики бюро
+                </h2>
+              </div>
+
+              {/* Layout Switcher (Горизонтальный скролл / Сетка) */}
+              <div className="flex items-center gap-2 bg-[#ECE8E0] p-1 rounded-sm border border-[#D5CFBF]">
+                <button
+                  type="button"
+                  onClick={() => setPracticesLayout('horizontal')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
+                    practicesLayout === 'horizontal' ? 'bg-[#2C3E50] text-white shadow-sm' : 'text-[#485464] hover:text-[#1C242E]'
+                  }`}
+                >
+                  <Rows className="w-3.5 h-3.5" />
+                  <span>Горизонтальный ряд</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPracticesLayout('grid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
+                    practicesLayout === 'grid' ? 'bg-[#2C3E50] text-white shadow-sm' : 'text-[#485464] hover:text-[#1C242E]'
+                  }`}
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span>Сетка 2×3</span>
+                </button>
+              </div>
+            </div>
+
+            <p className="text-base sm:text-lg text-[#485464] max-w-[62ch] leading-relaxed mb-8">
+              Каждая практика — отдельный подход и закреплённый партнёр. Выберите нужное направление для детального разбора регламента или листайте карточки.
+            </p>
+
+            {/* Practices Presentation */}
+            {practicesLayout === 'horizontal' ? (
+              <div className="relative">
+                <div className="horizontal-scroll-container gap-6 pb-6 pt-2">
+                  {PRACTICES_DATA.map((p) => (
+                    <div
+                      key={p.id}
+                      onClick={() => navigateTo(`practice-${p.id}`)}
+                      className="horizontal-scroll-item w-[360px] sm:w-[420px] bg-[#EFECE4] border border-[#D5CFBF] p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-lg transition-all cursor-pointer group"
+                    >
+                      <div>
+                        <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[#D5CFBF]">
+                          <span className="font-v27-mono text-xs font-bold text-[#798696]">
+                            Practice №{p.no}
+                          </span>
+                          <span className="font-v27-mono text-xs font-bold text-[#2C3E50]">
+                            {p.count}
+                          </span>
+                        </div>
+                        <h3 className="font-v27-display text-2xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
+                          {p.fullTitle}
+                        </h3>
+                        <p className="text-sm text-[#485464] line-clamp-4 leading-relaxed mb-4">
+                          {p.lead}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-[#D5CFBF] flex items-center justify-between text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
+                        <span>Подробный регламент</span>
+                        <span>→</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-[11px] font-v27-mono text-[#798696] mt-2 flex items-center gap-2">
+                  <span>← Прокручивайте карточки практик горизонтально колесом мыши или свайпом →</span>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {PRACTICES_DATA.map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => navigateTo(`practice-${p.id}`)}
+                    className="bg-[#EFECE4] border border-[#D5CFBF] p-6 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div>
+                      <div className="flex items-baseline justify-between mb-3 pb-2 border-b border-[#D5CFBF]">
+                        <span className="font-v27-mono text-xs font-bold text-[#798696]">
+                          №{p.no}
+                        </span>
+                        <span className="font-v27-mono text-xs font-bold text-[#2C3E50]">
+                          {p.count}
+                        </span>
+                      </div>
+                      <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-2">
+                        {p.fullTitle}
+                      </h3>
+                      <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed mb-4">
+                        {p.lead}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-[#D5CFBF] flex items-center justify-between text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
+                      <span>Открыть практику</span>
+                      <span>→</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="pt-8 mt-8 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => openModal('Консультация по практикам бюро')}
+              className="py-3 px-6 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
+            >
+              Запросить правовой анализ ситуации →
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo('cases-catalog')}
+              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-semibold cursor-pointer"
+            >
+              Смотреть выигранные дела бюро →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------
+    // 2. SPECIFIC PRACTICE DETAIL VIEW
+    // -------------------------------------------------------------
     if (view.startsWith('practice-')) {
       const pracId = view.replace('practice-', '');
       const prac = PRACTICES_DATA.find(p => p.id === pracId) || PRACTICES_DATA[0];
       return (
-        <div className="p-8 sm:p-16 lg:p-24 min-h-full flex flex-col justify-between">
+        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-20 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
               <button
                 type="button"
-                onClick={() => navigateTo('overview')}
+                onClick={() => navigateTo('practices-all')}
                 className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold flex items-center gap-1 cursor-pointer"
               >
-                ← Назад к общему обзору
+                ← Назад ко всем практикам
               </button>
               <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
                 Направление №{prac.no} из 06
@@ -252,56 +390,124 @@ export default function V27Page() {
       );
     }
 
-    // 2. Cases Catalog View
+    // -------------------------------------------------------------
+    // 3. TEAM VIEW (Все 8 адвокатов и партнёров бюро)
+    // -------------------------------------------------------------
+    if (view === 'team-all') {
+      return (
+        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
+            <div>
+              <div className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
+                <span className="w-6 h-px bg-[#2C3E50]" />
+                <span>Партнёрская модель управления · Адвокатское бюро ETLEGIS</span>
+              </div>
+              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E] mt-2">
+                Команда бюро
+              </h2>
+            </div>
+            <span className="font-v27-mono text-xs uppercase tracking-wider text-[#2C3E50] font-bold">
+              8 ведущих адвокатов
+            </span>
+          </div>
+
+          <p className="text-base sm:text-lg text-[#485464] max-w-[60ch] leading-relaxed mb-10">
+            Ваше дело ведёт партнёр лично — от первой консультации до вынесения решения в Верховном Суде РФ. Мы не передаём процессы младшим юристам.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {TEAM_MEMBERS_FULL.map((member, idx) => (
+              <div
+                key={member.id}
+                className="bg-[#EFECE4] border border-[#D5CFBF] p-5 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all group"
+              >
+                <div>
+                  <div className="relative aspect-[3/4] w-full bg-[#D5CFBF]/40 overflow-hidden mb-4 border border-[#D5CFBF]">
+                    <Image
+                      src={member.photo}
+                      alt={member.name}
+                      fill
+                      className="object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-300"
+                    />
+                    <div className="absolute top-2 left-2 bg-[#1C242E]/80 backdrop-blur-xs text-white font-v27-mono text-[10px] px-2 py-0.5">
+                      0{idx + 1}
+                    </div>
+                  </div>
+
+                  <h3 className="font-v27-display text-lg font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-1 leading-snug">
+                    {member.name}
+                  </h3>
+                  <p className="font-v27-mono text-[11px] text-[#2C3E50] font-semibold mb-2">
+                    {member.role}
+                  </p>
+                  <p className="text-xs text-[#798696] mb-3 font-medium">
+                    {member.experience}
+                  </p>
+                  <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed">
+                    {member.specialization}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-[#D5CFBF]">
+                  <button
+                    type="button"
+                    onClick={() => openModal(`Консультация с адвокатом: ${member.name}`)}
+                    className="w-full py-2 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white text-[#1C242E] font-v27-mono text-[10px] uppercase tracking-wider font-bold transition-colors cursor-pointer text-center"
+                  >
+                    Записаться на приём
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // -------------------------------------------------------------
+    // 4. CASES CATALOG VIEW (Успешные кейсы — выбор из 3 категорий)
+    // -------------------------------------------------------------
     if (view === 'cases-catalog') {
       return (
-        <div className="p-8 sm:p-14 lg:p-20">
+        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16">
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
-            <button
-              type="button"
-              onClick={() => navigateTo('overview')}
-              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold cursor-pointer"
-            >
-              ← Назад к обзору практик
-            </button>
+            <div>
+              <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-1">
+                // СУДЕБНАЯ ПРАКТИКА И ПРЕЦЕДЕНТЫ С 2019 ГОДА
+              </div>
+              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E]">
+                Успешные кейсы
+              </h2>
+            </div>
             <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
               Судебная база etlegis
             </span>
           </div>
 
-          <div className="mb-10">
-            <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-2">
-              // СУДЕБНАЯ ПРАКТИКА И ПРЕЦЕДЕНТЫ
-            </div>
-            <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
-              Более 100 успешных дел — подтверждённый результат защиты
-            </h2>
-            <p className="text-base sm:text-lg text-[#485464] max-w-[52ch] leading-relaxed">
-              Все выигранные арбитражные процессы, защита от субсидиарной ответственности и прекращение уголовных рисков.
-            </p>
+          <p className="text-base sm:text-lg text-[#485464] max-w-[60ch] leading-relaxed mb-6">
+            Подтверждённые победы в арбитражных инстанциях, защита топ-менеджеров от субсидиарной ответственности и прекращение претензий кредиторов.
+          </p>
 
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-[#D5CFBF]">
-              {[
-                { id: 'all', label: 'Все дела' },
-                { id: 'arbitration', label: 'Арбитраж' },
-                { id: 'bankruptcy', label: 'Банкротство и КДЛ' },
-                { id: 'liquidation', label: 'Корпоративные споры' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveCaseCategory(tab.id as any)}
-                  className={`py-2 px-4 font-v27-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer ${
-                    activeCaseCategory === tab.id
-                      ? 'bg-[#2C3E50] text-white shadow-sm'
-                      : 'bg-[#ECE8E0] text-[#485464] hover:bg-[#D5CFBF]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          {/* 3 Categories as requested */}
+          <div className="flex flex-wrap gap-2 mb-8 pt-4 border-t border-[#D5CFBF]">
+            {[
+              { id: 'arbitration', label: 'Арбитражные процессы (58)' },
+              { id: 'bankruptcy', label: 'Банкротство и субсидиарка (68)' },
+              { id: 'liquidation', label: 'Ликвидация и споры долей (14)' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveCaseCategory(tab.id as any)}
+                className={`py-2 px-4 font-v27-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer ${
+                  activeCaseCategory === tab.id
+                    ? 'bg-[#2C3E50] text-white shadow-sm'
+                    : 'bg-[#ECE8E0] text-[#485464] hover:bg-[#D5CFBF]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           {/* Cases Grid */}
@@ -309,7 +515,7 @@ export default function V27Page() {
             {filteredCases.map((c) => (
               <div
                 key={c.id}
-                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] transition-all group"
+                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
@@ -330,7 +536,7 @@ export default function V27Page() {
                   </p>
                 </div>
                 <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
-                  <span>Решение вступило в силу ✓</span>
+                  <span>Решение вступило в законную силу ✓</span>
                   <span className="text-[#2C3E50] font-bold">Победа</span>
                 </div>
               </div>
@@ -340,40 +546,35 @@ export default function V27Page() {
       );
     }
 
-    // 3. Blog & Media Catalog View
+    // -------------------------------------------------------------
+    // 5. BLOG & MEDIA CATALOG VIEW (Пресс-центр и экспертные статьи)
+    // -------------------------------------------------------------
     if (view === 'blog-catalog') {
       return (
-        <div className="p-8 sm:p-14 lg:p-20">
+        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16">
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
-            <button
-              type="button"
-              onClick={() => navigateTo('overview')}
-              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-bold cursor-pointer"
-            >
-              ← Назад к обзору практик
-            </button>
+            <div>
+              <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-1">
+                // ПРЕСС-ЦЕНТР, АНАЛИТИКА И МЕДИА
+              </div>
+              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E]">
+                Блог и медиа
+              </h2>
+            </div>
             <span className="font-v27-mono text-xs uppercase tracking-wider text-[#798696]">
-              Пресс-центр и экспертная аналитика
+              Экспертиза ETLEGIS
             </span>
           </div>
 
-          <div className="mb-10">
-            <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-2">
-              // ПРЕСС-ЦЕНТР И АНАЛИТИКА
-            </div>
-            <h2 className="font-v27-display font-normal text-3xl sm:text-5xl leading-tight text-[#1C242E] mb-4">
-              Экспертные материалы, публикации и медиа-комментарии
-            </h2>
-            <p className="text-base sm:text-lg text-[#485464] max-w-[50ch] leading-relaxed">
-              Практические разборы прецедентов, изменения законодательства и аналитика от ведущих адвокатов бюро.
-            </p>
-          </div>
+          <p className="text-base sm:text-lg text-[#485464] max-w-[60ch] leading-relaxed mb-10">
+            Практические комментарии изменений законодательства, разборы прецедентов Высших судов и авторские колонки адвокатов.
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {mockArticles.map((art) => (
               <article
                 key={art.id}
-                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] transition-all group"
+                className="bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D5CFBF]">
@@ -394,7 +595,7 @@ export default function V27Page() {
                 <div className="pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#798696]">
                   <span>Экспертиза бюро</span>
                   <span className="text-[#2C3E50] font-bold flex items-center gap-1">
-                    Читать →
+                    Читать материал →
                   </span>
                 </div>
               </article>
@@ -404,107 +605,71 @@ export default function V27Page() {
       );
     }
 
-    // 4. Default: Overview Stream (Main split page)
+    // -------------------------------------------------------------
+    // 6. OVERVIEW / BUREAU EDITORIAL VIEW (Концепт-06 Split с кейсом и формой)
+    // -------------------------------------------------------------
     return (
-      <div className="flex flex-col">
-        {/* Intro Section */}
-        <section id="intro" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+      <div className="pt-page-scrollable h-full flex flex-col">
+        {/* Intro */}
+        <section className="p-8 sm:p-14 lg:p-16 border-b border-[#D5CFBF]">
           <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-[#1C242E]" />
             <span>Адвокатское бюро · Москва · <em className="not-italic text-[#2C3E50] font-bold">с 2019 года</em></span>
           </div>
-          <h2 className="font-v27-display font-normal text-3xl sm:text-5xl lg:text-[62px] leading-[0.98] tracking-[-0.03em] text-[#1C242E] mb-6 max-w-[18ch]">
+          <h2 className="font-v27-display font-normal text-3xl sm:text-5xl lg:text-[56px] leading-[1.02] tracking-[-0.03em] text-[#1C242E] mb-6 max-w-[20ch]">
             Каталог практик — слева. Здесь — как мы с ними работаем.
           </h2>
-          <p className="text-lg leading-[1.55] text-[#485464] max-w-[48ch]">
-            Каждая практика — отдельный подход и отдельная команда. Кликните по названию в панели слева, чтобы открыть её с 3D-переходом. Или листайте горизонтально.
+          <p className="text-lg leading-[1.55] text-[#485464] max-w-[50ch]">
+            Каждая практика — отдельный подход и отдельная команда. Кликните по названию в панели слева, чтобы перейти к разделу с 3D-переходом.
           </p>
         </section>
 
-        {/* Practices Summary Section */}
-        <section className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
-          <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#2C3E50] font-bold mb-4">
-            // ШЕСТЬ КЛЮЧЕВЫХ НАПРАВЛЕНИЙ ЗАЩИТЫ
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {PRACTICES_DATA.map((p) => (
-              <div
-                key={p.id}
-                onClick={() => navigateTo(`practice-${p.id}`)}
-                className="p-6 bg-[#EFECE4] border border-[#D5CFBF] hover:border-[#2C3E50] transition-all cursor-pointer group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex justify-between items-baseline mb-2">
-                    <span className="font-v27-mono text-xs font-semibold text-[#798696]">
-                      №{p.no}
-                    </span>
-                    <span className="font-v27-mono text-[11px] text-[#2C3E50] font-bold">
-                      {p.count}
-                    </span>
-                  </div>
-                  <h3 className="font-v27-display text-xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-2">
-                    {p.fullTitle}
-                  </h3>
-                  <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed">
-                    {p.lead}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-[#D5CFBF] flex justify-between items-center text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50]">
-                  <span>Открыть практику</span>
-                  <span>→</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Flagship Case Section */}
-        <section id="case" className="p-8 sm:p-14 lg:p-20 bg-[#EFECE4] border-b border-[#D5CFBF]">
+        {/* Flagship Case */}
+        <section className="p-8 sm:p-14 lg:p-16 bg-[#EFECE4] border-b border-[#D5CFBF]">
           <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-[#1C242E]" />
             <span>Флагманский кейс · <em className="not-italic text-[#2C3E50] font-bold">Case File № 24-A-0117</em></span>
           </div>
           
-          <div className="font-v27-display font-normal text-6xl sm:text-8xl lg:text-[110px] leading-[0.85] tracking-[-0.045em] text-[#1C242E] mb-5">
+          <div className="font-v27-display font-normal text-6xl sm:text-8xl lg:text-[100px] leading-[0.85] tracking-[-0.045em] text-[#1C242E] mb-5">
             1,2
             <small className="block mt-4 font-v27-mono text-xs tracking-[0.14em] uppercase text-[#798696] font-medium">
               млрд ₽ · требование банка · снято
             </small>
           </div>
 
-          <div className="inline-flex flex-col py-2 px-3.5 mb-6 border-2 border-[#2C3E50] text-[#2C3E50] font-v27-mono text-xs tracking-[0.18em] uppercase font-bold rotate-[-2deg]">
-            Case Closed
-            <small className="text-[9px] tracking-[0.16em] mt-0.5">Ruling · in favor</small>
+          <div className="inline-flex flex-col py-2 px-3.5 mb-6 border-2 border-[#2C3E50] text-[#2C3E50] font-v27-mono text-xs tracking-[0.18em] uppercase font-bold">
+            Case Closed · Ruling in favor
           </div>
 
-          <h3 className="font-v27-display font-medium text-2xl sm:text-3xl leading-[1.2] tracking-[-0.015em] text-[#1C242E] mb-4 max-w-[28ch]">
+          <h3 className="font-v27-display font-medium text-2xl sm:text-3xl leading-[1.2] text-[#1C242E] mb-4 max-w-[28ch]">
             Победа в многолетней тяжбе против крупного банка.
           </h3>
           <p className="text-[17px] text-[#485464] max-w-[56ch] mb-4 leading-relaxed">
             Банк требовал с доверителя — производственной компании — 1,2 миллиарда рублей. Защита строилась на доказательстве того, что банк злоупотребляет процессуальными правами.
           </p>
           <p className="text-[17px] text-[#485464] max-w-[56ch] mb-6 leading-relaxed">
-            Суд первой инстанции и апелляция поддержали позицию защиты. Клиент сохранил активы и операционную деятельность.
+            Суд первой инстанции и апелляция полностью поддержали позицию защиты. Клиент сохранил операционный бизнес и активы.
           </p>
 
-          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-6 mt-6 border-t border-[#D5CFBF] max-w-[700px]">
+          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-6 mt-6 border-t border-[#D5CFBF] max-w-[650px]">
             <div>
-              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Практика</dt>
-              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Арбитраж</dd>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1">Практика</dt>
+              <dd className="font-v27-display font-medium text-lg text-[#1C242E]">Арбитраж</dd>
             </div>
             <div>
-              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Годы</dt>
-              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">2024 — 2025</dd>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1">Период</dt>
+              <dd className="font-v27-display font-medium text-lg text-[#1C242E]">2024 — 2025</dd>
             </div>
             <div>
-              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1.5">Инстанции</dt>
-              <dd className="m-0 font-v27-display font-medium text-lg text-[#1C242E]">Первая, апелляция</dd>
+              <dt className="font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] mb-1">Инстанции</dt>
+              <dd className="font-v27-display font-medium text-lg text-[#1C242E]">Первая, апелляция</dd>
             </div>
           </dl>
         </section>
 
-        {/* Bureau / Model & Team Section */}
-        <section id="bureau" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+        {/* Bureau Model */}
+        <section className="p-8 sm:p-14 lg:p-16 border-b border-[#D5CFBF]">
           <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-[#1C242E]" />
             <span>О бюро · <em className="not-italic text-[#2C3E50] font-bold">Как мы устроены</em></span>
@@ -524,14 +689,10 @@ export default function V27Page() {
               За 7 лет — <strong className="text-[#1C242E] font-medium">240 завершённых дел</strong> с подтверждённым результатом. Мы держим одновременно <strong className="text-[#1C242E] font-medium">шесть ключевых направлений</strong> и не выходим за их границы.
             </div>
           </div>
-
-          <p className="text-[17px] leading-relaxed text-[#485464] max-w-[54ch]">
-            Первая консультация бесплатна. Мы проводим её не для того, чтобы «продать», а для того, чтобы честно оценить перспективы. Если по нашему опыту ситуация вам невыгодна для судебного пути, мы скажем об этом на первой встрече.
-          </p>
         </section>
 
         {/* Contact Form Section */}
-        <section id="contact" className="p-8 sm:p-14 lg:p-20 border-b border-[#D5CFBF]">
+        <section className="p-8 sm:p-14 lg:p-16 border-b border-[#D5CFBF]">
           <div className="font-v27-mono text-[11px] tracking-[0.14em] uppercase text-[#798696] font-medium flex items-center gap-3 mb-5">
             <span className="w-8 h-px bg-[#1C242E]" />
             <span>Связь · <em className="not-italic text-[#2C3E50] font-bold">Первая консультация — 0 ₽</em></span>
@@ -622,7 +783,7 @@ export default function V27Page() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-[#1C242E] text-[#F6F4EF] p-8 sm:p-12 lg:p-16 grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
+        <footer className="bg-[#1C242E] text-[#F6F4EF] p-8 sm:p-12 lg:p-16 grid grid-cols-1 sm:grid-cols-2 gap-8 items-center mt-auto">
           <div className="flex items-center gap-3">
             <img
               src="/logo.svg"
@@ -667,12 +828,12 @@ export default function V27Page() {
         .font-v27-mono { font-family: var(--font-mono); }
       `}</style>
 
-      {/* Fixed Full-Viewport Split Layout: Page Does NOT Scroll Down (Zero Window Scroll) */}
+      {/* Fixed Full-Viewport Split Layout: Zero Window Scroll */}
       <div className="w-screen h-screen overflow-hidden bg-[#F6F4EF] text-[#1C242E] font-v27-body antialiased">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(360px,500px)_1fr] h-full w-full">
           
           {/* ========================================================
-              LEFT RAIL — Fixed/Pinned Navigation Menu (Zero Border Lines below)
+              LEFT RAIL — Fixed/Pinned Navigation Menu
              ======================================================== */}
           <aside className="bg-[#ECE8E0] border-r border-[#D5CFBF] h-full overflow-y-auto flex flex-col p-6 sm:p-8 z-30 select-none">
             
@@ -682,7 +843,7 @@ export default function V27Page() {
                 href="/v2-7"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigateTo('overview');
+                  navigateTo('practices-all');
                 }}
                 className="inline-flex items-center text-[#1C242E] hover:opacity-80 transition-opacity"
                 aria-label="Адвокатское бюро ETLEGIS"
@@ -711,27 +872,39 @@ export default function V27Page() {
             {/* Navigation Menus with Spoilers */}
             <nav className="flex flex-col flex-1 divide-y divide-[#D5CFBF] border-y border-[#D5CFBF] mb-6">
               
-              {/* 1. ПРАКТИКИ БЮРО (Спойлер скрыть / раскрыть) */}
+              {/* 1. ПРАКТИКИ БЮРО: Кликая по названию — сразу открываем страницу практик справа */}
               <div className="py-3">
-                <button
-                  type="button"
-                  onClick={() => setIsPracticesOpen(!isPracticesOpen)}
-                  className="w-full flex items-center justify-between py-1 text-left group cursor-pointer focus:outline-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
+                <div className="w-full flex items-center justify-between py-1">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo('practices-all')}
+                    className={`flex items-center gap-2 group cursor-pointer text-left ${
+                      currentView === 'practices-all' ? 'text-[#2C3E50]' : ''
+                    }`}
+                  >
+                    <span className={`font-v27-mono text-[11px] tracking-[0.16em] uppercase font-semibold transition-colors ${
+                      currentView === 'practices-all' ? 'text-[#2C3E50] underline underline-offset-4' : 'text-[#798696] group-hover:text-[#1C242E]'
+                    }`}>
                       Практики бюро
                     </span>
                     <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       ({PRACTICES_DATA.length})
                     </span>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isPracticesOpen ? 'rotate-180 text-[#2C3E50]' : ''
-                    }`}
-                  />
-                </button>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsPracticesOpen(!isPracticesOpen)}
+                    aria-label="Развернуть список практик"
+                    className="p-1 text-[#798696] hover:text-[#2C3E50] cursor-pointer"
+                  >
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        isPracticesOpen ? 'rotate-180 text-[#2C3E50]' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
 
                 {isPracticesOpen && (
                   <ul className="mt-3 flex flex-col divide-y divide-[#D5CFBF]/60 pt-1">
@@ -767,27 +940,39 @@ export default function V27Page() {
                 )}
               </div>
 
-              {/* 2. КОМАНДА БЮРО (Спойлер скрыть / раскрыть: все 8 человек) */}
+              {/* 2. КОМАНДА БЮРО: Кликая по названию — сразу открываем страницу команды из 8 человек справа */}
               <div className="py-3">
-                <button
-                  type="button"
-                  onClick={() => setIsTeamOpen(!isTeamOpen)}
-                  className="w-full flex items-center justify-between py-1 text-left group cursor-pointer focus:outline-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
+                <div className="w-full flex items-center justify-between py-1">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo('team-all')}
+                    className={`flex items-center gap-2 group cursor-pointer text-left ${
+                      currentView === 'team-all' ? 'text-[#2C3E50]' : ''
+                    }`}
+                  >
+                    <span className={`font-v27-mono text-[11px] tracking-[0.16em] uppercase font-semibold transition-colors ${
+                      currentView === 'team-all' ? 'text-[#2C3E50] underline underline-offset-4' : 'text-[#798696] group-hover:text-[#1C242E]'
+                    }`}>
                       Команда бюро
                     </span>
                     <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       ({TEAM_MEMBERS_FULL.length})
                     </span>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isTeamOpen ? 'rotate-180 text-[#2C3E50]' : ''
-                    }`}
-                  />
-                </button>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsTeamOpen(!isTeamOpen)}
+                    aria-label="Развернуть список команды"
+                    className="p-1 text-[#798696] hover:text-[#2C3E50] cursor-pointer"
+                  >
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        isTeamOpen ? 'rotate-180 text-[#2C3E50]' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
 
                 {isTeamOpen && (
                   <ul className="mt-3 flex flex-col divide-y divide-[#D5CFBF]/60 pt-1">
@@ -795,7 +980,7 @@ export default function V27Page() {
                       <li key={member.id}>
                         <button
                           type="button"
-                          onClick={() => navigateTo('overview')}
+                          onClick={() => navigateTo('team-all')}
                           className="w-full text-left grid grid-cols-[24px_1fr] gap-3 items-baseline py-2 hover:pl-1 transition-all duration-150 cursor-pointer"
                         >
                           <span className="font-v27-mono text-[10px] text-[#798696]">
@@ -816,56 +1001,52 @@ export default function V27Page() {
                 )}
               </div>
 
-              {/* 3. УСПЕШНЫЕ КЕЙСЫ (Спойлер с 3 подпунктами) */}
+              {/* 3. УСПЕШНЫЕ КЕЙСЫ: Кликая по названию — сразу открываем страницу кейсов справа */}
               <div className="py-3">
-                <button
-                  type="button"
-                  onClick={() => setIsCasesOpen(!isCasesOpen)}
-                  className="w-full flex items-center justify-between py-1 text-left group cursor-pointer focus:outline-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-semibold group-hover:text-[#1C242E] transition-colors">
+                <div className="w-full flex items-center justify-between py-1">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo('cases-catalog')}
+                    className={`flex items-center gap-2 group cursor-pointer text-left ${
+                      currentView === 'cases-catalog' ? 'text-[#2C3E50]' : ''
+                    }`}
+                  >
+                    <span className={`font-v27-mono text-[11px] tracking-[0.16em] uppercase font-semibold transition-colors ${
+                      currentView === 'cases-catalog' ? 'text-[#2C3E50] underline underline-offset-4' : 'text-[#798696] group-hover:text-[#1C242E]'
+                    }`}>
                       Успешные кейсы
                     </span>
                     <span className="font-v27-mono text-[10px] text-[#2C3E50] font-bold">
                       (100+)
                     </span>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-[#798696] transition-transform duration-200 ${
-                      isCasesOpen ? 'rotate-180 text-[#2C3E50]' : ''
-                    }`}
-                  />
-                </button>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsCasesOpen(!isCasesOpen)}
+                    aria-label="Развернуть подкатегории кейсов"
+                    className="p-1 text-[#798696] hover:text-[#2C3E50] cursor-pointer"
+                  >
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        isCasesOpen ? 'rotate-180 text-[#2C3E50]' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
 
                 {isCasesOpen && (
-                  <div className="mt-3 flex flex-col space-y-2 pt-1 pl-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveCaseCategory('all');
-                        navigateTo('cases-catalog');
-                      }}
-                      className={`text-left font-v27-display text-[15px] py-1.5 px-2 rounded-sm transition-colors flex items-center justify-between cursor-pointer ${
-                        currentView === 'cases-catalog' && activeCaseCategory === 'all'
-                          ? 'bg-[#2C3E50]/10 text-[#2C3E50] font-bold'
-                          : 'text-[#485464] hover:text-[#1C242E]'
-                      }`}
-                    >
-                      <span>Все прецеденты бюро</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-[#2C3E50]" />
-                    </button>
-
+                  <div className="mt-3 flex flex-col space-y-1.5 pt-1 pl-1">
                     <button
                       type="button"
                       onClick={() => {
                         setActiveCaseCategory('arbitration');
                         navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                      className={`text-left text-xs font-v27-mono py-1 px-2 rounded-xs transition-colors flex items-center justify-between cursor-pointer ${
                         currentView === 'cases-catalog' && activeCaseCategory === 'arbitration'
-                          ? 'text-[#2C3E50] font-bold'
-                          : 'text-[#798696] hover:text-[#1C242E]'
+                          ? 'bg-[#2C3E50] text-white font-bold'
+                          : 'text-[#485464] hover:text-[#1C242E] hover:bg-[#D5CFBF]/50'
                       }`}
                     >
                       <span>— Арбитражные процессы</span>
@@ -878,10 +1059,10 @@ export default function V27Page() {
                         setActiveCaseCategory('bankruptcy');
                         navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                      className={`text-left text-xs font-v27-mono py-1 px-2 rounded-xs transition-colors flex items-center justify-between cursor-pointer ${
                         currentView === 'cases-catalog' && activeCaseCategory === 'bankruptcy'
-                          ? 'text-[#2C3E50] font-bold'
-                          : 'text-[#798696] hover:text-[#1C242E]'
+                          ? 'bg-[#2C3E50] text-white font-bold'
+                          : 'text-[#485464] hover:text-[#1C242E] hover:bg-[#D5CFBF]/50'
                       }`}
                     >
                       <span>— Банкротство и субсидиарка</span>
@@ -894,10 +1075,10 @@ export default function V27Page() {
                         setActiveCaseCategory('liquidation');
                         navigateTo('cases-catalog');
                       }}
-                      className={`text-left text-xs font-v27-mono py-1 px-2 transition-colors flex items-center justify-between cursor-pointer ${
+                      className={`text-left text-xs font-v27-mono py-1 px-2 rounded-xs transition-colors flex items-center justify-between cursor-pointer ${
                         currentView === 'cases-catalog' && activeCaseCategory === 'liquidation'
-                          ? 'text-[#2C3E50] font-bold'
-                          : 'text-[#798696] hover:text-[#1C242E]'
+                          ? 'bg-[#2C3E50] text-white font-bold'
+                          : 'text-[#485464] hover:text-[#1C242E] hover:bg-[#D5CFBF]/50'
                       }`}
                     >
                       <span>— Ликвидация и споры долей</span>
@@ -917,7 +1098,7 @@ export default function V27Page() {
                   }`}
                 >
                   <span className={`font-v27-mono text-[11px] tracking-[0.16em] uppercase font-semibold transition-colors ${
-                    currentView === 'blog-catalog' ? 'text-[#2C3E50]' : 'text-[#798696] group-hover:text-[#1C242E]'
+                    currentView === 'blog-catalog' ? 'text-[#2C3E50] underline underline-offset-4' : 'text-[#798696] group-hover:text-[#1C242E]'
                   }`}>
                     Блог и медиа
                   </span>
@@ -984,13 +1165,14 @@ export default function V27Page() {
               
               {/* Previous page (animating OUT) */}
               {isAnimating && (
-                <div className={`pt-page ${getOutClass()}`}>
+                <div key={`prev-${prevView}`} className={`pt-page ${getOutClass()}`}>
                   {renderViewContent(prevView)}
                 </div>
               )}
 
               {/* Current page (animating IN or static current) */}
               <div
+                key={`current-${currentView}`}
                 ref={currentPageRef}
                 className={`pt-page ${isAnimating ? getInClass() : 'pt-page-current'}`}
               >
@@ -1012,7 +1194,7 @@ export default function V27Page() {
                   <SlidersHorizontal className="w-3.5 h-3.5 text-[#8BE69C]" />
                   <span>3D Эффект перехода:</span>
                   <span className="text-[#8BE69C] uppercase font-bold">
-                    {activeEffect === 'cube-right' && 'Куб вправо (3D)'}
+                    {activeEffect === 'cube-right' && 'Куб вправо (3D ⭐)'}
                     {activeEffect === 'cube-left' && 'Куб влево (3D)'}
                     {activeEffect === 'cube-up' && 'Куб вверх (3D)'}
                     {activeEffect === 'cube-down' && 'Куб вниз (3D)'}
@@ -1048,8 +1230,8 @@ export default function V27Page() {
                           onClick={() => {
                             setActiveEffect(item.id as TransitionEffect);
                             setIsWidgetOpen(false);
-                            // Test transition to current or next view
-                            const next = currentView === 'overview' ? 'cases-catalog' : 'overview';
+                            // Test transition to another view
+                            const next = currentView === 'practices-all' ? 'cases-catalog' : 'practices-all';
                             navigateTo(next);
                           }}
                           className={`w-full text-left px-2.5 py-1.5 rounded transition-colors flex items-center justify-between cursor-pointer ${
@@ -1069,7 +1251,7 @@ export default function V27Page() {
                       <button
                         type="button"
                         onClick={() => {
-                          const next = currentView === 'overview' ? 'cases-catalog' : 'overview';
+                          const next = currentView === 'practices-all' ? 'cases-catalog' : 'practices-all';
                           navigateTo(next);
                         }}
                         className="text-[#8BE69C] hover:underline flex items-center gap-1 cursor-pointer font-bold"
