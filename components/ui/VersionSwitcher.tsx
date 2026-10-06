@@ -4,14 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 
 interface VersionSwitcherProps {
-  currentVersion: '2.0' | '2.5' | '2.6';
+  currentVersion: '2.0' | '2.5' | '2.6' | '2.7';
 }
 
 export default function VersionSwitcher({ currentVersion }: VersionSwitcherProps) {
-  const versions: Array<{ id: '2.0' | '2.5' | '2.6'; label: string; href: string }> = [
+  const versions: Array<{ id: '2.0' | '2.5' | '2.6' | '2.7'; label: string; href: string }> = [
     { id: '2.0', label: 'v2.0 (Классика)', href: '/v2' },
     { id: '2.5', label: 'v2.5 (Heron 3D)', href: '/v2-5' },
     { id: '2.6', label: 'v2.6 (Сетка 20/40/40)', href: '/' },
+    { id: '2.7', label: 'v2.7 (Split Editorial)', href: '/v2-7' },
   ];
 
   return (
