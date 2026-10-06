@@ -70,21 +70,11 @@ export default function V26CasesSection() {
                   key={item.id}
                   className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[360px]"
                 >
-                  {/* Top Header Block with crisp divider line */}
+                  {/* Top Header Block with crisp divider line: Clean titles & amounts only */}
                   <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    <div className="flex items-center justify-between text-xs font-mono text-[#64748B] mb-3">
-                      <span>СУДЕБНЫЙ ПРЕЦЕДЕНТ</span>
-                      <span>{item.date}</span>
-                    </div>
-
                     {item.claimAmount && (
-                      <div className="mb-2">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block mb-0.5">
-                          Защищённый бюджет:
-                        </span>
-                        <span className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight">
-                          {item.claimAmount}
-                        </span>
+                      <div className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
+                        {item.claimAmount}
                       </div>
                     )}
 
@@ -123,13 +113,13 @@ export default function V26CasesSection() {
                     </div>
                   </div>
 
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
+                  {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on the left, Date on the right */}
                   <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
                     <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
                       {getPracticeTitle(item.practiceId)}
                     </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
-                      АРБИТРАЖНЫЙ СУД // kad.arbitr.ru
+                    <div className="px-4 py-2.5 text-[#64748B] text-[11px] flex items-center font-mono">
+                      {item.date}
                     </div>
                   </div>
                 </div>
@@ -143,21 +133,11 @@ export default function V26CasesSection() {
                   key={item.id}
                   className="bg-white border border-[#19212C]/15 rounded-sm flex flex-col justify-between shadow-sm hover:border-[#C5A059] transition-all group aspect-auto min-h-[360px]"
                 >
-                  {/* Top Header Block with crisp divider line */}
+                  {/* Top Header Block with crisp divider line: Clean titles & amounts only */}
                   <div className="p-6 sm:p-7 pb-5 border-b border-[#19212C]/10">
-                    <div className="flex items-center justify-between text-xs font-mono text-[#64748B] mb-3">
-                      <span>СУДЕБНЫЙ ПРЕЦЕДЕНТ</span>
-                      <span>{item.date}</span>
-                    </div>
-
                     {item.claimAmount && (
-                      <div className="mb-2">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block mb-0.5">
-                          Защищённый бюджет:
-                        </span>
-                        <span className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight">
-                          {item.claimAmount}
-                        </span>
+                      <div className="font-heading text-3xl sm:text-4xl font-bold text-[#0F172A] tracking-tight mb-2">
+                        {item.claimAmount}
                       </div>
                     )}
 
@@ -196,13 +176,13 @@ export default function V26CasesSection() {
                     </div>
                   </div>
 
-                  {/* Bottom Line & Bottom-Left Nadzagolovok Box (like Reference 2) */}
+                  {/* Bottom Line & Bottom-Left Nadzagolovok Box: Category on the left, Date on the right */}
                   <div className="border-t border-[#19212C]/15 flex items-stretch font-mono text-[11px]">
                     <div className="border-r border-[#19212C]/15 px-4 py-2.5 text-[#C5A059] font-bold uppercase tracking-wider bg-[#F8FAFC]">
                       {getPracticeTitle(item.practiceId)}
                     </div>
-                    <div className="px-4 py-2.5 text-[#64748B] text-[10px] flex items-center">
-                      АРБИТРАЖНЫЙ СУД // kad.arbitr.ru
+                    <div className="px-4 py-2.5 text-[#64748B] text-[11px] flex items-center font-mono">
+                      {item.date}
                     </div>
                   </div>
                 </div>
