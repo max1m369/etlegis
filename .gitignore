@@ -50,3 +50,8 @@ admin-panel/
 # archives
 *.tar.gz
 *.zip
+
+# temporary render artifacts
+*.blend*
+render_*.png*
+test_*.png

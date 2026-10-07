@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+export function generateStaticParams() {
+  return [
+    { path: ['leads'] },
+    { path: ['settings'] }
+  ];
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const { path } = await params;
   const endpoint = path.join('/');
-  const search = request.nextUrl.search;
+  let search = '';
+  try {
+    const url = new URL(request.url);
+    search = url.search;
+  } catch {}
   const payloadUrl = process.env.PAYLOAD_URL || 'http://localhost:3001';
   const targetUrl = `${payloadUrl}/api/payload/${endpoint}${search}`;
 

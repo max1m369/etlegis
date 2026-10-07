@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 export interface FaviconSettings {
   preset: 'silver' | 'gold' | 'brass' | 'graphite' | 'custom';
   customColor: string;

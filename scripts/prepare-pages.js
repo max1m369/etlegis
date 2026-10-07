@@ -19,6 +19,7 @@ const replacements = [
   { from: /(["'])\/footer-bg\.webp/g, to: '$1/etlegis/footer-bg.webp' },
   { from: /(["'])\/footer-bg-hflip\.webp/g, to: '$1/etlegis/footer-bg-hflip.webp' },
   { from: /(["'])\/team\//g, to: '$1/etlegis/team/' },
+  { from: /(["'])\/previews\//g, to: '$1/etlegis/previews/' },
   { from: /(["'])\/assets\//g, to: '$1/etlegis/assets/' },
   { from: /(["'])\/favicon\.ico/g, to: '$1/etlegis/favicon.ico' },
 ];

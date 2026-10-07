@@ -126,6 +126,7 @@ export default function V27Page() {
   // Container refs for scrollable pages
   const currentPageRef = useRef<HTMLDivElement>(null);
   const practicesScrollRef = useRef<HTMLDivElement>(null);
+  const teamScrollRef = useRef<HTMLDivElement>(null);
 
   // Trigger 3D Page Transition
   const navigateTo = (newView: string) => {
@@ -186,25 +187,26 @@ export default function V27Page() {
     // -------------------------------------------------------------
     if (view === 'practices-all') {
       return (
-        <div className="pt-page-scrollable h-full p-8 sm:p-12 lg:p-14 flex flex-col justify-between overflow-x-hidden">
-          <div>
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-[#D5CFBF]">
+        <div className="h-full w-full p-6 sm:p-10 lg:p-12 flex flex-col justify-between overflow-hidden">
+          {/* Header */}
+          <div className="shrink-0 mb-4 pb-3 border-b border-[#D5CFBF]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
+                <div className="font-v27-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
                   <span className="w-6 h-px bg-[#2C3E50]" />
                   <span>Шесть ключевых направлений · Адвокатское бюро ETLEGIS</span>
                 </div>
-                <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E] mt-2">
+                <h2 className="font-v27-display font-medium text-2xl sm:text-4xl lg:text-[42px] text-[#1C242E] mt-1 leading-tight">
                   Практики бюро
                 </h2>
               </div>
 
-              {/* Layout Switcher (Горизонтальный скролл / Сетка) */}
-              <div className="flex items-center gap-2 bg-[#ECE8E0] p-1 rounded-sm border border-[#D5CFBF]">
+              {/* Layout Switcher */}
+              <div className="flex items-center gap-1.5 bg-[#ECE8E0] p-1 rounded-sm border border-[#D5CFBF]">
                 <button
                   type="button"
                   onClick={() => setPracticesLayout('horizontal')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
                     practicesLayout === 'horizontal' ? 'bg-[#2C3E50] text-white shadow-sm' : 'text-[#485464] hover:text-[#1C242E]'
                   }`}
                 >
@@ -214,7 +216,7 @@ export default function V27Page() {
                 <button
                   type="button"
                   onClick={() => setPracticesLayout('grid')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-v27-mono uppercase font-semibold transition-colors cursor-pointer ${
                     practicesLayout === 'grid' ? 'bg-[#2C3E50] text-white shadow-sm' : 'text-[#485464] hover:text-[#1C242E]'
                   }`}
                 >
@@ -224,24 +226,25 @@ export default function V27Page() {
               </div>
             </div>
 
-            <p className="text-base sm:text-lg text-[#485464] max-w-[62ch] leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm text-[#485464] max-w-[65ch] leading-relaxed mt-2">
               Каждая практика — отдельный подход и закреплённый партнёр. Листайте карточки горизонтально вправо: колесом мыши, тачпадом или стрелками.
             </p>
+          </div>
 
-            {/* Practices Presentation */}
+          {/* Practices Cards — Flex-1 to fit strictly inside viewport without vertical scroll */}
+          <div className="flex-1 min-h-0 flex flex-col justify-center">
             {practicesLayout === 'horizontal' ? (
-              <div className="relative -mr-8 sm:-mr-12 lg:-mr-14">
+              <div className="relative -mr-6 sm:-mr-10 lg:-mr-12 flex-1 flex flex-col justify-between min-h-0">
                 <div
                   ref={practicesScrollRef}
                   onWheel={(e) => {
                     if (practicesScrollRef.current) {
-                      // Allow natural horizontal scroll with standard mouse wheel
                       if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
                         e.currentTarget.scrollLeft += e.deltaY * 1.2;
                       }
                     }
                   }}
-                  className="horizontal-scroll-container gap-6 pb-6 pt-2 pr-14 select-none"
+                  className="horizontal-scroll-container gap-5 py-2 pr-12 select-none flex-1 min-h-0 items-stretch"
                   style={{
                     overflowX: 'auto',
                     overflowY: 'hidden',
@@ -253,50 +256,51 @@ export default function V27Page() {
                     <div
                       key={p.id}
                       onClick={() => navigateTo(`practice-${p.id}`)}
-                      className="horizontal-scroll-item w-[420px] sm:w-[480px] lg:w-[500px] min-h-[460px] sm:min-h-[500px] bg-[#EFECE4] border border-[#D5CFBF] p-8 sm:p-10 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-2xl transition-all cursor-pointer group shrink-0"
+                      className="horizontal-scroll-item w-[360px] sm:w-[420px] lg:w-[460px] max-h-full bg-[#EFECE4] border border-[#D5CFBF] p-6 sm:p-8 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-xl transition-all cursor-pointer group shrink-0"
                       style={{ scrollSnapAlign: 'start' }}
                     >
                       <div>
-                        <div className="flex items-baseline justify-between mb-6 pb-4 border-b border-[#D5CFBF]">
-                          <span className="font-v27-mono text-xs font-bold tracking-[0.14em] text-[#798696] uppercase">
-                            Practice №{p.no}
+                        <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[#D5CFBF]">
+                          <span className="font-v27-mono text-[11px] font-bold tracking-[0.14em] text-[#798696] uppercase">
+                            Практика №{p.no}
                           </span>
-                          <span className="font-v27-mono text-sm font-bold text-[#2C3E50]">
+                          <span className="font-v27-mono text-xs font-bold text-[#2C3E50]">
                             {p.count}
                           </span>
                         </div>
 
-                        <h3 className="font-v27-display text-3xl sm:text-[34px] font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-5 leading-[1.12] tracking-[-0.015em]">
+                        <h3 className="font-v27-display text-2xl sm:text-[28px] font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-[1.18] tracking-[-0.015em]">
                           {p.fullTitle}
                         </h3>
 
-                        <p className="text-[16px] leading-[1.65] text-[#485464] mb-6">
+                        <p className="text-xs sm:text-sm leading-[1.6] text-[#485464] line-clamp-4 sm:line-clamp-5">
                           {p.lead}
                         </p>
                       </div>
 
-                      <div className="pt-5 border-t border-[#D5CFBF] flex items-center justify-between font-v27-mono text-xs uppercase tracking-wider font-bold text-[#5A738E] group-hover:text-[#2C3E50] transition-colors">
-                        <span>Подробный процессуальный регламент</span>
+                      <div className="pt-4 border-t border-[#D5CFBF] flex items-center justify-between font-v27-mono text-[11px] uppercase tracking-wider font-bold text-[#5A738E] group-hover:text-[#2C3E50] transition-colors mt-4">
+                        <span>Подробный регламент</span>
                         <span className="text-base group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between text-xs font-v27-mono text-[#798696] mt-3 pr-14">
+                {/* Subtitle & Controls */}
+                <div className="flex items-center justify-between text-[11px] font-v27-mono text-[#798696] pt-2 pr-12 shrink-0">
                   <span className="flex items-center gap-2">
                     <span className="inline-block w-2 h-2 rounded-full bg-[#2C3E50]" />
-                    Карточки уходят за край экрана · Крутите колесо мыши или свайпайте для скролла вправо →
+                    Карточки уходят за край экрана · Колесо мыши / стрелки для скролла вправо →
                   </span>
-                  <div className="hidden sm:flex items-center gap-2 text-[#2C3E50] font-bold">
+                  <div className="flex items-center gap-2 text-[#2C3E50] font-bold">
                     <button
                       type="button"
                       onClick={() => {
                         if (practicesScrollRef.current) {
-                          practicesScrollRef.current.scrollBy({ left: -460, behavior: 'smooth' });
+                          practicesScrollRef.current.scrollBy({ left: -420, behavior: 'smooth' });
                         }
                       }}
-                      className="px-3 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
+                      className="px-2.5 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
                     >
                       ←
                     </button>
@@ -304,10 +308,10 @@ export default function V27Page() {
                       type="button"
                       onClick={() => {
                         if (practicesScrollRef.current) {
-                          practicesScrollRef.current.scrollBy({ left: 460, behavior: 'smooth' });
+                          practicesScrollRef.current.scrollBy({ left: 420, behavior: 'smooth' });
                         }
                       }}
-                      className="px-3 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
+                      className="px-2.5 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
                     >
                       →
                     </button>
@@ -315,31 +319,31 @@ export default function V27Page() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-full pr-1">
                 {PRACTICES_DATA.map((p) => (
                   <div
                     key={p.id}
                     onClick={() => navigateTo(`practice-${p.id}`)}
-                    className="bg-[#EFECE4] border border-[#D5CFBF] p-7 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all cursor-pointer group min-h-[380px]"
+                    className="bg-[#EFECE4] border border-[#D5CFBF] p-5 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all cursor-pointer group"
                   >
                     <div>
-                      <div className="flex items-baseline justify-between mb-3 pb-2 border-b border-[#D5CFBF]">
-                        <span className="font-v27-mono text-xs font-bold text-[#798696]">
+                      <div className="flex items-baseline justify-between mb-2 pb-1.5 border-b border-[#D5CFBF]">
+                        <span className="font-v27-mono text-[10px] font-bold text-[#798696]">
                           №{p.no}
                         </span>
-                        <span className="font-v27-mono text-xs font-bold text-[#2C3E50]">
+                        <span className="font-v27-mono text-[10px] font-bold text-[#2C3E50]">
                           {p.count}
                         </span>
                       </div>
-                      <h3 className="font-v27-display text-2xl font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-3 leading-snug">
+                      <h3 className="font-v27-display text-lg font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-2 leading-snug">
                         {p.fullTitle}
                       </h3>
-                      <p className="text-sm text-[#485464] leading-relaxed mb-4">
+                      <p className="text-xs text-[#485464] leading-relaxed line-clamp-3">
                         {p.lead}
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-[#D5CFBF] flex items-center justify-between text-xs font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold">
+                    <div className="pt-2 border-t border-[#D5CFBF] flex items-center justify-between text-[10px] font-v27-mono text-[#5A738E] group-hover:text-[#2C3E50] font-bold mt-2">
                       <span>Открыть практику</span>
                       <span>→</span>
                     </div>
@@ -349,11 +353,12 @@ export default function V27Page() {
             )}
           </div>
 
-          <div className="pt-6 mt-6 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-4">
+          {/* Footer bar */}
+          <div className="pt-3 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-3 shrink-0">
             <button
               type="button"
               onClick={() => openModal('Консультация по практикам бюро')}
-              className="py-3 px-6 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
+              className="py-2.5 px-5 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer"
             >
               Запросить правовой анализ ситуации →
             </button>
@@ -376,9 +381,9 @@ export default function V27Page() {
       const pracId = view.replace('practice-', '');
       const prac = PRACTICES_DATA.find(p => p.id === pracId) || PRACTICES_DATA[0];
       return (
-        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-20 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
+        <div className="h-full w-full p-6 sm:p-10 lg:p-12 flex flex-col justify-between overflow-hidden">
+          <div className="flex-1 overflow-y-auto pr-2">
+            <div className="flex items-center justify-between mb-6 pb-3 border-b border-[#D5CFBF]">
               <button
                 type="button"
                 onClick={() => navigateTo('practices-all')}
@@ -391,27 +396,27 @@ export default function V27Page() {
               </span>
             </div>
 
-            <div className="flex items-baseline justify-between gap-6 mb-6">
-              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl lg:text-6xl text-[#1C242E] leading-[1.05] tracking-[-0.02em]">
+            <div className="flex items-baseline justify-between gap-6 mb-4">
+              <h2 className="font-v27-display font-medium text-2xl sm:text-4xl lg:text-5xl text-[#1C242E] leading-[1.05] tracking-[-0.02em]">
                 {prac.fullTitle}
               </h2>
-              <div className="font-v27-display text-4xl sm:text-5xl text-[#2C3E50] text-right shrink-0">
+              <div className="font-v27-display text-3xl sm:text-4xl text-[#2C3E50] text-right shrink-0">
                 {prac.count.split(' ')[0]}
-                <small className="block font-v27-mono text-[10px] tracking-[0.14em] uppercase text-[#798696] font-medium mt-1">
+                <small className="block font-v27-mono text-[9px] tracking-[0.14em] uppercase text-[#798696] font-medium mt-0.5">
                   дел с 2019
                 </small>
               </div>
             </div>
 
-            <div className="space-y-6 max-w-[62ch] my-10">
-              <p className="text-lg sm:text-xl leading-[1.6] text-[#1C242E] font-medium">
+            <div className="space-y-4 max-w-[62ch] my-6">
+              <p className="text-base sm:text-lg leading-[1.6] text-[#1C242E] font-medium">
                 {prac.lead}
               </p>
-              <p className="text-base sm:text-lg leading-[1.65] text-[#485464]">
+              <p className="text-sm sm:text-base leading-[1.65] text-[#485464]">
                 {prac.details}
               </p>
-              <div className="p-6 bg-[#ECE8E0] border-l-4 border-[#2C3E50] text-base italic text-[#485464] leading-[1.6]">
-                <strong className="block not-italic font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#2C3E50] font-bold mb-2">
+              <div className="p-5 bg-[#ECE8E0] border-l-4 border-[#2C3E50] text-sm sm:text-base italic text-[#485464] leading-[1.6]">
+                <strong className="block not-italic font-v27-mono text-[10px] tracking-[0.16em] uppercase text-[#2C3E50] font-bold mb-1.5">
                   Процессуальный регламент ведения:
                 </strong>
                 {prac.howWeWork}
@@ -419,11 +424,11 @@ export default function V27Page() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-[#D5CFBF] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="pt-4 border-t border-[#D5CFBF] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
             <button
               type="button"
               onClick={() => openModal(`Консультация: ${prac.fullTitle}`)}
-              className="py-3.5 px-6 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
+              className="py-2.5 px-5 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer"
             >
               Обсудить судебную защиту →
             </button>
@@ -440,74 +445,147 @@ export default function V27Page() {
     }
 
     // -------------------------------------------------------------
-    // 3. TEAM VIEW (Все 8 адвокатов и партнёров бюро)
+    // 3. TEAM VIEW (Все 8 адвокатов — ГОРИЗОНТАЛЬНАЯ ЛЕНТА ЗА ПРЕДЕЛЫ ВЬЮПОРТА)
     // -------------------------------------------------------------
     if (view === 'team-all') {
       return (
-        <div className="pt-page-scrollable h-full p-8 sm:p-14 lg:p-16">
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#D5CFBF]">
-            <div>
-              <div className="font-v27-mono text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
-                <span className="w-6 h-px bg-[#2C3E50]" />
-                <span>Партнёрская модель управления · Адвокатское бюро ETLEGIS</span>
+        <div className="h-full w-full p-6 sm:p-10 lg:p-12 flex flex-col justify-between overflow-hidden">
+          {/* Header */}
+          <div className="shrink-0 mb-4 pb-3 border-b border-[#D5CFBF]">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-v27-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase text-[#798696] font-medium flex items-center gap-2">
+                  <span className="w-6 h-px bg-[#2C3E50]" />
+                  <span>Партнёрская модель управления · Адвокатское бюро ETLEGIS</span>
+                </div>
+                <h2 className="font-v27-display font-medium text-2xl sm:text-4xl lg:text-[42px] text-[#1C242E] mt-1 leading-tight">
+                  Команда бюро
+                </h2>
               </div>
-              <h2 className="font-v27-display font-medium text-3xl sm:text-5xl text-[#1C242E] mt-2">
-                Команда бюро
-              </h2>
+              <span className="font-v27-mono text-xs uppercase tracking-wider text-[#2C3E50] font-bold">
+                8 ведущих адвокатов
+              </span>
             </div>
-            <span className="font-v27-mono text-xs uppercase tracking-wider text-[#2C3E50] font-bold">
-              8 ведущих адвокатов
-            </span>
+
+            <p className="text-xs sm:text-sm text-[#485464] max-w-[65ch] leading-relaxed mt-2">
+              Ваше дело ведёт партнёр лично — от первой консультации до Верховного Суда РФ. Листайте вправо: адвокаты уходят за вьюпорт.
+            </p>
           </div>
 
-          <p className="text-base sm:text-lg text-[#485464] max-w-[60ch] leading-relaxed mb-10">
-            Ваше дело ведёт партнёр лично — от первой консультации до вынесения решения в Верховном Суде РФ. Мы не передаём процессы младшим юристам.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM_MEMBERS_FULL.map((member, idx) => (
-              <div
-                key={member.id}
-                className="bg-[#EFECE4] border border-[#D5CFBF] p-5 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-md transition-all group"
-              >
-                <div>
-                  <div className="relative aspect-[3/4] w-full bg-[#D5CFBF]/40 overflow-hidden mb-4 border border-[#D5CFBF]">
-                    <Image
-                      src={member.photo}
-                      alt={member.name}
-                      fill
-                      className="object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
-                    <div className="absolute top-2 left-2 bg-[#1C242E]/80 backdrop-blur-xs text-white font-v27-mono text-[10px] px-2 py-0.5">
-                      0{idx + 1}
+          {/* Horizontal Lawyers Ribbon overflowing to the right */}
+          <div className="relative -mr-6 sm:-mr-10 lg:-mr-12 flex-1 flex flex-col justify-between min-h-0">
+            <div
+              ref={teamScrollRef}
+              onWheel={(e) => {
+                if (teamScrollRef.current) {
+                  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                    e.currentTarget.scrollLeft += e.deltaY * 1.2;
+                  }
+                }
+              }}
+              className="horizontal-scroll-container gap-5 py-2 pr-12 select-none flex-1 min-h-0 items-stretch"
+              style={{
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                display: 'flex',
+                scrollSnapType: 'x mandatory',
+              }}
+            >
+              {TEAM_MEMBERS_FULL.map((member, idx) => (
+                <div
+                  key={member.id}
+                  className="horizontal-scroll-item w-[280px] sm:w-[320px] lg:w-[340px] max-h-full bg-[#EFECE4] border border-[#D5CFBF] p-5 flex flex-col justify-between hover:border-[#2C3E50] hover:shadow-xl transition-all group shrink-0"
+                  style={{ scrollSnapAlign: 'start' }}
+                >
+                  <div className="flex-1 flex flex-col">
+                    <div className="relative aspect-[4/3] sm:aspect-[14/11] w-full bg-[#D5CFBF]/40 overflow-hidden mb-3 border border-[#D5CFBF] shrink-0">
+                      <Image
+                        src={member.photo}
+                        alt={member.name}
+                        fill
+                        className="object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-300"
+                      />
+                      <div className="absolute top-2 left-2 bg-[#1C242E]/80 backdrop-blur-xs text-white font-v27-mono text-[9px] px-2 py-0.5">
+                        0{idx + 1}
+                      </div>
                     </div>
+
+                    <h3 className="font-v27-display text-lg font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-1 leading-snug">
+                      {member.name}
+                    </h3>
+                    <p className="font-v27-mono text-[10px] text-[#2C3E50] font-bold mb-1 uppercase tracking-wider">
+                      {member.role}
+                    </p>
+                    <p className="text-[11px] text-[#798696] mb-2 font-medium">
+                      {member.experience}
+                    </p>
+                    <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed">
+                      {member.specialization}
+                    </p>
                   </div>
 
-                  <h3 className="font-v27-display text-lg font-medium text-[#1C242E] group-hover:text-[#2C3E50] transition-colors mb-1 leading-snug">
-                    {member.name}
-                  </h3>
-                  <p className="font-v27-mono text-[11px] text-[#2C3E50] font-semibold mb-2">
-                    {member.role}
-                  </p>
-                  <p className="text-xs text-[#798696] mb-3 font-medium">
-                    {member.experience}
-                  </p>
-                  <p className="text-xs text-[#485464] line-clamp-3 leading-relaxed">
-                    {member.specialization}
-                  </p>
+                  <div className="mt-3 pt-3 border-t border-[#D5CFBF] shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => openModal(`Консультация с адвокатом: ${member.name}`)}
+                      className="w-full py-2 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white text-[#1C242E] font-v27-mono text-[10px] uppercase tracking-wider font-bold transition-colors cursor-pointer text-center"
+                    >
+                      Записаться на приём
+                    </button>
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="mt-4 pt-3 border-t border-[#D5CFBF]">
-                  <button
-                    type="button"
-                    onClick={() => openModal(`Консультация с адвокатом: ${member.name}`)}
-                    className="w-full py-2 bg-[#ECE8E0] hover:bg-[#2C3E50] hover:text-white text-[#1C242E] font-v27-mono text-[10px] uppercase tracking-wider font-bold transition-colors cursor-pointer text-center"
-                  >
-                    Записаться на приём
-                  </button>
-                </div>
+            {/* Subtitle & Controls for Team */}
+            <div className="flex items-center justify-between text-[11px] font-v27-mono text-[#798696] pt-2 pr-12 shrink-0">
+              <span className="flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-[#2C3E50]" />
+                8 адвокатов уходят за край экрана · Колесо мыши / стрелки для скролла влево-вправо →
+              </span>
+              <div className="flex items-center gap-2 text-[#2C3E50] font-bold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (teamScrollRef.current) {
+                      teamScrollRef.current.scrollBy({ left: -340, behavior: 'smooth' });
+                    }
+                  }}
+                  className="px-2.5 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (teamScrollRef.current) {
+                      teamScrollRef.current.scrollBy({ left: 340, behavior: 'smooth' });
+                    }
+                  }}
+                  className="px-2.5 py-1 bg-[#ECE8E0] hover:bg-[#D5CFBF] border border-[#D5CFBF] cursor-pointer"
+                >
+                  →
+                </button>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {/* Footer bar */}
+          <div className="pt-3 border-t border-[#D5CFBF] flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => openModal('Назначить встречу с партнёром бюро')}
+              className="py-2.5 px-5 bg-[#2C3E50] hover:bg-[#3D5A73] text-white font-v27-mono text-[11px] uppercase tracking-wider font-bold transition-colors cursor-pointer"
+            >
+              Назначить встречу с партнёром →
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo('practices-all')}
+              className="font-v27-mono text-xs uppercase tracking-wider text-[#5A738E] hover:text-[#2C3E50] font-semibold cursor-pointer"
+            >
+              Перейти к практикам бюро →
+            </button>
           </div>
         </div>
       );
