@@ -94,10 +94,11 @@ export default function Monument3D({
       try {
         const gltfLoader = new GLTFLoader();
         const hdrLoader = new HDRLoader();
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
         const [gltf, hdr] = await Promise.all([
-          gltfLoader.loadAsync('/monument.glb'),
-          hdrLoader.loadAsync('/assets/studio.hdr'),
+          gltfLoader.loadAsync(`${basePath}/monument.glb`),
+          hdrLoader.loadAsync(`${basePath}/assets/studio.hdr`),
         ]);
 
         if (destroyed || !scene || !renderer) return;

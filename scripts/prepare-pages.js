@@ -21,6 +21,7 @@ const replacements = [
   { from: /(["'])\/team\//g, to: '$1/etlegis/team/' },
   { from: /(["'])\/previews\//g, to: '$1/etlegis/previews/' },
   { from: /(["'])\/assets\//g, to: '$1/etlegis/assets/' },
+  { from: /(["'])\/monument\.glb/g, to: '$1/etlegis/monument.glb' },
   { from: /(["'])\/favicon\.ico/g, to: '$1/etlegis/favicon.ico' },
 ];
 
@@ -53,3 +54,13 @@ function processDirectory(dir) {
 
 processDirectory(outDir);
 console.log(`Updated paths in ${modifiedCount} exported files.`);
+
+// 3. Mirror static assets under out/etlegis so requests to /etlegis/assets/ and /etlegis/monument.glb resolve directly
+const etlegisOut = path.join(outDir, 'etlegis');
+if (!fs.existsSync(etlegisOut)) {
+  fs.mkdirSync(etlegisOut, { recursive: true });
+}
+const publicDir = path.join(__dirname, '..', 'public');
+fs.cpSync(publicDir, etlegisOut, { recursive: true });
+console.log('Mirrored public assets to out/etlegis/');
+
