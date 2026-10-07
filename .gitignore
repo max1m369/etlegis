@@ -1,0 +1,57 @@
+# dependencies
+/node_modules
+**/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+*.exe
+*.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+
+# ignore separate legacy subfolder
+EEE/
+
+# ignore admin-panel (excluded for static site repository)
+admin-panel/
+
+# archives
+*.tar.gz
+*.zip
+
+# temporary render artifacts
+*.blend*
+render_*.png*
+test_*.png

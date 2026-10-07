@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fapi\u002Fpayload\u002F[...path]","\u002Fblog\u002F[slug]","\u002Fcases\u002F[slug]","\u002Fpractices\u002F[slug]","\u002Fteam\u002F[slug]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
