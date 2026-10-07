@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <!-- Metallic Silver Base Gradient -->
+    <linearGradient id="silverBase" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="18%" stop-color="#E2E8F0"/>
+      <stop offset="48%" stop-color="#94A3B8"/>
+      <stop offset="72%" stop-color="#CBD5E1"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+
+    <!-- Mirrored 45-degree Specular Glare Shimmer Gradient (Top-Right to Bottom-Left) -->
+    <linearGradient id="glareShimmer" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="35%" stop-color="#FFFFFF" stop-opacity="0.15"/>
+      <stop offset="48%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="62%" stop-color="#FFFFFF" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+      <animateTransform
+        attributeName="gradientTransform"
+        type="translate"
+        values="2 -2; -2 2; -2 2"
+        keyTimes="0; 0.3; 1"
+        dur="10s"
+        repeatCount="indefinite"
+      />
+    </linearGradient>
+
+    <!-- Mask to keep glare strictly inside the monogram geometry -->
+    <mask id="monogramMask">
+      <path d="M113.4,31.3V11.9H35.8v19.4H12.5v81.5h81.5v-23.3h19.4v-19.4h-58.2v-11.7h58.2v-15.5h-58.2v-11.6h58.2ZM86.2,89.5v15.5H20.2V39h15.5v50.4h50.5v.1Z" fill="#FFFFFF"/>
+    </mask>
+  </defs>
+
+  <!-- Drop Shadow for 3D Relief -->
+  <path d="M113.4,31.3V11.9H35.8v19.4H12.5v81.5h81.5v-23.3h19.4v-19.4h-58.2v-11.7h58.2v-15.5h-58.2v-11.6h58.2ZM86.2,89.5v15.5H20.2V39h15.5v50.4h50.5v.1Z" fill="#CBD5E1" transform="translate(0, 1.5)" opacity="0.3"/>
+
+  <!-- Static Silver Base Monogram -->
+  <path d="M113.4,31.3V11.9H35.8v19.4H12.5v81.5h81.5v-23.3h19.4v-19.4h-58.2v-11.7h58.2v-15.5h-58.2v-11.6h58.2ZM86.2,89.5v15.5H20.2V39h15.5v50.4h50.5v.1Z" fill="url(#silverBase)"/>
+
+  <!-- Micro-bevel outline for crisp relief -->
+  <path d="M113.4,31.3V11.9H35.8v19.4H12.5v81.5h81.5v-23.3h19.4v-19.4h-58.2v-11.7h58.2v-15.5h-58.2v-11.6h58.2ZM86.2,89.5v15.5H20.2V39h15.5v50.4h50.5v.1Z" fill="none" stroke="#FFFFFF" stroke-width="1.2" opacity="0.45"/>
+
+  <!-- Shimmer Overlay at mirrored 45 degrees -->
+  <rect x="0" y="0" width="120" height="120" fill="url(#glareShimmer)" mask="url(#monogramMask)" pointer-events="none"/>
+</svg>
